@@ -1,0 +1,37 @@
+---
+const legalLinks = [
+  { href: "/conditions-generales", label: "Conditions Générales" },
+  { href: "/mentions-legales", label: "Mentions légales" },
+  { href: "/donnees-personnelles", label: "Données personnelles" },
+  { href: "/cookies", label: "Gérer mes cookies" },
+  { href: "/cookies", label: "Politique cookies" },
+];
+---
+
+<footer class="mt-auto">
+  <div class="bg-zozzo-jaune">
+    <!-- Trait bleu en haut -->
+    <div
+      class="h-[3px] w-full"
+      style="background-color: var(--color-zozzo-bleu-fonce);"
+    >
+    </div>
+
+    <div class="mx-auto max-w-7xl px-6 py-6 md:px-10 md:py-8">
+      <div
+        class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-black sm:text-sm"
+      >
+        {
+          legalLinks.map((item) => (
+            <a
+              href={item.href}
+              class="underline transition-opacity hover:opacity-70"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</footer>
