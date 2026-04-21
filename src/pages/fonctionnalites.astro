@@ -1,0 +1,185 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Fonctionnalités"
+  description="Les fonctionnalités de l’application ZOZZO pour apprendre la langue des signes aux enfants."
+>
+  <!-- HERO / INTRO -->
+  <section
+    class="relative overflow-hidden bg-[#ffffff] pt-28 pb-10 lg:pt-32 lg:pb-14"
+    style="background-image: url('/images/shapes/blob-beige.png'); background-repeat: no-repeat; background-size: 100% auto; background-position: center 110px;"
+  >
+    <div class="container-zozzo relative z-10">
+      <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr]">
+        <div class="max-w-xl">
+          <h1
+            class="font-['Barlow'] text-3xl leading-none font-normal text-black sm:text-4xl md:text-5xl lg:text-[4.8rem]"
+          >
+            Les fonctionnalités
+          </h1>
+
+          <p
+            class="mt-10 max-w-[560px] text-sm leading-[1.45] text-black/80 sm:text-base md:text-lg"
+          >
+            ZOZZO est une application pensée pour rendre l’apprentissage de la
+            langue des signes naturel, ludique et accessible dès le plus jeune
+            âge. À travers une expérience immersive et intuitive, l’enfant
+            découvre une nouvelle manière de communiquer grâce à quatre espaces
+            complémentaires :
+          </p>
+
+          <p
+            class="mt-5 text-xl leading-tight font-normal text-black sm:text-2xl md:text-[1.55rem] lg:text-[2rem]"
+          >
+            les leçons, le dictionnaire, les histoires et les jeux.
+          </p>
+        </div>
+
+        <div class="flex justify-center lg:justify-end">
+          <img
+            src="/images/features/feature-tablet.png"
+            alt="Aperçu des fonctionnalités sur tablette"
+            class="relative z-10 w-full max-w-[520px] lg:max-w-[560px]"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEÇONS -->
+  <section class="bg-[#ece339] py-16 lg:py-20">
+    <div class="container-zozzo">
+      <div class="max-w-6xl">
+        <h2
+          class="font-['Barlow'] text-xl leading-tight font-medium text-black sm:text-2xl md:text-[1.95rem] lg:text-[2.2rem]"
+        >
+          Apprendre pas à pas
+        </h2>
+
+        <p
+          class="mt-6 max-w-[1180px] text-sm leading-[1.75] text-black sm:text-base md:text-lg"
+        >
+          La partie Leçon guide l’enfant dans un parcours progressif et
+          structuré. Chaque module est organisé par thèmes du quotidien,
+          l’école, la famille, les émotions, les animaux, afin de connecter
+          immédiatement les signes à des situations concrètes. Les
+          démonstrations visuelles permettent une compréhension claire du geste,
+          tandis que la répétition favorise la mémorisation. L’enfant avance à
+          son rythme, gagne en confiance et consolide ses acquis au fil des
+          niveaux.
+        </p>
+
+        <div class="mt-12 flex justify-center">
+          <img
+            src="/images/features/feature-lessons.png"
+            alt="Illustration de la partie leçons"
+            class="w-full max-w-[430px] sm:max-w-[500px] lg:max-w-[560px]"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DICTIONNAIRE + HISTOIRES -->
+  <section class="bg-white py-16 lg:py-20">
+    <div class="container-zozzo">
+      <div class="grid gap-8 lg:grid-cols-2 lg:gap-10">
+        <!-- dictionnaire -->
+        <article
+          class="relative min-h-[320px] rounded-[3rem] bg-[#88a3ef] px-8 py-10 text-black sm:px-10 sm:py-12"
+        >
+          <h2
+            class="font-['Barlow'] text-xl leading-tight font-medium sm:text-2xl md:text-[1.9rem] lg:text-[2.1rem]"
+          >
+            Explorer librement
+          </h2>
+
+          <p
+            class="mt-8 max-w-[470px] text-sm leading-[1.7] sm:text-base md:text-lg"
+          >
+            Le Dictionnaire est un véritable outil de référence intégré à
+            l’application. Accessible à tout moment, il permet de rechercher un
+            mot, de découvrir son signe correspondant et de le revoir autant de
+            fois que nécessaire. Classé de manière simple et intuitive, il
+            encourage l’autonomie et prolonge l’apprentissage en dehors du
+            parcours guidé.
+          </p>
+
+          <img
+            src="/images/shapes/star-1.svg"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute bottom-10 left-5 w-9 sm:w-10"
+          />
+          <img
+            src="/images/shapes/star-2.svg"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute bottom-20 left-20 w-8 sm:w-9"
+          />
+          <img
+            src="/images/shapes/star-1.svg"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute bottom-12 left-36 hidden w-7 sm:block"
+          />
+        </article>
+
+        <!-- histoires -->
+        <article
+          class="min-h-[320px] rounded-[3rem] bg-[#224ed1] px-8 py-10 text-white sm:px-10 sm:py-12"
+        >
+          <h2
+            class="font-['Barlow'] text-xl leading-tight font-medium sm:text-2xl md:text-[1.9rem] lg:text-[2.1rem]"
+          >
+            Vivre des histoires en langue des signes
+          </h2>
+
+          <p
+            class="mt-8 max-w-[500px] text-sm leading-[1.7] text-white/95 sm:text-base md:text-lg"
+          >
+            Avec la section Histoire, l’enfant plonge dans des récits illustrés
+            où les signes prennent vie. Les mots appris sont intégrés dans des
+            situations narratives, permettant de les voir utilisés dans un
+            contexte réel. Cette immersion favorise la compréhension, stimule
+            l’imaginaire et crée un lien émotionnel fort avec l’apprentissage.
+            Mais aussi permet de sensibiliser concrètement sur la LSF.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- JEUX -->
+  <section class="bg-white pt-6 pb-20 lg:pt-10 lg:pb-24">
+    <div class="container-zozzo">
+      <div class="max-w-6xl">
+        <h2
+          class="font-['Barlow'] text-xl leading-tight font-medium text-black sm:text-2xl md:text-[1.95rem] lg:text-[2.2rem]"
+        >
+          Apprendre en s'amusant
+        </h2>
+
+        <p
+          class="mt-6 max-w-[1180px] text-sm leading-[1.75] text-black/80 sm:text-base md:text-lg"
+        >
+          Enfin, la partie Jeux transforme la révision en moment de plaisir.
+          Quiz interactifs, associations visuelles et petits défis viennent
+          renforcer les connaissances acquises. Le jeu devient un levier de
+          motivation et permet d’ancrer durablement les apprentissages.
+        </p>
+      </div>
+    </div>
+
+    <!-- image pleine largeur -->
+    <div class="mt-10 w-full">
+      <img
+        src="/images/features/feature-games.png"
+        alt="Illustrations de la partie jeux"
+        class="block w-full max-w-none"
+      />
+    </div>
+  </section>
+</Layout>
