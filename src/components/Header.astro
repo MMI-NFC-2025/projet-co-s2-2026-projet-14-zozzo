@@ -1,0 +1,113 @@
+---
+const desktopNavigation = [
+  { href: "/", label: "Accueil" },
+  { href: "/fonctionnalites", label: "Fonctionnalités" },
+  { href: "/apropos", label: "À propos" },
+  { href: "/contact", label: "Contact" },
+];
+
+const mobileNavigation = [
+  ...desktopNavigation,
+  { href: "/contact", label: "Contact" },
+];
+---
+
+<header class="relative w-full">
+  <div
+    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 md:px-10"
+  >
+    <a href="/" aria-label="Accueil ZOZZO">
+      <img
+        src="/images/logo-zozzo.svg"
+        alt="ZOZZO"
+        class="h-8 w-auto md:h-10"
+      />
+    </a>
+
+    <div class="hidden items-center gap-8 md:flex">
+      <nav class="flex items-center gap-8" aria-label="Navigation principale">
+        {
+          desktopNavigation.map((item) => (
+            <a
+              href={item.href}
+              class="text-sm font-medium text-black transition hover:opacity-80"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <a
+        href="/contact"
+        class="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
+        style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
+      >
+        Essayez gratuitement
+      </a>
+    </div>
+
+    <button
+      id="menu-btn"
+      class="group relative z-50 flex h-9 w-9 flex-col items-center justify-center gap-1.5 md:hidden"
+      aria-label="Ouvrir le menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span
+        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:translate-y-[8px] group-aria-expanded:rotate-45"
+      ></span>
+      <span
+        class="block h-0.5 w-7 rounded-full bg-white transition-opacity duration-300 group-aria-expanded:opacity-0"
+      ></span>
+      <span
+        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:-translate-y-[8px] group-aria-expanded:-rotate-45"
+      ></span>
+    </button>
+  </div>
+
+  <div
+    id="mobile-menu"
+    class="mobile-overlay md:hidden"
+    aria-hidden="true"
+    data-open="false"
+  >
+    <nav class="flex flex-col gap-6 px-10 pt-24">
+      {
+        mobileNavigation.map((item) => (
+          <a
+            href={item.href}
+            class="text-xl font-semibold text-white transition hover:opacity-80"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href="/contact"
+        class="mt-4 w-fit rounded-full px-6 py-3 font-semibold"
+        style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
+      >
+        Essayez gratuitement
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector("#menu-btn");
+  const menu = document.querySelector("#mobile-menu");
+  const page = document.body;
+
+  if (toggle && menu) {
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      const nextState = String(!isOpen);
+
+      toggle.setAttribute("aria-expanded", nextState);
+      menu.setAttribute("aria-hidden", String(isOpen));
+      menu.setAttribute("data-open", String(!isOpen));
+      page.classList.toggle("noscroll", !isOpen);
+    });
+  }
+</script>

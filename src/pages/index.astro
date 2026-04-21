@@ -1,11 +1,169 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Accueil"
+  description="Découvrez ZOZZO, l’application éducative pour apprendre la langue des signes aux enfants."
+>
+  <Hero />
+
+  <!-- PRÉSENTATION DE ZOZZO -->
+  <section class="relative bg-[#f2f2f2] pb-14 pt-6 sm:pb-20 lg:pb-24">
+    <div class="container-zozzo relative">
+      <!-- étoiles décoratives -->
+      <img
+        src="/images/landing/star-1.svg"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-[-12px] hidden w-8 sm:block lg:w-10"
+      />
+      <img
+        src="/images/landing/star-2.svg"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-8 top-[24px] hidden w-7 sm:block lg:w-9"
+      />
+      <img
+        src="/images/landing/star-1.svg"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-8 bottom-[74px] hidden w-8 sm:block lg:w-10"
+      />
+      <img
+        src="/images/landing/star-2.svg"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 bottom-6 hidden w-7 sm:block lg:w-9"
+      />
+
+      <div
+        class="grid items-center gap-8 sm:grid-cols-[1fr_0.95fr] lg:grid-cols-[1fr_0.9fr] lg:gap-12"
+      >
+        <div class="max-w-[460px] pl-0 sm:pl-2 lg:pl-8">
+          <p
+            class="font-['Montserrat'] text-[1.05rem] leading-[1.35] text-black sm:text-[1.15rem] lg:text-[1.5rem]"
+          >
+            Dans un monde où les enfants parlent, discutent, chuchotent,
+            rigolent, il y a Zozzo.
+          </p>
+
+          <p
+            class="mt-4 font-['Montserrat'] text-[1.05rem] leading-[1.35] text-black sm:text-[1.15rem] lg:text-[1.5rem]"
+          >
+            Zozzo est une petite fille comme les autres mais elle a quelque
+            chose en plus, elle ne parle pas, mais pourtant, elle a beaucoup de
+            choses à raconter !
+          </p>
+
+          <p
+            class="mt-4 font-['Montserrat'] text-[1.05rem] leading-[1.35] text-black sm:text-[1.15rem] lg:text-[1.5rem]"
+          >
+            Alors, elle utilise ses mains et la langue des signes pour parler et
+            communiquer avec ses amis
+          </p>
+        </div>
+
+        <div class="flex justify-center sm:justify-end">
+          <img
+            src="/images/landing/zozzo-standing.png"
+            alt="Zozzo debout"
+            class="w-full max-w-[220px] sm:max-w-[280px] lg:max-w-[400px]"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BONJOUR -->
+  <section class="bg-[#f2f2f2] pb-16 pt-4 sm:pb-20 lg:pb-24">
+    <div class="container-zozzo">
+      <div class="mx-auto max-w-[1180px]">
+        <div
+          class="grid items-end justify-center gap-6 sm:grid-cols-2 sm:gap-10 lg:gap-16"
+        >
+          <div class="flex justify-center">
+            <img
+              src="/images/landing/bonjour-step-1.png"
+              alt="Premier geste du signe bonjour"
+              class="w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[430px]"
+            />
+          </div>
+
+          <div class="flex justify-center">
+            <img
+              src="/images/landing/bonjour-step-2.png"
+              alt="Deuxième geste du signe bonjour"
+              class="w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[430px]"
+            />
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-center">
+          <div
+            class="bg-[#88a3ef] px-5 py-4 text-center font-['Montserrat'] text-[1rem] font-medium text-[#1f1f1f] sm:px-6 sm:py-4 sm:text-[1.05rem] lg:px-8 lg:text-[1.15rem]"
+          >
+            ZOZZO te dit bonjour
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION BLEUE -->
+  <section class="bg-[#224ed1] py-16 sm:py-20 lg:py-24">
+    <div class="container-zozzo">
+      <div class="mx-auto max-w-[1180px]">
+        <div class="max-w-[980px] text-white">
+          <p
+            class="font-['Montserrat'] text-[1.05rem] leading-[1.45] sm:text-[1.2rem] lg:text-[1.55rem]"
+          >
+            Découvrez Zozzo, l’application éducative pour apprendre la langue
+            des signes aux enfants de 6 à 12 ans. Ludique, immersive et adaptée.
+          </p>
+
+          <p
+            class="mt-6 font-['Montserrat'] text-[1.05rem] leading-[1.45] sm:text-[1.2rem] lg:text-[1.55rem]"
+          >
+            Dans cette application, l’enfant entre dans la vie de Zozzo et la
+            suit au fil de ses journées, Zozzo à la maison, Zozzo à l’école ou
+            encore Zozzo au zoo.
+          </p>
+
+          <p
+            class="mt-6 font-['Montserrat'] text-[1.05rem] leading-[1.45] sm:text-[1.2rem] lg:text-[1.55rem]"
+          >
+            Le seul souci c’est que Zozzo communique avec ses mains, son visage
+            et ses émotions. Pour la comprendre, il faut signer avec elle.
+            L’enfant est obligé d’utiliser la langue des signes pour communiquer
+            avec Zozzo.
+          </p>
+        </div>
+
+        <div class="mt-10 flex justify-center">
+          <img
+            src="/images/landing/tablet-preview.png"
+            alt="Aperçu de l’application ZOZZO sur tablette"
+            class="w-full max-w-[420px] sm:max-w-[620px] lg:max-w-[820px]"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FONCTIONNALITÉS -->
+  <section class="bg-[#f2f2f2] py-20 sm:py-24 lg:py-28">
+    <div class="container-zozzo flex justify-center">
+      <a
+        href="/fonctionnalites"
+        class="inline-flex items-center gap-5 rounded-[1.25rem] bg-[#f26748] px-8 py-5 font-['Barlow'] text-[1.35rem] font-medium text-[#ece339] transition hover:scale-105 sm:px-10 sm:py-5 sm:text-[1.55rem] lg:rounded-[1.4rem] lg:px-14 lg:py-6 lg:text-[1.9rem]"
+      >
+        <span>Fonctionnalités</span>
+        <span class="text-[2rem] leading-none sm:text-[2.2rem] lg:text-[2.6rem]"
+          >→</span
+        >
+      </a>
+    </div>
+  </section>
 </Layout>

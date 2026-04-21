@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme {
+    /* Couleurs ZOZZO */
+    --color-zozzo-orange: #f26748;
+    --color-zozzo-jaune: #f3e63f;
+    --color-zozzo-bleu-clair: #84a5f2;
+    --color-zozzo-beige: #fcded6;
+    --color-zozzo-bleu-fonce: #224ed1;
+    --color-zozzo-bg: #ffffff;
+    --color-zozzo-text: #1f1f1f;
+
+    /* Polices */
+    --font-sans: "Montserrat", sans-serif;
+    --font-title: "Biryani", sans-serif;
+    --font-subtitle: "Barlow", sans-serif;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply m-0 font-sans text-base leading-normal;
+        background-color: var(--color-zozzo-bg);
+        color: var(--color-zozzo-text);
+    }
+
+    body.noscroll {
+        @apply overflow-hidden;
+    }
+
+    h1 {
+        font-family: var(--font-title);
+        @apply text-3xl leading-tight font-normal sm:text-4xl md:text-5xl lg:text-6xl;
+    }
+
+    h2 {
+        font-family: var(--font-subtitle);
+        @apply text-2xl leading-tight font-normal sm:text-3xl md:text-4xl lg:text-5xl;
+    }
+
+    h3 {
+        font-family: var(--font-sans);
+        @apply text-lg leading-tight font-medium sm:text-xl md:text-2xl;
+    }
+
+    p {
+        @apply text-sm leading-7 sm:text-base md:text-lg;
+    }
+
+    a {
+        @apply text-inherit no-underline;
+    }
+
+    img {
+        @apply block h-auto max-w-full;
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+}
+
+@layer components {
+    .container-zozzo {
+        @apply mx-auto w-full max-w-7xl px-6 lg:px-8;
+    }
+
+    .section-pad {
+        @apply py-16 lg:py-24;
+    }
+
+    .hero-title {
+        font-family: var(--font-title);
+        @apply text-3xl leading-tight font-normal sm:text-4xl md:text-5xl lg:text-7xl;
+    }
+
+    .section-title {
+        font-family: var(--font-subtitle);
+        @apply text-2xl leading-tight font-normal sm:text-3xl md:text-4xl lg:text-5xl;
+    }
+
+    .body-text {
+        font-family: var(--font-sans);
+        @apply text-sm leading-7 sm:text-base md:text-lg;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-full border-2 border-current bg-white px-8 py-3 text-lg font-semibold transition hover:scale-105;
+        color: var(--color-zozzo-text);
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-semibold text-white transition hover:scale-105;
+        background-color: var(--color-zozzo-orange);
+    }
+
+    .bg-zozzo-orange {
+        background-color: var(--color-zozzo-orange);
+    }
+
+    .bg-zozzo-jaune {
+        background-color: var(--color-zozzo-jaune);
+    }
+
+    .bg-zozzo-bleu-clair {
+        background-color: var(--color-zozzo-bleu-clair);
+    }
+
+    .bg-zozzo-beige {
+        background-color: var(--color-zozzo-beige);
+    }
+
+    .bg-zozzo-bleu-fonce {
+        background-color: var(--color-zozzo-bleu-fonce);
+    }
+
+    .text-zozzo-blue {
+        color: var(--color-zozzo-bleu-fonce);
+    }
+
+    .bubble-blue {
+        @apply rounded-full;
+        background-color: var(--color-zozzo-bleu-clair);
+    }
+
+    .bubble-beige {
+        @apply rounded-full;
+        background-color: var(--color-zozzo-beige);
+    }
+
+    /* Mobile menu animation */
+    .mobile-overlay {
+        @apply fixed inset-0 z-40;
+        background-color: var(--color-zozzo-orange);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .mobile-overlay[data-open="true"] {
+        opacity: 1;
+        visibility: visible;
+    }
+}
