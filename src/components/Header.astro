@@ -52,29 +52,29 @@ const mobileNavigation = [...desktopNavigation];
       aria-controls="mobile-menu"
     >
       <span
-        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:translate-y-[8px] group-aria-expanded:rotate-45"
+        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:translate-y-2 group-aria-expanded:rotate-45"
       ></span>
       <span
         class="block h-0.5 w-7 rounded-full bg-white transition-opacity duration-300 group-aria-expanded:opacity-0"
       ></span>
       <span
-        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:-translate-y-[8px] group-aria-expanded:-rotate-45"
+        class="block h-0.5 w-7 rounded-full bg-white transition-transform duration-300 group-aria-expanded:-translate-y-2 group-aria-expanded:-rotate-45"
       ></span>
     </button>
   </div>
 
   <div
     id="mobile-menu"
-    class="mobile-overlay md:hidden"
+    class="mobile-overlay overflow-y-auto md:hidden"
     aria-hidden="true"
     data-open="false"
   >
-    <nav class="flex flex-col gap-6 px-10 pt-24">
+    <nav class="flex flex-col gap-6 px-6 pt-20 pb-10 sm:px-10 sm:pt-24">
       {
         mobileNavigation.map((item) => (
           <a
             href={item.href}
-            class="text-xl font-semibold text-white transition hover:opacity-80"
+            class="text-lg font-semibold text-white transition hover:opacity-80 sm:text-xl"
           >
             {item.label}
           </a>
