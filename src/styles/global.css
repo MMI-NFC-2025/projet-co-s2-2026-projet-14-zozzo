@@ -16,6 +16,76 @@
     --font-subtitle: "Barlow", sans-serif;
 }
 
+@layer components {
+    /* Wrapper centré avec padding horizontal cohérent sur toutes les pages */
+    .container-zozzo {
+        @apply mx-auto w-full max-w-7xl px-6 sm:px-10;
+    }
+
+    /* Espacement vertical de section */
+    .section-pad {
+        @apply py-14 sm:py-20 lg:py-28;
+    }
+
+    /* Overlay menu mobile (Header) */
+    .mobile-overlay {
+        @apply fixed inset-0 z-40 bg-zozzo-orange;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .mobile-overlay[data-open="true"] {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Carte des pages légales */
+    .legal-page {
+        @apply relative mx-auto my-8 sm:mt-11 max-w-7xl overflow-hidden rounded-3xl border border-[#eceff3] p-6 sm:p-8;
+        background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+        box-shadow: 0 24px 55px -38px rgba(0, 0, 0, 0.45);
+    }
+
+    .legal-page::before,
+    .legal-page::after {
+        content: "";
+        position: absolute;
+        border-radius: 9999px;
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+    .legal-page::before {
+        top: -60px;
+        right: -45px;
+        width: 170px;
+        height: 170px;
+        background: #ffe2b0;
+    }
+
+    .legal-page::after {
+        bottom: -70px;
+        left: -55px;
+        width: 200px;
+        height: 200px;
+        background: #d9ecff;
+    }
+
+    .legal-page .content {
+        @apply relative z-10;
+    }
+
+    .legal-page .content > div {
+        @apply rounded-2xl border border-[#eceff3] bg-white p-4 sm:p-5;
+    }
+
+    .legal-page p,
+    .legal-page li {
+        @apply text-[#1f2937] leading-[1.6];
+    }
+}
+
 @layer base {
     html {
         scroll-behavior: smooth;
