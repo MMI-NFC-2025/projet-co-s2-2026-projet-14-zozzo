@@ -1,0 +1,198 @@
+---
+import MinimalLayout from "../layouts/MinimalLayout.astro";
+---
+
+<MinimalLayout
+  title="ZOZZO | Bienvenue"
+  description="Découvre l'histoire de Zozzo et commence à apprendre la langue des signes !"
+  bodyStyle="margin:0; padding:0; background:white; display:flex; flex-direction:column; width:100%; height:100dvh; overflow:hidden;"
+>
+
+  <!-- Zone des slides : prend tout l'espace disponible au-dessus de la nav -->
+  <div style="position: relative; flex: 1; overflow: hidden; min-height: 0;">
+    <div
+      id="slides-track"
+      style="display: flex; width: 500vw; height: 100%; transition: transform 0.5s ease-in-out;"
+    >
+
+      <!-- ── Slide 1 : Présentation du personnage ── -->
+      <div style="width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden;"
+           class="flex flex-col items-center justify-center px-8 text-center">
+        <img
+          src="/images/intro/zozzo-magicienne.png"
+          alt="Zozzo, mascotte de l'application"
+          class="min-h-0 flex-1 w-auto object-contain py-4"
+        />
+        <p class="shrink-0 font-title text-4xl font-semibold text-black sm:text-5xl">
+          ZOZZO
+        </p>
+      </div>
+
+      <!-- ── Slide 2 : La magicienne ── -->
+      <div style="width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden;"
+           class="flex flex-col items-center px-8 pt-10 pb-4 text-center">
+        <p class="shrink-0 font-subtitle text-base text-black sm:text-lg">
+          on la compare souvent à une magicienne
+        </p>
+        <img
+          src="/images/intro/zozzo-enchantements.png"
+          alt="Zozzo déguisée en magicienne avec un chaudron magique"
+          class="min-h-0 flex-1 w-auto object-contain py-4"
+        />
+        <p class="shrink-0 font-subtitle text-base text-black sm:text-lg">
+          Quand ses mains bougent, on dirait qu'elle<br />prépare des enchantements ultra cool
+        </p>
+      </div>
+
+      <!-- ── Slide 3 : Les mains ── -->
+      <div style="width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden;"
+           class="flex flex-col items-center px-8 pt-10 pb-4 text-center">
+        <p class="shrink-0 font-subtitle text-base text-black sm:text-lg">
+          Mais Zozzo est encore mieux qu'une magicienne.<br />
+          Parce que ses sorts ne lancent pas des éclairs
+        </p>
+        <img
+          src="/images/intro/les-deux-main.png"
+          alt="Deux mains ouvertes représentant la langue des signes"
+          class="min-h-0 flex-1 w-auto object-contain py-4"
+        />
+        <p class="shrink-0 font-subtitle text-base text-black sm:text-lg">
+          ils permettent de parler, de rire, de se comprendre.
+        </p>
+      </div>
+
+      <!-- ── Slide 4 : Populaire ── -->
+      <div style="width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden;"
+           class="flex flex-col items-center px-8 pt-10 pb-4 text-center">
+        <p class="shrink-0 font-subtitle text-base text-black sm:text-lg">
+          Avec ses mains magiques, Zozzo communique avec tout le monde.<br />
+          Et forcément… elle est super populaire !
+        </p>
+        <img
+          src="/images/intro/zozzo-populaire.png"
+          alt="Zozzo et ses amis qui font de la langue des signes"
+          class="min-h-0 flex-1 w-auto object-contain py-4"
+        />
+        <p class="shrink-0 font-subtitle text-base font-medium text-zozzo-bleu-fonce sm:text-lg">
+          Parce que son vrai pouvoir, c'est de créer du lien.
+        </p>
+      </div>
+
+      <!-- ── Slide 5 : CTA ── -->
+      <div style="width: 100vw; height: 100%; flex-shrink: 0; overflow: hidden;"
+           class="flex flex-col items-center justify-center gap-16 px-8 text-center">
+        <p class="font-subtitle text-xl text-black sm:text-2xl">
+          Et toi, prêt·e à apprendre<br />la magie de Zozzo ?
+        </p>
+        <a
+          href="/login"
+          class="rounded-full bg-zozzo-orange px-16 py-5 text-lg font-medium text-white transition hover:opacity-90 active:scale-95 sm:text-xl"
+        >
+          Commencez !
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre de navigation : toujours en bas, ne cache jamais le contenu -->
+  <div
+    id="nav-bar"
+    style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: white;"
+  >
+
+    <!-- Flèche précédent -->
+    <button
+      id="prev-btn"
+      aria-label="Slide précédente"
+      style="display: none;"
+      class="flex h-14 w-14 items-center justify-center rounded-full bg-zozzo-bleu-clair text-white shadow-md transition hover:opacity-90 active:scale-95 sm:h-16 sm:w-16"
+    >
+      <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+
+    <!-- Espace vide à gauche quand prev est caché -->
+    <div id="prev-placeholder" class="h-14 w-14 sm:h-16 sm:w-16"></div>
+
+    <!-- Points de progression -->
+    <div id="dots-container" class="flex gap-2.5" aria-hidden="true">
+      {
+        [0, 1, 2, 3, 4].map((i) => (
+          <span
+            data-index={i}
+            class={`dot block h-2 w-2 rounded-full bg-zozzo-bleu-clair transition-opacity duration-300 ${i === 0 ? "opacity-100" : "opacity-30"}`}
+          />
+        ))
+      }
+    </div>
+
+    <!-- Flèche suivant -->
+    <button
+      id="next-btn"
+      aria-label="Slide suivante"
+      class="flex h-14 w-14 items-center justify-center rounded-full bg-zozzo-bleu-clair text-white shadow-md transition hover:opacity-90 active:scale-95 sm:h-16 sm:w-16"
+    >
+      <svg viewBox="0 0 24 24" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 18l6-6-6-6"></path>
+      </svg>
+    </button>
+
+  </div>
+
+  <script>
+    const track = document.getElementById("slides-track") as HTMLElement;
+    const nextBtn = document.getElementById("next-btn") as HTMLButtonElement;
+    const prevBtn = document.getElementById("prev-btn") as HTMLButtonElement;
+    const prevPlaceholder = document.getElementById("prev-placeholder") as HTMLElement;
+    const navBar = document.getElementById("nav-bar") as HTMLElement;
+    const dots = document.querySelectorAll(".dot");
+
+    let current = 0;
+    const total = 5;
+
+    function goTo(index) {
+      current = index;
+      track.style.transform = `translateX(-${current * 100}vw)`;
+
+      dots.forEach((dot, i) => {
+        dot.style.opacity = i === current ? "1" : "0.3";
+      });
+
+      if (current === 0) {
+        prevBtn.style.display = "none";
+        prevPlaceholder.style.display = "";
+      } else {
+        prevBtn.style.display = "";
+        prevPlaceholder.style.display = "none";
+      }
+
+      if (current === total - 1) {
+        navBar.style.visibility = "hidden";
+      } else {
+        navBar.style.visibility = "visible";
+      }
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (current < total - 1) goTo(current + 1);
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) goTo(current - 1);
+    });
+
+    // Swipe tactile
+    let touchStartX = 0;
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+    document.addEventListener("touchend", (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (diff > 50 && current < total - 1) goTo(current + 1);
+      if (diff < -50 && current > 0) goTo(current - 1);
+    });
+  </script>
+
+</MinimalLayout>

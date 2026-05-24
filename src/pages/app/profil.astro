@@ -1,0 +1,128 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Mon profil">
+
+  <div class="container-zozzo py-10">
+
+    <h1 class="mb-8 font-title text-3xl text-zozzo-text sm:text-4xl">Mon profil</h1>
+
+    <!-- Carte profil principale -->
+    <div class="mb-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8">
+      <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+
+        <!-- Avatar -->
+        <div class="shrink-0">
+          <div
+            id="avatar-container"
+            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige sm:h-28 sm:w-28"
+          >
+            <!-- Image ou initiale affichée en JS -->
+            <span id="avatar-initiale" class="font-title text-3xl text-zozzo-orange sm:text-4xl">?</span>
+            <img id="avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
+          </div>
+        </div>
+
+        <!-- Infos principales -->
+        <div class="flex-1 text-center sm:text-left">
+          <p id="profil-pseudo" class="font-title text-2xl text-zozzo-text sm:text-3xl">—</p>
+          <p id="profil-email" class="mt-1 text-sm text-gray-400">—</p>
+          <p id="profil-age" class="mt-1 text-sm text-gray-500">—</p>
+
+          <!-- Badge premium -->
+          <div id="badge-premium" class="mt-3 hidden">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-zozzo-jaune px-3 py-1 text-xs font-semibold text-zozzo-text">
+              ⭐ Premium
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
+        <p class="font-title text-3xl font-semibold text-zozzo-orange" id="stat-niveau">—</p>
+        <p class="mt-1 text-xs font-medium text-gray-500">Niveau</p>
+      </div>
+
+      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
+        <p class="font-title text-3xl font-semibold text-zozzo-orange" id="stat-xp">—</p>
+        <p class="mt-1 text-xs font-medium text-gray-500">Expérience</p>
+      </div>
+
+      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
+        <p id="stat-vies" class="text-2xl">—</p>
+        <p class="mt-1 text-xs font-medium text-gray-500">Vies</p>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <a
+        href="/app"
+        class="rounded-full border-2 border-zozzo-orange px-6 py-3 text-center text-sm font-semibold text-zozzo-orange transition hover:bg-zozzo-orange hover:text-white"
+      >
+        ← Retour à l'accueil
+      </a>
+
+      <button
+        id="logout-profil-btn"
+        class="rounded-full bg-zozzo-orange px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+      >
+        Se déconnecter
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    import { getCurrentUser, logout, getAvatarUrl } from "../../lib/pocketbase.js";
+
+    const user = getCurrentUser();
+
+    if (user) {
+      // Pseudo et infos de base
+      document.getElementById("profil-pseudo").textContent = user.pseudo || "—";
+      document.getElementById("profil-email").textContent = user.email || "—";
+      document.getElementById("profil-age").textContent = user.age ? `${user.age} ans` : "—";
+
+      // Stats
+      document.getElementById("stat-niveau").textContent = user.niveau ?? "1";
+      document.getElementById("stat-xp").textContent = (user.experience ?? 0) + " XP";
+
+      const vies = user.vies ?? 3;
+      document.getElementById("stat-vies").textContent = "❤️".repeat(Math.max(0, vies));
+
+      // Badge premium
+      if (user.abonnement_actif) {
+        document.getElementById("badge-premium").classList.remove("hidden");
+      }
+
+      // Avatar : image ou initiale
+      const avatarUrl = getAvatarUrl(user);
+      if (avatarUrl) {
+        const img = document.getElementById("avatar-img");
+        const initiale = document.getElementById("avatar-initiale");
+        img.src = avatarUrl;
+        img.classList.remove("hidden");
+        initiale.classList.add("hidden");
+      } else {
+        // Afficher la première lettre du pseudo
+        const pseudo = user.pseudo || user.email || "?";
+        document.getElementById("avatar-initiale").textContent = pseudo[0].toUpperCase();
+      }
+    }
+
+    // Déconnexion depuis la page profil
+    document.getElementById("logout-profil-btn")?.addEventListener("click", () => {
+      logout();
+      window.location.href = "/login";
+    });
+  </script>
+
+</AppLayout>

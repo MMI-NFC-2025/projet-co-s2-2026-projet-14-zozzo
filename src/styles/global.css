@@ -10,10 +10,80 @@
     --color-zozzo-bg: #ffffff;
     --color-zozzo-text: #1f1f1f;
 
-    /* Polices */
+    /* Polices — génère automatiquement font-sans, font-title, font-subtitle */
     --font-sans: "Montserrat", sans-serif;
     --font-title: "Biryani", sans-serif;
     --font-subtitle: "Barlow", sans-serif;
+}
+
+@layer components {
+    /* Wrapper centré avec padding horizontal cohérent sur toutes les pages */
+    .container-zozzo {
+        @apply mx-auto w-full max-w-7xl px-6 sm:px-10;
+    }
+
+    /* Espacement vertical de section */
+    .section-pad {
+        @apply py-14 sm:py-20 lg:py-28;
+    }
+
+    /* Overlay menu mobile (Header) */
+    .mobile-overlay {
+        @apply fixed inset-0 z-40 bg-zozzo-orange;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .mobile-overlay[data-open="true"] {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Carte des pages légales */
+    .legal-page {
+        @apply relative mx-auto my-8 sm:mt-11 max-w-7xl overflow-hidden rounded-3xl border border-[#eceff3] p-6 sm:p-8;
+        background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+        box-shadow: 0 24px 55px -38px rgba(0, 0, 0, 0.45);
+    }
+
+    .legal-page::before,
+    .legal-page::after {
+        content: "";
+        position: absolute;
+        border-radius: 9999px;
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+    .legal-page::before {
+        top: -60px;
+        right: -45px;
+        width: 170px;
+        height: 170px;
+        background: #ffe2b0;
+    }
+
+    .legal-page::after {
+        bottom: -70px;
+        left: -55px;
+        width: 200px;
+        height: 200px;
+        background: #d9ecff;
+    }
+
+    .legal-page .content {
+        @apply relative z-10;
+    }
+
+    .legal-page .content > div {
+        @apply rounded-2xl border border-[#eceff3] bg-white p-4 sm:p-5;
+    }
+
+    .legal-page p,
+    .legal-page li {
+        @apply text-[#1f2937] leading-[1.6];
+    }
 }
 
 @layer base {
@@ -22,9 +92,7 @@
     }
 
     body {
-        @apply m-0 font-sans text-base leading-normal;
-        background-color: var(--color-zozzo-bg);
-        color: var(--color-zozzo-text);
+        @apply m-0 font-sans text-base leading-normal bg-zozzo-bg text-zozzo-text;
     }
 
     body.noscroll {
@@ -32,18 +100,15 @@
     }
 
     h1 {
-        font-family: var(--font-title);
-        @apply text-3xl leading-tight font-normal sm:text-4xl md:text-5xl lg:text-6xl;
+        @apply font-title text-3xl leading-tight font-normal sm:text-4xl md:text-5xl lg:text-6xl;
     }
 
     h2 {
-        font-family: var(--font-subtitle);
-        @apply text-2xl leading-tight font-normal sm:text-3xl md:text-4xl lg:text-5xl;
+        @apply font-subtitle text-2xl leading-tight font-normal sm:text-3xl md:text-4xl lg:text-5xl;
     }
 
     h3 {
-        font-family: var(--font-sans);
-        @apply text-lg leading-tight font-medium sm:text-xl md:text-2xl;
+        @apply font-sans text-lg leading-tight font-medium sm:text-xl md:text-2xl;
     }
 
     p {
@@ -60,88 +125,5 @@
 
     button {
         @apply cursor-pointer;
-    }
-}
-
-@layer components {
-    .container-zozzo {
-        @apply mx-auto w-full max-w-7xl px-6 lg:px-8;
-    }
-
-    .section-pad {
-        @apply py-16 lg:py-24;
-    }
-
-    .hero-title {
-        font-family: var(--font-title);
-        @apply text-3xl leading-tight font-normal sm:text-4xl md:text-5xl lg:text-7xl;
-    }
-
-    .section-title {
-        font-family: var(--font-subtitle);
-        @apply text-2xl leading-tight font-normal sm:text-3xl md:text-4xl lg:text-5xl;
-    }
-
-    .body-text {
-        font-family: var(--font-sans);
-        @apply text-sm leading-7 sm:text-base md:text-lg;
-    }
-
-    .btn-primary {
-        @apply inline-flex items-center justify-center rounded-full border-2 border-current bg-white px-8 py-3 text-lg font-semibold transition hover:scale-105;
-        color: var(--color-zozzo-text);
-    }
-
-    .btn-secondary {
-        @apply inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-semibold text-white transition hover:scale-105;
-        background-color: var(--color-zozzo-orange);
-    }
-
-    .bg-zozzo-orange {
-        background-color: var(--color-zozzo-orange);
-    }
-
-    .bg-zozzo-jaune {
-        background-color: var(--color-zozzo-jaune);
-    }
-
-    .bg-zozzo-bleu-clair {
-        background-color: var(--color-zozzo-bleu-clair);
-    }
-
-    .bg-zozzo-beige {
-        background-color: var(--color-zozzo-beige);
-    }
-
-    .bg-zozzo-bleu-fonce {
-        background-color: var(--color-zozzo-bleu-fonce);
-    }
-
-    .text-zozzo-blue {
-        color: var(--color-zozzo-bleu-fonce);
-    }
-
-    .bubble-blue {
-        @apply rounded-full;
-        background-color: var(--color-zozzo-bleu-clair);
-    }
-
-    .bubble-beige {
-        @apply rounded-full;
-        background-color: var(--color-zozzo-beige);
-    }
-
-    /* Mobile menu animation */
-    .mobile-overlay {
-        @apply fixed inset-0 z-40;
-        background-color: var(--color-zozzo-orange);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    .mobile-overlay[data-open="true"] {
-        opacity: 1;
-        visibility: visible;
     }
 }

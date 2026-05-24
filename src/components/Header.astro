@@ -9,9 +9,9 @@ const desktopNavigation = [
 const mobileNavigation = [...desktopNavigation];
 ---
 
-<header class="relative w-full">
+<header class="sticky top-0 z-50 w-full">
   <div
-    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 md:px-10"
+    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 shadow-[0_6px_18px_rgba(0,0,0,0.12)] md:px-10"
   >
     <a href="/" aria-label="Accueil ZOZZO">
       <img
@@ -35,12 +35,14 @@ const mobileNavigation = [...desktopNavigation];
         }
       </nav>
 
+      <!-- Bouton auth desktop : mis à jour en JS selon l'état de connexion -->
       <a
-        href="/contact"
+        id="auth-btn-desktop"
+        href="/login"
         class="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
         style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
       >
-        Essayez gratuitement
+        Connexion
       </a>
     </div>
 
@@ -80,18 +82,22 @@ const mobileNavigation = [...desktopNavigation];
           </a>
         ))
       }
+
+      <!-- Bouton auth mobile : mis à jour en JS selon l'état de connexion -->
       <a
-        href="/contact"
+        id="auth-btn-mobile"
+        href="/login"
         class="mt-4 w-fit rounded-full px-6 py-3 font-semibold"
         style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
       >
-        Essayez gratuitement
+        Connexion
       </a>
     </nav>
   </div>
 </header>
 
 <script>
+  // ── Menu hamburger ──
   const toggle = document.querySelector("#menu-btn");
   const menu = document.querySelector("#mobile-menu");
   const page = document.body;
@@ -100,11 +106,40 @@ const mobileNavigation = [...desktopNavigation];
     toggle.addEventListener("click", () => {
       const isOpen = toggle.getAttribute("aria-expanded") === "true";
       const nextState = String(!isOpen);
-
       toggle.setAttribute("aria-expanded", nextState);
       menu.setAttribute("aria-hidden", String(isOpen));
       menu.setAttribute("data-open", String(!isOpen));
       page.classList.toggle("noscroll", !isOpen);
     });
+  }
+
+  // ── Bouton auth : adapte selon connexion PocketBase ──
+  import { isLoggedIn, getCurrentUser, logout } from "../lib/pocketbase.js";
+
+  const btnDesktop = document.getElementById("auth-btn-desktop");
+  const btnMobile = document.getElementById("auth-btn-mobile");
+
+  if (isLoggedIn()) {
+    const user = getCurrentUser();
+    const label = user?.pseudo || "Mon espace";
+
+    // Transformer en bouton "Mon espace" → /app
+    [btnDesktop, btnMobile].forEach((btn) => {
+      if (!btn) return;
+      btn.textContent = label;
+      btn.setAttribute("href", "/app");
+    });
+
+    // Ajouter un bouton déconnexion juste après (desktop)
+    if (btnDesktop) {
+      const logoutBtn = document.createElement("button");
+      logoutBtn.textContent = "Déconnexion";
+      logoutBtn.className = "rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/20";
+      logoutBtn.addEventListener("click", () => {
+        logout();
+        window.location.href = "/login";
+      });
+      btnDesktop.insertAdjacentElement("afterend", logoutBtn);
+    }
   }
 </script>

@@ -1,0 +1,38 @@
+---
+// Layout sans header ni footer — pour les pages plein écran (intro, etc.)
+import "../styles/global.css";
+import "@fontsource/montserrat/400.css";
+import "@fontsource/montserrat/500.css";
+import "@fontsource/montserrat/600.css";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/500.css";
+import "@fontsource/biryani/400.css";
+import "@fontsource/biryani/600.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  bodyStyle?: string;
+}
+
+const {
+  title = "ZOZZO",
+  description = "",
+  bodyStyle = "",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {description && <meta name="description" content={description} />}
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body style={bodyStyle}>
+    <slot />
+  </body>
+</html>
