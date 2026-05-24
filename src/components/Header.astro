@@ -9,9 +9,9 @@ const desktopNavigation = [
 const mobileNavigation = [...desktopNavigation];
 ---
 
-<header class="relative w-full">
+<header class="sticky top-0 z-50 w-full">
   <div
-    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 md:px-10"
+    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 shadow-[0_6px_18px_rgba(0,0,0,0.12)] md:px-10"
   >
     <a href="/" aria-label="Accueil ZOZZO">
       <img
@@ -36,11 +36,11 @@ const mobileNavigation = [...desktopNavigation];
       </nav>
 
       <a
-        href="/contact"
+        href="/intro"
         class="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-90"
         style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
       >
-        Essayez gratuitement
+        Connexion
       </a>
     </div>
 
@@ -80,8 +80,9 @@ const mobileNavigation = [...desktopNavigation];
           </a>
         ))
       }
+
       <a
-        href="/contact"
+        href="/intro"
         class="mt-4 w-fit rounded-full px-6 py-3 font-semibold"
         style="background-color: var(--color-zozzo-jaune); color: var(--color-zozzo-orange);"
       >

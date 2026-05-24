@@ -9,8 +9,20 @@ const legalLinks = [
   { href: "/conditions-generales", label: "Conditions Générales" },
   { href: "/mentions-legales", label: "Mentions légales" },
   { href: "/donnees-personnelles", label: "Données personnelles" },
-  { href: "/cookies", label: "Gérer mes cookies" },
   { href: "/cookies", label: "Politique cookies" },
+];
+
+const socialLinks = [
+  {
+    href: "https://www.instagram.com/zozzo_lsf/",
+    label: "Instagram",
+    icon: "instagram",
+  },
+  {
+    href: "https://www.facebook.com/zozzo.lsf",
+    label: "Facebook",
+    icon: "facebook",
+  },
 ];
 ---
 
@@ -33,6 +45,32 @@ const legalLinks = [
     </div>
 
     <div class="mx-auto max-w-7xl px-6 sm:px-10">
+      <div class="mb-5 flex items-center gap-3" aria-label="Réseaux sociaux ZOZZO">
+        {
+          socialLinks.map((item) => (
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={item.label}
+              class="flex h-10 w-10 items-center justify-center rounded-full border border-zozzo-blue text-zozzo-blue transition hover:bg-zozzo-blue hover:text-white"
+            >
+              {
+                item.icon === "instagram" ? (
+                  <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.75A4 4 0 0 0 3.75 7.75v8.5a4 4 0 0 0 4 4h8.5a4 4 0 0 0 4-4v-8.5a4 4 0 0 0-4-4h-8.5Zm8.95 1.3a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.75a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5Z" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M13.5 21v-7h2.35l.4-2.95H13.5V9.2c0-.86.24-1.45 1.48-1.45h1.58V5.1A19.5 19.5 0 0 0 14.2 5c-2.34 0-3.95 1.43-3.95 4.07v1.98H7.9V14h2.35v7h3.25Z" />
+                  </svg>
+                )
+              }
+            </a>
+          ))
+        }
+      </div>
+
       <div
         class="h-px w-full"
         style="background-color: var(--color-zozzo-bleu-fonce);"

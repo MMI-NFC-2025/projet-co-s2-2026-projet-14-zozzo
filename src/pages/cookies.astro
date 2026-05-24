@@ -6,45 +6,70 @@ import Layout from "../layouts/Layout.astro";
   title="ZOZZO | Cookies"
   description="Consultez les informations relatives aux cookies du site ZOZZO."
 >
-  <section class="section-pad">
-    <div
-      class="container-zozzo max-w-4xl space-y-8 rounded-[2.5rem] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10"
-    >
-      <div class="space-y-4">
-        <h1 class="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-          Politique de cookies
-        </h1>
-        <p class="body-text">
-          Cette base de page explique simplement la situation actuelle du site
-          concernant l’usage de cookies.
+  <section class="legal-page">
+    <h1 class="mb-4 text-xl font-medium text-black sm:text-2xl">
+      Gérer ses cookies
+    </h1>
+
+    <div class="content space-y-5">
+      <div>
+        <p class="font-medium text-[#3a3a3a]">Qu’est-ce qu’un cookie ?</p>
+        <p>
+          Un cookie est un petit fichier texte enregistré sur l’ordinateur ou
+          l’appareil de l’utilisateur lors de la consultation d’un site
+          internet.
+        </p>
+        <p>
+          Il permet notamment de mémoriser certaines informations de navigation.
         </p>
       </div>
 
-      <section class="space-y-3">
-        <h2 class="section-title">Usage actuel</h2>
-        <p class="body-text">
-          Dans la version actuelle, aucun dispositif avancé de suivi marketing
-          ou d’analyse n’est mis en avant dans cette base de projet.
-        </p>
-      </section>
+      <div>
+        <p class="font-medium text-[#3a3a3a]">Utilisation des cookies :</p>
+        <p>Le site ZOZZO peut utiliser des cookies pour :</p>
+        <ul class="ml-5 list-disc space-y-1">
+          <li>assurer le bon fonctionnement du site</li>
+          <li>analyser la fréquentation</li>
+          <li>améliorer l’expérience utilisateur</li>
+        </ul>
+      </div>
 
-      <section class="space-y-3">
-        <h2 class="section-title">Évolutions possibles</h2>
-        <p class="body-text">
-          Si des outils de mesure d’audience, de personnalisation ou
-          d’authentification sont ajoutés, cette page devra être complétée pour
-          décrire les finalités correspondantes.
+      <div>
+        <p class="font-medium text-[#3a3a3a]">Types de cookies utilisés :</p>
+        <p>Cookies essentiels :</p>
+        <p>
+          Ils sont nécessaires au fonctionnement du site et ne peuvent pas être
+          désactivés.
         </p>
-      </section>
+        <p class="mt-2">Cookies de mesure d’audience</p>
+        <p>
+          Ils permettent d’analyser la fréquentation du site afin d’améliorer
+          son contenu.
+        </p>
+      </div>
 
-      <section class="space-y-3">
-        <h2 class="section-title">Information utilisateur</h2>
-        <p class="body-text">
-          Toute mise en place future d’un mécanisme de dépôt de cookies devra
-          s’accompagner d’une information claire et d’un recueil de choix
-          adapté.
+      <div>
+        <p class="font-medium text-[#3a3a3a]">Gestion des cookies :</p>
+        <p>L’utilisateur peut configurer son navigateur pour :</p>
+        <ul class="ml-5 list-disc space-y-1">
+          <li>accepter tous les cookies</li>
+          <li>refuser les cookies</li>
+          <li>être informé lorsqu’un cookie est installé</li>
+        </ul>
+        <p class="mt-2">
+          La désactivation de certains cookies peut toutefois limiter certaines
+          fonctionnalités du site.
         </p>
-      </section>
+      </div>
+
+      <div>
+        <p class="font-medium text-[#3a3a3a]">Consentement :</p>
+        <p>
+          Lors de la première visite sur le site, un bandeau d’information
+          informe l’utilisateur de l’utilisation de cookies et lui permet de les
+          accepter ou de les refuser.
+        </p>
+      </div>
     </div>
   </section>
 </Layout>
