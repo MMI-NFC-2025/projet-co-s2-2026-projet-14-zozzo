@@ -3,28 +3,26 @@ import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
 <AppLayout title="ZOZZO | Mon profil">
-
   <div class="container-zozzo py-10">
 
     <h1 class="mb-8 font-title text-3xl text-zozzo-text sm:text-4xl">Mon profil</h1>
 
-    <!-- Carte profil principale -->
+    <!-- ── Carte principale ────────────────────────────────────────────── -->
     <div class="mb-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8">
       <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
 
-        <!-- Avatar -->
+        <!-- Avatar affiché -->
         <div class="shrink-0">
           <div
-            id="avatar-container"
+            id="avatar-wrapper"
             class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige sm:h-28 sm:w-28"
           >
-            <!-- Image ou initiale affichée en JS -->
             <span id="avatar-initiale" class="font-title text-3xl text-zozzo-orange sm:text-4xl">?</span>
             <img id="avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
           </div>
         </div>
 
-        <!-- Infos principales -->
+        <!-- Infos utilisateur -->
         <div class="flex-1 text-center sm:text-left">
           <p id="profil-pseudo" class="font-title text-2xl text-zozzo-text sm:text-3xl">—</p>
           <p id="profil-email" class="mt-1 text-sm text-gray-400">—</p>
@@ -36,32 +34,64 @@ import AppLayout from "../../layouts/AppLayout.astro";
               ⭐ Premium
             </span>
           </div>
+
+          <!-- Bouton changer avatar -->
+          <button
+            id="toggle-avatar-btn"
+            class="mt-4 rounded-full border-2 border-zozzo-bleu-clair px-5 py-2 text-sm font-semibold text-zozzo-bleu-fonce transition hover:bg-zozzo-bleu-clair hover:text-white"
+          >
+            Changer mon avatar
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Section changement d'avatar (cachée par défaut) ─────────── -->
+      <div id="avatar-change-section" class="mt-6 hidden border-t border-gray-100 pt-6">
+        <p class="mb-4 text-sm font-semibold text-zozzo-text">Choisis un nouveau personnage ✨</p>
+
+        <!-- Loading -->
+        <div id="change-loading" class="py-4 text-center text-sm text-gray-400">
+          Chargement…
         </div>
 
+        <!-- Grille -->
+        <div
+          id="change-grid"
+          class="hidden grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6"
+        ></div>
+
+        <!-- Message succès -->
+        <p id="change-success" class="mt-3 hidden text-center text-sm font-medium text-green-600">
+          ✓ Avatar mis à jour !
+        </p>
+        <!-- Message erreur -->
+        <p id="change-error" class="mt-3 hidden text-center text-sm text-red-500">
+          Impossible de sauvegarder. Réessaie.
+        </p>
       </div>
     </div>
 
-    <!-- Statistiques -->
+    <!-- ── Statistiques ──────────────────────────────────────────────── -->
     <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
 
-      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
-        <p class="font-title text-3xl font-semibold text-zozzo-orange" id="stat-niveau">—</p>
+      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
+        <p id="stat-niveau" class="font-title text-3xl font-semibold text-zozzo-orange">—</p>
         <p class="mt-1 text-xs font-medium text-gray-500">Niveau</p>
       </div>
 
-      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
-        <p class="font-title text-3xl font-semibold text-zozzo-orange" id="stat-xp">—</p>
+      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
+        <p id="stat-xp" class="font-title text-3xl font-semibold text-zozzo-orange">—</p>
         <p class="mt-1 text-xs font-medium text-gray-500">Expérience</p>
       </div>
 
-      <div class="rounded-2xl bg-white p-5 shadow-sm text-center">
+      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
         <p id="stat-vies" class="text-2xl">—</p>
         <p class="mt-1 text-xs font-medium text-gray-500">Vies</p>
       </div>
 
     </div>
 
-    <!-- Actions -->
+    <!-- ── Actions ──────────────────────────────────────────────────── -->
     <div class="flex flex-col gap-3 sm:flex-row">
       <a
         href="/app"
@@ -69,7 +99,6 @@ import AppLayout from "../../layouts/AppLayout.astro";
       >
         ← Retour à l'accueil
       </a>
-
       <button
         id="logout-profil-btn"
         class="rounded-full bg-zozzo-orange px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
@@ -81,44 +110,167 @@ import AppLayout from "../../layouts/AppLayout.astro";
   </div>
 
   <script>
-    import { getCurrentUser, logout, getAvatarUrl } from "../../lib/pocketbase.js";
+    import {
+      getCurrentUser,
+      getCurrentUserWithAvatar,
+      logout,
+      getAvatars,
+      getAvatarImageUrl,
+      updateUserAvatar,
+    } from "../../lib/pocketbase.js";
 
-    const user = getCurrentUser();
+    // ── Chargement du profil ──────────────────────────────────────────
+    let currentUser: any = null;
 
-    if (user) {
-      // Pseudo et infos de base
-      document.getElementById("profil-pseudo").textContent = user.pseudo || "—";
-      document.getElementById("profil-email").textContent = user.email || "—";
-      document.getElementById("profil-age").textContent = user.age ? `${user.age} ans` : "—";
+    async function loadProfile() {
+      currentUser = await getCurrentUserWithAvatar();
+      if (!currentUser) return;
 
-      // Stats
-      document.getElementById("stat-niveau").textContent = user.niveau ?? "1";
-      document.getElementById("stat-xp").textContent = (user.experience ?? 0) + " XP";
+      document.getElementById("profil-pseudo")!.textContent = currentUser.pseudo || "—";
+      document.getElementById("profil-email")!.textContent = currentUser.email || "—";
+      document.getElementById("profil-age")!.textContent =
+        currentUser.age ? `${currentUser.age} ans` : "—";
 
-      const vies = user.vies ?? 3;
-      document.getElementById("stat-vies").textContent = "❤️".repeat(Math.max(0, vies));
+      document.getElementById("stat-niveau")!.textContent = currentUser.niveau ?? "1";
+      document.getElementById("stat-xp")!.textContent = (currentUser.experience ?? 0) + " XP";
 
-      // Badge premium
-      if (user.abonnement_actif) {
-        document.getElementById("badge-premium").classList.remove("hidden");
+      const vies = currentUser.vies ?? 3;
+      document.getElementById("stat-vies")!.textContent = "❤️".repeat(Math.max(0, vies));
+
+      if (currentUser.abonnement_actif) {
+        document.getElementById("badge-premium")!.classList.remove("hidden");
       }
 
-      // Avatar : image ou initiale
-      const avatarUrl = getAvatarUrl(user);
-      if (avatarUrl) {
-        const img = document.getElementById("avatar-img");
-        const initiale = document.getElementById("avatar-initiale");
-        img.src = avatarUrl;
+      // Afficher l'avatar depuis la relation expandée
+      const avatarRecord = currentUser.expand?.avatar;
+      afficherAvatar(avatarRecord);
+    }
+
+    // Met à jour l'image d'avatar affichée dans la carte profil
+    function afficherAvatar(avatarRecord: any) {
+      const img = document.getElementById("avatar-img") as HTMLImageElement;
+      const initiale = document.getElementById("avatar-initiale") as HTMLElement;
+
+      const url = getAvatarImageUrl(avatarRecord);
+      if (url) {
+        img.src = url;
         img.classList.remove("hidden");
         initiale.classList.add("hidden");
       } else {
-        // Afficher la première lettre du pseudo
-        const pseudo = user.pseudo || user.email || "?";
-        document.getElementById("avatar-initiale").textContent = pseudo[0].toUpperCase();
+        const pseudo = currentUser?.pseudo || currentUser?.email || "?";
+        initiale.textContent = pseudo[0].toUpperCase();
+        img.classList.add("hidden");
+        initiale.classList.remove("hidden");
       }
     }
 
-    // Déconnexion depuis la page profil
+    loadProfile();
+
+    // ── Toggle section changement d'avatar ───────────────────────────
+    const toggleBtn = document.getElementById("toggle-avatar-btn") as HTMLButtonElement;
+    const changeSection = document.getElementById("avatar-change-section") as HTMLElement;
+    let avatarsLoaded = false;
+
+    toggleBtn.addEventListener("click", async () => {
+      const isOpen = !changeSection.classList.contains("hidden");
+
+      if (isOpen) {
+        changeSection.classList.add("hidden");
+        toggleBtn.textContent = "Changer mon avatar";
+      } else {
+        changeSection.classList.remove("hidden");
+        toggleBtn.textContent = "Fermer";
+        if (!avatarsLoaded) await loadAvatarGrid();
+      }
+    });
+
+    // ── Grille de changement d'avatar ────────────────────────────────
+    async function loadAvatarGrid() {
+      const loading = document.getElementById("change-loading") as HTMLElement;
+      const grid = document.getElementById("change-grid") as HTMLElement;
+
+      try {
+        const avatars = await getAvatars() as any[];
+        loading.style.display = "none";
+        grid.classList.remove("hidden");
+        grid.classList.add("grid");
+        avatarsLoaded = true;
+
+        // ID de l'avatar actuellement sélectionné
+        const currentAvatarId = currentUser?.avatar ?? null;
+
+        avatars.forEach((avatar) => {
+          const imgUrl = getAvatarImageUrl(avatar) ?? "";
+          const isSelected = avatar.id === currentAvatarId;
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.dataset.id = avatar.id;
+          btn.className = [
+            "avatar-change-btn relative rounded-2xl border-2 p-1",
+            "transition-all duration-200 hover:scale-105 focus:outline-none",
+            isSelected
+              ? "border-zozzo-bleu-fonce scale-105"
+              : "border-transparent hover:border-zozzo-bleu-clair",
+          ].join(" ");
+
+          btn.innerHTML = `
+            <img
+              src="${imgUrl}"
+              alt="${avatar.nom}"
+              class="w-full aspect-square rounded-xl object-cover"
+              loading="lazy"
+            />
+            <span class="check-icon absolute inset-0 items-center justify-center rounded-2xl bg-zozzo-bleu-fonce/15 ${isSelected ? "flex" : "hidden"}">
+              <svg viewBox="0 0 24 24" class="h-6 w-6 text-zozzo-bleu-fonce drop-shadow" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 13l4 4L19 7"/>
+              </svg>
+            </span>
+          `;
+
+          btn.addEventListener("click", () => sauvegarderAvatar(avatar, btn));
+          grid.appendChild(btn);
+        });
+      } catch {
+        loading.textContent = "Impossible de charger les personnages.";
+      }
+    }
+
+    async function sauvegarderAvatar(avatar: any, btn: HTMLElement) {
+      const success = document.getElementById("change-success") as HTMLElement;
+      const errEl = document.getElementById("change-error") as HTMLElement;
+
+      success.classList.add("hidden");
+      errEl.classList.add("hidden");
+
+      try {
+        await updateUserAvatar(currentUser.id, avatar.id);
+
+        // Mettre à jour l'affichage principal
+        currentUser.avatar = avatar.id;
+        currentUser.expand = { avatar };
+        afficherAvatar(avatar);
+
+        // Mettre à jour les bordures dans la grille
+        document.querySelectorAll<HTMLElement>(".avatar-change-btn").forEach((b) => {
+          b.classList.remove("border-zozzo-bleu-fonce", "scale-105");
+          b.classList.add("border-transparent");
+          b.querySelector(".check-icon")?.classList.remove("flex");
+          b.querySelector(".check-icon")?.classList.add("hidden");
+        });
+        btn.classList.remove("border-transparent");
+        btn.classList.add("border-zozzo-bleu-fonce", "scale-105");
+        btn.querySelector(".check-icon")?.classList.remove("hidden");
+        btn.querySelector(".check-icon")?.classList.add("flex");
+
+        success.classList.remove("hidden");
+        setTimeout(() => success.classList.add("hidden"), 3000);
+      } catch {
+        errEl.classList.remove("hidden");
+      }
+    }
+
+    // ── Déconnexion ──────────────────────────────────────────────────
     document.getElementById("logout-profil-btn")?.addEventListener("click", () => {
       logout();
       window.location.href = "/login";

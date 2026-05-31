@@ -1,15 +1,15 @@
 import PocketBase from "pocketbase";
 
-// ⚠️ Remplacer par l'URL de votre instance PocketBase (ex: https://votre-domaine.com)
 export const pb = new PocketBase("http://127.0.0.1:8090");
 
-// Connexion avec email + mot de passe
+// ── Auth ──────────────────────────────────────────────────────────────────
+
 export async function login(email, password) {
   return await pb.collection("users").authWithPassword(email, password);
 }
 
-// Inscription d'un nouvel utilisateur
-export async function register({ email, password, passwordConfirm, pseudo, age }) {
+// avatar = ID du record dans la collection avatars (relation)
+export async function register({ email, password, passwordConfirm, pseudo, age, avatar }) {
   await pb.collection("users").create({
     email,
     password,
@@ -21,36 +21,57 @@ export async function register({ email, password, passwordConfirm, pseudo, age }
     niveau: 1,
     vies: 3,
     abonnement_actif: false,
+    ...(avatar ? { avatar } : {}),
   });
-  // Connexion automatique après inscription
   return await pb.collection("users").authWithPassword(email, password);
 }
 
-// Déconnexion
 export function logout() {
   pb.authStore.clear();
 }
 
-// Retourne l'utilisateur connecté (ou null)
 export function getCurrentUser() {
   return pb.authStore.model;
 }
 
-// Vérifie si le token est valide (utilisateur connecté)
 export function isLoggedIn() {
   return pb.authStore.isValid;
 }
 
-// Mettre à jour les données du profil
+// Utilisateur connecté avec la relation avatar expandée
+export async function getCurrentUserWithAvatar() {
+  const user = getCurrentUser();
+  if (!user) return null;
+  try {
+    return await pb.collection("users").getOne(user.id, { expand: "avatar" });
+  } catch {
+    return user;
+  }
+}
+
 export async function updateUser(data) {
   const user = getCurrentUser();
   if (!user) throw new Error("Non connecté");
-  const updated = await pb.collection("users").update(user.id, data);
-  return updated;
+  return await pb.collection("users").update(user.id, data);
 }
 
-// Construire l'URL de l'avatar
-export function getAvatarUrl(user) {
-  if (!user?.avatar) return null;
-  return pb.getFileUrl(user, user.avatar, { thumb: "200x200" });
+// ── Avatars ───────────────────────────────────────────────────────────────
+
+// Récupère tous les avatars actifs de la collection avatars
+export async function getAvatars() {
+  return await pb.collection("avatars").getFullList({
+    filter: "actif = true",
+    sort: "nom",
+  });
+}
+
+// Met à jour la relation avatar de l'utilisateur
+export async function updateUserAvatar(userId, avatarId) {
+  return await pb.collection("users").update(userId, { avatar: avatarId });
+}
+
+// Construit l'URL de l'image d'un record de la collection avatars
+export function getAvatarImageUrl(avatarRecord) {
+  if (!avatarRecord?.image) return null;
+  return pb.getFileUrl(avatarRecord, avatarRecord.image);
 }

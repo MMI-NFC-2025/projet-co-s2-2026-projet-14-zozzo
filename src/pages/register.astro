@@ -7,130 +7,154 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
   description="Crée ton compte ZOZZO et apprends la langue des signes."
   bodyStyle="margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:3rem 1rem; background-color:#fcded6;"
 >
-  <div class="w-full max-w-md">
+  <div class="w-full max-w-xl">
 
-      <!-- Titre -->
-      <div class="mb-8 text-center">
-        <h1 class="font-title text-3xl text-zozzo-text">Créer un compte</h1>
-        <p class="mt-1 text-sm text-gray-500">Rejoins l'aventure ZOZZO !</p>
-      </div>
+    <!-- Titre -->
+    <div class="mb-8 text-center">
+      <h1 class="font-title text-3xl text-zozzo-text">Créer un compte</h1>
+      <p class="mt-1 text-sm text-gray-500">Rejoins l'aventure ZOZZO !</p>
+    </div>
 
-      <!-- Carte formulaire -->
-      <div class="rounded-3xl bg-white p-8 shadow-lg">
+    <!-- Carte formulaire -->
+    <div class="rounded-3xl bg-white p-8 shadow-lg">
 
-        <!-- Message d'erreur -->
-        <div
-          id="error-msg"
-          class="mb-5 hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600"
-        ></div>
+      <!-- Message d'erreur global -->
+      <div
+        id="error-msg"
+        class="mb-5 hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600"
+      ></div>
 
-        <form id="register-form" class="flex flex-col gap-5" novalidate>
+      <form id="register-form" class="flex flex-col gap-5" novalidate>
 
-          <!-- Pseudo -->
-          <div>
-            <label for="pseudo" class="mb-1.5 block text-sm font-medium text-zozzo-text">
-              Pseudo
-            </label>
-            <input
-              type="text"
-              id="pseudo"
-              name="pseudo"
-              required
-              autocomplete="username"
-              placeholder="TonPseudo"
-              class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
-            />
+        <!-- Pseudo -->
+        <div>
+          <label for="pseudo" class="mb-1.5 block text-sm font-medium text-zozzo-text">
+            Pseudo
+          </label>
+          <input
+            type="text"
+            id="pseudo"
+            name="pseudo"
+            required
+            autocomplete="username"
+            placeholder="TonPseudo"
+            class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-zozzo-text">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+            placeholder="ton@email.com"
+            class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
+          />
+        </div>
+
+        <!-- Âge -->
+        <div>
+          <label for="age" class="mb-1.5 block text-sm font-medium text-zozzo-text">
+            Âge
+          </label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            required
+            min="4"
+            max="18"
+            placeholder="Ex : 8"
+            class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
+          />
+        </div>
+
+        <!-- ── Choix d'avatar ──────────────────────────────────────── -->
+        <div class="border-t border-gray-100 pt-4">
+          <p class="mb-3 text-sm font-semibold text-zozzo-text">
+            Choisis ton personnage ZOZZO ✨
+          </p>
+
+          <!-- Chargement -->
+          <div id="avatars-loading" class="py-6 text-center text-sm text-gray-400">
+            Chargement des personnages…
           </div>
 
-          <!-- Email -->
-          <div>
-            <label for="email" class="mb-1.5 block text-sm font-medium text-zozzo-text">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              autocomplete="email"
-              placeholder="ton@email.com"
-              class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
-            />
+          <!-- Erreur chargement -->
+          <div id="avatars-error" class="hidden py-4 text-center text-sm text-red-500">
+            Impossible de charger les personnages. Réessaie plus tard.
           </div>
 
-          <!-- Âge -->
-          <div>
-            <label for="age" class="mb-1.5 block text-sm font-medium text-zozzo-text">
-              Âge
-            </label>
-            <input
-              type="number"
-              id="age"
-              name="age"
-              required
-              min="4"
-              max="18"
-              placeholder="Ex : 8"
-              class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
-            />
-          </div>
+          <!-- Grille des avatars : 2 col mobile, 3 col sm, 4 col lg -->
+          <div
+            id="avatars-grid"
+            class="hidden grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+          ></div>
+        </div>
+        <!-- ─────────────────────────────────────────────────────────── -->
 
-          <!-- Mot de passe -->
-          <div>
-            <label for="password" class="mb-1.5 block text-sm font-medium text-zozzo-text">
-              Mot de passe
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              autocomplete="new-password"
-              placeholder="Au moins 8 caractères"
-              class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
-            />
-          </div>
+        <!-- Mot de passe -->
+        <div class="border-t border-gray-100 pt-4">
+          <label for="password" class="mb-1.5 block text-sm font-medium text-zozzo-text">
+            Mot de passe
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="new-password"
+            placeholder="Au moins 8 caractères"
+            class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
+          />
+        </div>
 
-          <!-- Confirmer le mot de passe -->
-          <div>
-            <label for="passwordConfirm" class="mb-1.5 block text-sm font-medium text-zozzo-text">
-              Confirmer le mot de passe
-            </label>
-            <input
-              type="password"
-              id="passwordConfirm"
-              name="passwordConfirm"
-              required
-              autocomplete="new-password"
-              placeholder="••••••••"
-              class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
-            />
-          </div>
+        <!-- Confirmer le mot de passe -->
+        <div>
+          <label for="passwordConfirm" class="mb-1.5 block text-sm font-medium text-zozzo-text">
+            Confirmer le mot de passe
+          </label>
+          <input
+            type="password"
+            id="passwordConfirm"
+            name="passwordConfirm"
+            required
+            autocomplete="new-password"
+            placeholder="••••••••"
+            class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-zozzo-text outline-none transition focus:border-zozzo-orange"
+          />
+        </div>
 
-          <!-- Bouton inscription -->
-          <button
-            id="submit-btn"
-            type="submit"
-            class="mt-2 w-full rounded-full bg-zozzo-orange py-3.5 text-base font-semibold text-white transition hover:opacity-90 active:scale-95"
-          >
-            Créer mon compte
-          </button>
+        <!-- Bouton inscription -->
+        <button
+          id="submit-btn"
+          type="submit"
+          class="mt-2 w-full rounded-full bg-zozzo-orange py-3.5 text-base font-semibold text-white transition hover:opacity-90 active:scale-95"
+        >
+          Créer mon compte
+        </button>
 
-        </form>
-      </div>
+      </form>
+    </div>
 
-      <!-- Lien vers login -->
-      <p class="mt-6 text-center text-sm text-gray-500">
-        Déjà un compte ?{" "}
-        <a href="/login" class="font-semibold text-zozzo-bleu-fonce hover:underline">
-          Se connecter
-        </a>
-      </p>
+    <!-- Lien vers login -->
+    <p class="mt-6 text-center text-sm text-gray-500">
+      Déjà un compte ?{" "}
+      <a href="/login" class="font-semibold text-zozzo-bleu-fonce hover:underline">
+        Se connecter
+      </a>
+    </p>
 
   </div>
 
   <script>
-    import { register, isLoggedIn } from "../lib/pocketbase.js";
+    import { register, isLoggedIn, getAvatars, getAvatarImageUrl } from "../lib/pocketbase.js";
 
     if (isLoggedIn()) {
       window.location.replace("/app");
@@ -139,11 +163,90 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
     const form = document.getElementById("register-form") as HTMLFormElement;
     const errorMsg = document.getElementById("error-msg") as HTMLElement;
     const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const avatarsGrid = document.getElementById("avatars-grid") as HTMLElement;
+    const avatarsLoading = document.getElementById("avatars-loading") as HTMLElement;
+    const avatarsError = document.getElementById("avatars-error") as HTMLElement;
+
+    let selectedAvatar: string | null = null;
 
     function val(id: string) {
       return (document.getElementById(id) as HTMLInputElement).value;
     }
 
+    // ── Chargement de la grille d'avatars ──
+    async function loadAvatars() {
+      try {
+        const avatars = await getAvatars() as any[];
+        if (avatars.length === 0) {
+          avatarsLoading.style.display = "none";
+          avatarsError.textContent = "Aucun personnage trouvé dans PocketBase.";
+          avatarsError.classList.remove("hidden");
+          return;
+        }
+
+        avatarsLoading.style.display = "none";
+        avatarsGrid.classList.remove("hidden");
+        avatarsGrid.classList.add("grid");
+
+        avatars.forEach((avatar) => {
+          const imgUrl = getAvatarImageUrl(avatar) ?? "";
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.dataset.id = avatar.id;
+          btn.className =
+            "avatar-btn relative rounded-2xl border-2 border-transparent p-1 transition-all duration-200 hover:scale-105 hover:border-zozzo-bleu-clair focus:outline-none";
+
+          btn.innerHTML = `
+            <img
+              src="${imgUrl}"
+              alt="${avatar.nom}"
+              class="w-full aspect-square rounded-xl object-cover"
+              loading="lazy"
+            />
+            <span class="check-icon absolute inset-0 hidden items-center justify-center rounded-2xl bg-zozzo-bleu-fonce/15">
+              <svg viewBox="0 0 24 24" class="h-8 w-8 text-zozzo-bleu-fonce drop-shadow" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 13l4 4L19 7"/>
+              </svg>
+            </span>
+          `;
+
+          btn.addEventListener("click", () => {
+            // Désélectionner tous
+            document.querySelectorAll<HTMLElement>(".avatar-btn").forEach((b) => {
+              b.classList.remove("border-zozzo-bleu-fonce", "scale-105");
+              b.classList.add("border-transparent");
+              b.querySelector(".check-icon")?.classList.remove("flex");
+              b.querySelector(".check-icon")?.classList.add("hidden");
+            });
+            // Sélectionner celui-ci
+            btn.classList.remove("border-transparent");
+            btn.classList.add("border-zozzo-bleu-fonce", "scale-105");
+            btn.querySelector(".check-icon")?.classList.remove("hidden");
+            btn.querySelector(".check-icon")?.classList.add("flex");
+            selectedAvatar = avatar.id;
+          });
+
+          avatarsGrid.appendChild(btn);
+        });
+      } catch (err: any) {
+        avatarsLoading.style.display = "none";
+        const status = err?.status ?? "inconnu";
+        const message = err?.message ?? String(err);
+        avatarsError.textContent =
+          status === 403
+            ? "Accès refusé (403) — ouvre les règles API de la collection avatars dans PocketBase."
+            : status === 404
+              ? "Collection avatars introuvable (404) — vérifie qu'elle existe dans PocketBase."
+              : `Erreur ${status} : ${message}`;
+        avatarsError.classList.remove("hidden");
+        console.error("[ZOZZO] getAvatars échoué :", err);
+      }
+    }
+
+    loadAvatars();
+
+    // ── Soumission du formulaire ──
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -155,6 +258,15 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
 
       errorMsg.classList.add("hidden");
       errorMsg.textContent = "";
+
+      // Validations côté client
+      if (!selectedAvatar) {
+        errorMsg.textContent = "Choisis ton personnage avant de continuer.";
+        errorMsg.classList.remove("hidden");
+        // Scroll vers la grille
+        avatarsGrid.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
 
       if (password !== passwordConfirm) {
         errorMsg.textContent = "Les mots de passe ne correspondent pas.";
@@ -172,11 +284,12 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
       submitBtn.textContent = "Création en cours…";
 
       try {
-        await register({ email, password, passwordConfirm, pseudo, age });
+        await register({ email, password, passwordConfirm, pseudo, age, avatar: selectedAvatar });
         window.location.replace("/app");
       } catch (error) {
         const err = error as any;
         const data = err?.data?.data;
+
         if (data?.email?.message) {
           errorMsg.textContent = "Cet email est déjà utilisé.";
         } else if (data?.pseudo?.message) {
@@ -186,6 +299,7 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
         } else {
           errorMsg.textContent = "Une erreur s'est produite. Vérifie les informations saisies.";
         }
+
         errorMsg.classList.remove("hidden");
         submitBtn.disabled = false;
         submitBtn.textContent = "Créer mon compte";
