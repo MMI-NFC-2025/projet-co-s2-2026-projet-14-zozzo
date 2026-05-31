@@ -1,4 +1,5 @@
 ---
+// @ts-nocheck
 import "../styles/global.css";
 import "@fontsource/montserrat/400.css";
 import "@fontsource/montserrat/500.css";
@@ -10,9 +11,17 @@ import "@fontsource/biryani/600.css";
 
 interface Props {
   title?: string;
+  showBack?: boolean;
+  backHref?: string;
+  pageTitle?: string;
 }
 
-const { title = "ZOZZO | Application" } = Astro.props;
+const {
+  title = "ZOZZO | Application",
+  showBack = false,
+  backHref = "/app",
+  pageTitle = "",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -26,6 +35,179 @@ const { title = "ZOZZO | Application" } = Astro.props;
   </head>
 
   <body class="min-h-screen bg-white font-sans text-zozzo-text">
-    <slot />
+
+    <!-- ══ MENU PLEIN ÉCRAN (fond blanc) ═══════════════════════════════ -->
+    <div
+      id="app-menu"
+      aria-hidden="true"
+      style="position:fixed;inset:0;z-index:60;background:white;display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform 0.3s ease;"
+    >
+      <!-- Navigation en cartes colorées (commence sous le header) -->
+      <nav class="flex flex-1 flex-col gap-3 overflow-y-auto px-5 pt-20 pb-4 sm:px-8">
+
+        <a href="/app" class="flex items-center justify-between rounded-3xl px-5 py-4 transition active:scale-95" style="background-color:#6c8ff5;">
+          <span class="font-subtitle text-xl font-semibold text-white">Accueil</span>
+          <svg class="h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+        </a>
+
+        <a href="/app/lecons" class="flex items-center justify-between rounded-3xl px-5 py-4 transition active:scale-95" style="background-color:#224ed1;">
+          <span class="font-subtitle text-xl font-semibold text-white">Leçons</span>
+          <svg class="h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+        </a>
+
+        <a href="/app/histoires" class="flex items-center justify-between rounded-3xl px-5 py-4 transition active:scale-95" style="background-color:#f26748;">
+          <span class="font-subtitle text-xl font-semibold text-white">Histoires</span>
+          <svg class="h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+        </a>
+
+        <a href="/app/mini-jeux" class="flex items-center justify-between rounded-3xl px-5 py-4 transition active:scale-95" style="background-color:#f3e63f;">
+          <span class="font-subtitle text-xl font-semibold text-zozzo-text">Mini-jeux</span>
+          <svg class="h-5 w-5 shrink-0 text-zozzo-text/50" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+        </a>
+
+        <a href="/app/profil" class="flex items-center justify-between rounded-3xl px-5 py-4 transition active:scale-95" style="background-color:#84a5f2;">
+          <span class="font-subtitle text-xl font-semibold text-white">Profil</span>
+          <svg class="h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+        </a>
+
+        <button
+          id="menu-logout-btn"
+          class="flex w-full items-center justify-between rounded-3xl border-2 border-gray-200 px-5 py-4 text-left transition hover:bg-gray-50 active:scale-95"
+        >
+          <span class="font-subtitle text-xl font-semibold text-gray-500">Déconnexion</span>
+        </button>
+
+      </nav>
+
+      <!-- Utilisateur connecté (bas du menu) -->
+      <div class="flex items-center gap-4 border-t border-gray-100 px-5 py-5 sm:px-8">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige">
+          <img id="menu-avatar-img" src="" alt="" class="hidden h-full w-full object-cover" />
+          <span id="menu-avatar-initiale" class="font-title text-lg font-bold text-zozzo-orange">?</span>
+        </div>
+        <span id="menu-pseudo" class="font-subtitle text-base font-semibold text-zozzo-text">…</span>
+      </div>
+    </div>
+
+    <!-- ══ HEADER (z-70 : toujours au-dessus du menu) ════════════════ -->
+    <header
+      class="sticky top-0 z-[70] w-full"
+      style="background-color:#fcded6;"
+    >
+      <div class="flex items-center justify-between px-5 py-3 sm:px-8">
+
+        {showBack ? (
+          <div class="flex items-center gap-3">
+            <a
+              href={backHref}
+              aria-label="Retour"
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-white/60 text-zozzo-text transition hover:bg-white"
+            >
+              <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </a>
+            {pageTitle && (
+              <span class="font-title text-lg font-semibold text-zozzo-text">{pageTitle}</span>
+            )}
+          </div>
+        ) : (
+          <a href="/app" aria-label="Accueil ZOZZO">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 117.72 26.9" class="h-7 w-auto sm:h-9" fill="#f26748" aria-label="ZOZZO" role="img">
+              <path d="M.12,26.54v-2.63L13.88,3.76H0V.36h18.72v2.63L4.95,23.14h13.88v3.4H.12ZM45.3,13.45c0,2.8-.51,5.2-1.53,7.21-1.02,2-2.42,3.55-4.21,4.63-1.77,1.07-3.79,1.61-6.05,1.61s-4.29-.54-6.07-1.61c-1.77-1.08-3.17-2.63-4.19-4.64-1.02-2.01-1.53-4.41-1.53-7.2s.51-5.19,1.53-7.2c1.02-2.01,2.42-3.55,4.19-4.63,1.78-1.08,3.81-1.62,6.07-1.62s4.27.54,6.05,1.62c1.78,1.07,3.18,2.62,4.21,4.63,1.02,2,1.53,4.4,1.53,7.2ZM41.39,13.45c0-2.13-.35-3.92-1.04-5.38-.68-1.47-1.62-2.57-2.81-3.32-1.18-.76-2.53-1.14-4.03-1.14s-2.86.38-4.04,1.14c-1.18.75-2.12,1.86-2.81,3.32-.68,1.46-1.02,3.25-1.02,5.38s.34,3.93,1.02,5.39c.69,1.46,1.63,2.57,2.81,3.32,1.18.75,2.53,1.12,4.04,1.12s2.84-.38,4.03-1.12c1.19-.76,2.13-1.87,2.81-3.32.69-1.47,1.04-3.26,1.04-5.39ZM49.54,26.54v-2.63L63.31,3.76h-13.88V.36h18.72v2.63l-13.77,20.15h13.88v3.4h-18.72ZM72.54,26.54v-2.63l13.77-20.15h-13.88V.36h18.72v2.63l-13.77,20.15h13.88v3.4h-18.72ZM117.72,13.45c0,2.8-.51,5.2-1.53,7.21-1.02,2-2.42,3.55-4.21,4.63-1.77,1.07-3.79,1.61-6.05,1.61s-4.29-.54-6.07-1.61c-1.77-1.08-3.17-2.63-4.19-4.64-1.02-2.01-1.53-4.41-1.53-7.2s.51-5.19,1.53-7.2c1.02-2.01,2.42-3.55,4.19-4.63,1.78-1.08,3.81-1.62,6.07-1.62s4.27.54,6.05,1.62c1.78,1.07,3.18,2.62,4.21,4.63,1.02,2,1.53,4.4,1.53,7.2ZM113.81,13.45c0-2.13-.35-3.92-1.03-5.38-.68-1.47-1.62-2.57-2.81-3.32-1.18-.76-2.53-1.14-4.03-1.14s-2.85.38-4.04,1.14c-1.18.75-2.12,1.86-2.81,3.32-.68,1.46-1.02,3.25-1.02,5.38s.34,3.93,1.02,5.39c.69,1.46,1.63,2.57,2.81,3.32,1.19.75,2.53,1.12,4.04,1.12s2.84-.38,4.03-1.12c1.19-.76,2.13-1.87,2.81-3.32.69-1.47,1.03-3.26,1.03-5.39Z"/>
+            </svg>
+          </a>
+        )}
+
+        <!-- Bouton hamburger avec animation X (identique au landing) -->
+        <button
+          id="open-menu-btn"
+          aria-label="Ouvrir le menu"
+          aria-expanded="false"
+          class="group relative flex h-11 w-11 flex-col items-center justify-center gap-[6px]"
+        >
+          <span class="block h-[3px] w-8 rounded-full bg-zozzo-orange transition-transform duration-300 group-aria-expanded:translate-y-[9px] group-aria-expanded:rotate-45"></span>
+          <span class="block h-[3px] w-8 rounded-full bg-zozzo-orange transition-opacity duration-300 group-aria-expanded:opacity-0"></span>
+          <span class="block h-[3px] w-8 rounded-full bg-zozzo-orange transition-transform duration-300 group-aria-expanded:-translate-y-[9px] group-aria-expanded:-rotate-45"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ══ CONTENU PAGE ═══════════════════════════════════════════════ -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- ══ SCRIPT (auth + menu) ══════════════════════════════════════ -->
+    <script>
+      // @ts-nocheck
+      import {
+        isLoggedIn,
+        getCurrentUserWithAvatar,
+        logout,
+        getAvatarImageUrl,
+      } from "../lib/pocketbase.js";
+
+      if (!isLoggedIn()) {
+        window.location.replace("/login");
+      }
+
+      const menu    = document.getElementById("app-menu");
+      const menuBtn = document.getElementById("open-menu-btn");
+      const header  = document.querySelector("header");
+
+      function openMenu() {
+        menu.style.transform = "translateX(0)";
+        menu.setAttribute("aria-hidden", "false");
+        menuBtn.setAttribute("aria-expanded", "true");
+        menuBtn.setAttribute("aria-label", "Fermer le menu");
+        // header fond blanc pour se fondre avec le menu
+        if (header) header.style.backgroundColor = "white";
+        document.body.style.overflow = "hidden";
+      }
+      function closeMenu() {
+        menu.style.transform = "translateX(100%)";
+        menu.setAttribute("aria-hidden", "true");
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.setAttribute("aria-label", "Ouvrir le menu");
+        // restaurer la couleur rose du header
+        if (header) header.style.backgroundColor = "#fcded6";
+        document.body.style.overflow = "";
+      }
+
+      menuBtn.addEventListener("click", () => {
+        menuBtn.getAttribute("aria-expanded") === "true" ? closeMenu() : openMenu();
+      });
+      menu.querySelectorAll("a").forEach(link => link.addEventListener("click", closeMenu));
+
+      document.getElementById("menu-logout-btn").addEventListener("click", () => {
+        logout();
+        window.location.href = "/login";
+      });
+
+      (async () => {
+        try {
+          const user = await getCurrentUserWithAvatar();
+          if (!user) return;
+
+          const pseudo = user.pseudo || user.email || "…";
+          document.getElementById("menu-pseudo").textContent = pseudo;
+
+          const url = getAvatarImageUrl(user.expand?.avatar);
+          const img = document.getElementById("menu-avatar-img");
+
+          if (url) {
+            img.src = url;
+            img.classList.remove("hidden");
+            document.getElementById("menu-avatar-initiale").classList.add("hidden");
+          } else {
+            document.getElementById("menu-avatar-initiale").textContent = pseudo[0].toUpperCase();
+          }
+        } catch {
+          // PocketBase non disponible
+        }
+      })();
+    </script>
+
   </body>
 </html>

@@ -2,111 +2,98 @@
 import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
-<AppLayout title="ZOZZO | Mon espace">
+<AppLayout title="ZOZZO | Accueil">
 
-  <div class="container-zozzo py-10">
+  <div class="flex flex-col items-center px-5 py-8 sm:px-8">
 
-    <!-- Message de bienvenue (rempli en JS) -->
-    <div class="mb-10">
-      <h1 id="welcome-title" class="font-title text-3xl text-zozzo-text sm:text-4xl">
-        Bonjour ! 👋
-      </h1>
-      <p class="mt-2 text-sm text-gray-500 sm:text-base">
-        Prêt·e à apprendre la langue des signes aujourd'hui ?
-      </p>
+    <!-- ── Avatar ──────────────────────────────────────────────────── -->
+    <div
+      id="home-avatar-wrapper"
+      class="mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige shadow-md sm:h-28 sm:w-28"
+    >
+      <img id="home-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
+      <span id="home-avatar-initiale" class="font-title text-3xl text-zozzo-orange sm:text-4xl">?</span>
     </div>
 
-    <!-- Statistiques rapides -->
-    <div class="mb-10 grid grid-cols-3 gap-4 sm:gap-6">
+    <!-- ── Bonjour ─────────────────────────────────────────────────── -->
+    <h1 id="home-greeting" class="mb-1 font-title text-2xl text-zozzo-text sm:text-3xl">
+      Bonjour !
+    </h1>
 
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-niveau" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">Niveau</span>
-      </div>
+    <!-- ── Niveau ──────────────────────────────────────────────────── -->
+    <p id="home-niveau" class="mb-8 text-sm font-medium text-gray-400">Niveau —</p>
 
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-vies" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">Vies</span>
-      </div>
+    <!-- ── Cartes de navigation ────────────────────────────────────── -->
+    <div class="w-full max-w-md space-y-3">
 
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-xp" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">XP</span>
-      </div>
-
-    </div>
-
-    <!-- Navigation principale de l'app -->
-    <h2 class="mb-5 font-subtitle text-xl text-zozzo-text sm:text-2xl">Que veux-tu faire ?</h2>
-
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-      <a href="/app/lecons" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-beige text-2xl">📚</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Leçons</p>
-          <p class="text-xs text-gray-400">Apprendre par thème</p>
-        </div>
+      <a href="/app/lecons"
+        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
+        style="background-color:#224ed1;">
+        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">📚</span>
+        <span class="font-subtitle text-xl font-semibold text-white">Leçons</span>
+        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
       </a>
 
-      <a href="/app/dictionnaire" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-bleu-clair/30 text-2xl">🔤</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Dictionnaire</p>
-          <p class="text-xs text-gray-400">Chercher un signe</p>
-        </div>
+      <a href="/app/histoires"
+        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
+        style="background-color:#f26748;">
+        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">📖</span>
+        <span class="font-subtitle text-xl font-semibold text-white">Histoires</span>
+        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
       </a>
 
-      <a href="/app/histoires" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-jaune/50 text-2xl">📖</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Histoires</p>
-          <p class="text-xs text-gray-400">Lire et signer</p>
-        </div>
+      <a href="/app/mini-jeux"
+        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
+        style="background-color:#f3e63f;">
+        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black/10 text-3xl">🎮</span>
+        <span class="font-subtitle text-xl font-semibold text-zozzo-text">Mini-jeux</span>
+        <svg class="ml-auto h-5 w-5 shrink-0 text-zozzo-text/50" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
       </a>
 
-      <a href="/app/mini-jeux" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-orange/20 text-2xl">🎮</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Mini-jeux</p>
-          <p class="text-xs text-gray-400">Jouer et progresser</p>
-        </div>
-      </a>
-
-      <a href="/app/profil" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-2xl">👤</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Mon profil</p>
-          <p class="text-xs text-gray-400">Voir mes stats</p>
-        </div>
-      </a>
-
-      <a href="/app/premium" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-jaune hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-jaune/50 text-2xl">⭐</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Premium</p>
-          <p class="text-xs text-gray-400">Débloquer tout</p>
-        </div>
+      <a href="/app/dictionnaire"
+        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
+        style="background-color:#84a5f2;">
+        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">🔤</span>
+        <span class="font-subtitle text-xl font-semibold text-white">Dictionnaire</span>
+        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
       </a>
 
     </div>
-
   </div>
 
   <script>
-    import { getCurrentUser } from "../../lib/pocketbase.js";
+    // @ts-nocheck
+    import { getCurrentUserWithAvatar, getAvatarImageUrl } from "../../lib/pocketbase.js";
 
-    const user = getCurrentUser();
-    if (user) {
-      // Mettre à jour le message de bienvenue
-      const titleEl = document.getElementById("welcome-title");
-      if (titleEl) titleEl.textContent = `Bonjour ${user.pseudo || ""} ! 👋`;
-
-      // Remplir les stats
-      document.getElementById("stat-niveau").textContent = user.niveau ?? "1";
-      document.getElementById("stat-vies").textContent = "❤️".repeat(user.vies ?? 3);
-      document.getElementById("stat-xp").textContent = (user.experience ?? 0) + " XP";
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
     }
+
+    (async () => {
+      try {
+        const user = await getCurrentUserWithAvatar();
+        if (!user) return;
+
+        const pseudo = user.pseudo || "";
+        setText("home-greeting", pseudo ? `Bonjour ${pseudo} !` : "Bonjour !");
+        setText("home-niveau", `Niveau ${user.niveau ?? 1}`);
+
+        const url = getAvatarImageUrl(user.expand?.avatar);
+        const img = document.getElementById("home-avatar-img");
+        const initiale = document.getElementById("home-avatar-initiale");
+
+        if (url && img) {
+          img.src = url;
+          img.classList.remove("hidden");
+          if (initiale) initiale.classList.add("hidden");
+        } else if (pseudo && initiale) {
+          initiale.textContent = pseudo[0].toUpperCase();
+        }
+      } catch (e) {
+        console.error("[ZOZZO] Erreur chargement accueil :", e);
+      }
+    })();
   </script>
 
 </AppLayout>

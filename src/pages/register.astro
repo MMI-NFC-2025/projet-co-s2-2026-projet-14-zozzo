@@ -154,6 +154,7 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
   </div>
 
   <script>
+    // @ts-nocheck
     import { register, isLoggedIn, getAvatars, getAvatarImageUrl } from "../lib/pocketbase.js";
 
     if (isLoggedIn()) {

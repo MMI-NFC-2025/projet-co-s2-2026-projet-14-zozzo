@@ -2,233 +2,250 @@
 import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
-<AppLayout title="ZOZZO | Mon profil">
-  <div class="container-zozzo py-10">
+<AppLayout title="ZOZZO | Profil" showBack={true} backHref="/app" pageTitle="Profil">
 
-    <h1 class="mb-8 font-title text-3xl text-zozzo-text sm:text-4xl">Mon profil</h1>
-
-    <!-- ── Carte principale ────────────────────────────────────────────── -->
-    <div class="mb-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8">
-      <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-
-        <!-- Avatar affiché -->
-        <div class="shrink-0">
-          <div
-            id="avatar-wrapper"
-            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige sm:h-28 sm:w-28"
-          >
-            <span id="avatar-initiale" class="font-title text-3xl text-zozzo-orange sm:text-4xl">?</span>
-            <img id="avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
-          </div>
-        </div>
-
-        <!-- Infos utilisateur -->
-        <div class="flex-1 text-center sm:text-left">
-          <p id="profil-pseudo" class="font-title text-2xl text-zozzo-text sm:text-3xl">—</p>
-          <p id="profil-email" class="mt-1 text-sm text-gray-400">—</p>
-          <p id="profil-age" class="mt-1 text-sm text-gray-500">—</p>
-
-          <!-- Badge premium -->
-          <div id="badge-premium" class="mt-3 hidden">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-zozzo-jaune px-3 py-1 text-xs font-semibold text-zozzo-text">
-              ⭐ Premium
-            </span>
-          </div>
-
-          <!-- Bouton changer avatar -->
-          <button
-            id="toggle-avatar-btn"
-            class="mt-4 rounded-full border-2 border-zozzo-bleu-clair px-5 py-2 text-sm font-semibold text-zozzo-bleu-fonce transition hover:bg-zozzo-bleu-clair hover:text-white"
-          >
-            Changer mon avatar
-          </button>
-        </div>
-      </div>
-
-      <!-- ── Section changement d'avatar (cachée par défaut) ─────────── -->
-      <div id="avatar-change-section" class="mt-6 hidden border-t border-gray-100 pt-6">
-        <p class="mb-4 text-sm font-semibold text-zozzo-text">Choisis un nouveau personnage ✨</p>
-
-        <!-- Loading -->
-        <div id="change-loading" class="py-4 text-center text-sm text-gray-400">
-          Chargement…
-        </div>
-
-        <!-- Grille -->
-        <div
-          id="change-grid"
-          class="hidden grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6"
-        ></div>
-
-        <!-- Message succès -->
-        <p id="change-success" class="mt-3 hidden text-center text-sm font-medium text-green-600">
-          ✓ Avatar mis à jour !
-        </p>
-        <!-- Message erreur -->
-        <p id="change-error" class="mt-3 hidden text-center text-sm text-red-500">
-          Impossible de sauvegarder. Réessaie.
-        </p>
-      </div>
-    </div>
-
-    <!-- ── Statistiques ──────────────────────────────────────────────── -->
-    <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-
-      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p id="stat-niveau" class="font-title text-3xl font-semibold text-zozzo-orange">—</p>
-        <p class="mt-1 text-xs font-medium text-gray-500">Niveau</p>
-      </div>
-
-      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p id="stat-xp" class="font-title text-3xl font-semibold text-zozzo-orange">—</p>
-        <p class="mt-1 text-xs font-medium text-gray-500">Expérience</p>
-      </div>
-
-      <div class="rounded-2xl bg-white p-5 text-center shadow-sm">
-        <p id="stat-vies" class="text-2xl">—</p>
-        <p class="mt-1 text-xs font-medium text-gray-500">Vies</p>
-      </div>
-
-    </div>
-
-    <!-- ── Actions ──────────────────────────────────────────────────── -->
-    <div class="flex flex-col gap-3 sm:flex-row">
-      <a
-        href="/app"
-        class="rounded-full border-2 border-zozzo-orange px-6 py-3 text-center text-sm font-semibold text-zozzo-orange transition hover:bg-zozzo-orange hover:text-white"
-      >
-        ← Retour à l'accueil
-      </a>
+  <!-- ══ MODAL : CHOISIR UN AVATAR ══════════════════════════════════ -->
+  <div
+    id="avatar-modal"
+    aria-hidden="true"
+    style="position:fixed;inset:0;z-index:70;background:white;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.3s ease;"
+  >
+    <div class="flex items-center gap-4 border-b border-gray-100 px-5 py-4" style="background-color:#fcded6;">
       <button
-        id="logout-profil-btn"
-        class="rounded-full bg-zozzo-orange px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+        id="close-avatar-modal"
+        aria-label="Fermer"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-white/60 text-zozzo-text transition hover:bg-white"
       >
-        Se déconnecter
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h2 class="font-title text-lg font-semibold text-zozzo-text">Choisir un avatar</h2>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-5">
+      <div id="modal-loading" class="py-8 text-center text-sm text-gray-400">Chargement…</div>
+      <div id="modal-grid" class="hidden grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6"></div>
+    </div>
+
+    <div class="border-t border-gray-100 p-5">
+      <p id="modal-success" class="mb-3 hidden text-center text-sm font-medium text-green-600">✓ Avatar mis à jour !</p>
+      <p id="modal-error" class="mb-3 hidden text-center text-sm text-red-500">Impossible de sauvegarder. Réessaie.</p>
+      <button
+        id="save-avatar-btn"
+        disabled
+        class="w-full rounded-full bg-zozzo-orange py-3.5 text-base font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
+      >
+        Sauvegarder
       </button>
     </div>
+  </div>
+
+  <!-- ══ PAGE PROFIL ════════════════════════════════════════════════ -->
+  <div class="container-zozzo py-8">
+
+    <!-- ── Avatar + pseudo ────────────────────────────────────────── -->
+    <div class="mb-8 flex flex-col items-center gap-3 text-center">
+      <div class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige shadow-md">
+        <img id="profil-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
+        <span id="profil-avatar-initiale" class="font-title text-4xl text-zozzo-orange">?</span>
+      </div>
+      <p id="profil-pseudo-display" class="font-title text-2xl text-zozzo-text">—</p>
+      <button
+        id="change-avatar-btn"
+        class="rounded-full border-2 border-zozzo-bleu-clair px-5 py-1.5 text-sm font-semibold text-zozzo-bleu-fonce transition hover:bg-zozzo-bleu-clair hover:text-white"
+      >
+        Changer mon avatar
+      </button>
+    </div>
+
+    <!-- ── Informations ───────────────────────────────────────────── -->
+    <div class="mb-5 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+      <h2 class="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">Informations</h2>
+      <ul class="divide-y divide-gray-100">
+        {[
+          { label: "Pseudo",      id: "info-pseudo" },
+          { label: "Email",       id: "info-email" },
+          { label: "Âge",         id: "info-age" },
+          { label: "Niveau",      id: "info-niveau" },
+          { label: "Abonnement",  id: "info-abo" },
+        ].map(row => (
+          <li class="flex items-center justify-between py-3">
+            <span class="text-sm font-medium text-gray-500">{row.label}</span>
+            <span id={row.id} class="text-sm font-semibold text-zozzo-text">—</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- ── Bouton modifier ─────────────────────────────────────────── -->
+    <button
+      id="toggle-edit-btn"
+      class="mb-4 w-full rounded-full border-2 border-zozzo-orange py-3 text-sm font-semibold text-zozzo-orange transition hover:bg-zozzo-orange hover:text-white"
+    >
+      Modifier mes informations
+    </button>
+
+    <!-- ── Formulaire modification (caché par défaut) ──────────────── -->
+    <div id="edit-section" class="hidden mb-5 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+      <h2 class="mb-5 font-subtitle text-base font-semibold text-zozzo-text">Modifier mes informations</h2>
+
+      <div id="edit-success" class="mb-4 hidden rounded-2xl bg-green-50 px-4 py-3 text-sm text-green-700">✓ Profil mis à jour !</div>
+      <div id="edit-error" class="mb-4 hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+      <form id="edit-form" class="flex flex-col gap-4" novalidate>
+        <div>
+          <label for="edit-pseudo" class="mb-1.5 block text-sm font-medium text-zozzo-text">Pseudo</label>
+          <input type="text" id="edit-pseudo" class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-zozzo-orange" />
+        </div>
+        <div>
+          <label for="edit-email" class="mb-1.5 block text-sm font-medium text-zozzo-text">Email</label>
+          <input type="email" id="edit-email" class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-zozzo-orange" />
+        </div>
+        <div>
+          <label for="edit-age" class="mb-1.5 block text-sm font-medium text-zozzo-text">Âge</label>
+          <input type="number" id="edit-age" min="4" max="18" class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-zozzo-orange" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" id="cancel-edit-btn" class="flex-1 rounded-full border-2 border-gray-200 py-3 text-sm font-semibold text-gray-500 transition hover:border-gray-400">
+            Annuler
+          </button>
+          <button id="save-edit-btn" type="submit" class="flex-1 rounded-full bg-zozzo-orange py-3 text-sm font-semibold text-white transition hover:opacity-90">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Déconnexion ─────────────────────────────────────────────── -->
+    <button
+      id="logout-btn"
+      class="w-full rounded-full py-3 text-sm font-semibold text-gray-400 transition hover:text-red-500"
+    >
+      Se déconnecter
+    </button>
 
   </div>
 
   <script>
+    // @ts-nocheck
     import {
-      getCurrentUser,
       getCurrentUserWithAvatar,
-      logout,
       getAvatars,
       getAvatarImageUrl,
       updateUserAvatar,
+      updateUserProfile,
+      logout,
     } from "../../lib/pocketbase.js";
 
-    // ── Chargement du profil ──────────────────────────────────────────
     let currentUser: any = null;
+    let selectedAvatarId: string | null = null;
 
-    async function loadProfile() {
-      currentUser = await getCurrentUserWithAvatar();
-      if (!currentUser) return;
-
-      document.getElementById("profil-pseudo")!.textContent = currentUser.pseudo || "—";
-      document.getElementById("profil-email")!.textContent = currentUser.email || "—";
-      document.getElementById("profil-age")!.textContent =
-        currentUser.age ? `${currentUser.age} ans` : "—";
-
-      document.getElementById("stat-niveau")!.textContent = currentUser.niveau ?? "1";
-      document.getElementById("stat-xp")!.textContent = (currentUser.experience ?? 0) + " XP";
-
-      const vies = currentUser.vies ?? 3;
-      document.getElementById("stat-vies")!.textContent = "❤️".repeat(Math.max(0, vies));
-
-      if (currentUser.abonnement_actif) {
-        document.getElementById("badge-premium")!.classList.remove("hidden");
-      }
-
-      // Afficher l'avatar depuis la relation expandée
-      const avatarRecord = currentUser.expand?.avatar;
-      afficherAvatar(avatarRecord);
+    function setText(id: string, val: string) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
     }
 
-    // Met à jour l'image d'avatar affichée dans la carte profil
-    function afficherAvatar(avatarRecord: any) {
-      const img = document.getElementById("avatar-img") as HTMLImageElement;
-      const initiale = document.getElementById("avatar-initiale") as HTMLElement;
+    // ── Chargement du profil ─────────────────────────────────────────
+    async function loadProfile() {
+      currentUser = await getCurrentUserWithAvatar() as any;
+      if (!currentUser) return;
 
+      const pseudo = currentUser.pseudo || "—";
+      afficherAvatar(currentUser.expand?.avatar);
+      setText("profil-pseudo-display", pseudo);
+      setText("info-pseudo",  pseudo);
+      setText("info-email",   currentUser.email || "—");
+      setText("info-age",     currentUser.age ? `${currentUser.age} ans` : "—");
+      setText("info-niveau",  `Niveau ${currentUser.niveau ?? 1}`);
+      setText("info-abo",     currentUser.abonnement_actif ? "⭐ Premium" : "Gratuit");
+
+      // Pré-remplir le formulaire
+      const inp = (id: string) => document.getElementById(id) as HTMLInputElement | null;
+      const ep = inp("edit-pseudo"); if (ep) ep.value = currentUser.pseudo || "";
+      const ee = inp("edit-email");  if (ee) ee.value = currentUser.email  || "";
+      const ea = inp("edit-age");    if (ea) ea.value = currentUser.age    ?? "";
+    }
+
+    function afficherAvatar(avatarRecord: any) {
+      const img      = document.getElementById("profil-avatar-img")      as HTMLImageElement | null;
+      const initiale = document.getElementById("profil-avatar-initiale");
       const url = getAvatarImageUrl(avatarRecord);
-      if (url) {
+
+      if (url && img) {
         img.src = url;
         img.classList.remove("hidden");
-        initiale.classList.add("hidden");
-      } else {
-        const pseudo = currentUser?.pseudo || currentUser?.email || "?";
+        initiale?.classList.add("hidden");
+      } else if (initiale) {
+        const pseudo = currentUser?.pseudo || "?";
         initiale.textContent = pseudo[0].toUpperCase();
-        img.classList.add("hidden");
+        img?.classList.add("hidden");
         initiale.classList.remove("hidden");
       }
     }
 
     loadProfile();
 
-    // ── Toggle section changement d'avatar ───────────────────────────
-    const toggleBtn = document.getElementById("toggle-avatar-btn") as HTMLButtonElement;
-    const changeSection = document.getElementById("avatar-change-section") as HTMLElement;
-    let avatarsLoaded = false;
+    // ── Modal avatar ─────────────────────────────────────────────────
+    const modal         = document.getElementById("avatar-modal")     as HTMLElement;
+    const saveAvatarBtn = document.getElementById("save-avatar-btn")  as HTMLButtonElement;
+    let modalLoaded     = false;
+    let loadedAvatars: any[] = []; // garde les records en mémoire pour affichage immédiat
 
-    toggleBtn.addEventListener("click", async () => {
-      const isOpen = !changeSection.classList.contains("hidden");
+    const openModal  = () => { modal.style.transform = "translateY(0)"; modal.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; if (!modalLoaded) loadAvatarGrid(); };
+    const closeModal = () => { modal.style.transform = "translateY(100%)"; modal.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; };
 
-      if (isOpen) {
-        changeSection.classList.add("hidden");
-        toggleBtn.textContent = "Changer mon avatar";
-      } else {
-        changeSection.classList.remove("hidden");
-        toggleBtn.textContent = "Fermer";
-        if (!avatarsLoaded) await loadAvatarGrid();
-      }
-    });
+    document.getElementById("change-avatar-btn")?.addEventListener("click", openModal);
+    document.getElementById("close-avatar-modal")?.addEventListener("click", closeModal);
 
-    // ── Grille de changement d'avatar ────────────────────────────────
     async function loadAvatarGrid() {
-      const loading = document.getElementById("change-loading") as HTMLElement;
-      const grid = document.getElementById("change-grid") as HTMLElement;
+      const loading = document.getElementById("modal-loading") as HTMLElement;
+      const grid    = document.getElementById("modal-grid")    as HTMLElement;
 
       try {
         const avatars = await getAvatars() as any[];
+        loadedAvatars = avatars; // mémorise pour l'affichage après sauvegarde
         loading.style.display = "none";
         grid.classList.remove("hidden");
         grid.classList.add("grid");
-        avatarsLoaded = true;
+        modalLoaded = true;
 
-        // ID de l'avatar actuellement sélectionné
         const currentAvatarId = currentUser?.avatar ?? null;
+        if (currentAvatarId) {
+          selectedAvatarId = currentAvatarId;
+          saveAvatarBtn.disabled = false;
+        }
 
         avatars.forEach((avatar) => {
-          const imgUrl = getAvatarImageUrl(avatar) ?? "";
+          const imgUrl    = getAvatarImageUrl(avatar) ?? "";
           const isSelected = avatar.id === currentAvatarId;
 
           const btn = document.createElement("button");
           btn.type = "button";
           btn.dataset.id = avatar.id;
           btn.className = [
-            "avatar-change-btn relative rounded-2xl border-2 p-1",
+            "avatar-opt relative rounded-2xl border-2 p-1",
             "transition-all duration-200 hover:scale-105 focus:outline-none",
-            isSelected
-              ? "border-zozzo-bleu-fonce scale-105"
-              : "border-transparent hover:border-zozzo-bleu-clair",
+            isSelected ? "border-zozzo-bleu-fonce scale-105" : "border-transparent hover:border-zozzo-bleu-clair",
           ].join(" ");
 
           btn.innerHTML = `
-            <img
-              src="${imgUrl}"
-              alt="${avatar.nom}"
-              class="w-full aspect-square rounded-xl object-cover"
-              loading="lazy"
-            />
-            <span class="check-icon absolute inset-0 items-center justify-center rounded-2xl bg-zozzo-bleu-fonce/15 ${isSelected ? "flex" : "hidden"}">
-              <svg viewBox="0 0 24 24" class="h-6 w-6 text-zozzo-bleu-fonce drop-shadow" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
-            </span>
-          `;
+            <img src="${imgUrl}" alt="${avatar.nom}" class="w-full aspect-square rounded-xl object-cover" loading="lazy"/>
+            <span class="check absolute inset-0 items-center justify-center rounded-2xl bg-zozzo-bleu-fonce/15 ${isSelected ? "flex" : "hidden"}">
+              <svg viewBox="0 0 24 24" class="h-7 w-7 text-zozzo-bleu-fonce" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+            </span>`;
 
-          btn.addEventListener("click", () => sauvegarderAvatar(avatar, btn));
+          btn.addEventListener("click", () => {
+            document.querySelectorAll<HTMLElement>(".avatar-opt").forEach(b => {
+              b.classList.remove("border-zozzo-bleu-fonce", "scale-105");
+              b.classList.add("border-transparent");
+              b.querySelector(".check")?.classList.replace("flex", "hidden");
+            });
+            btn.classList.remove("border-transparent");
+            btn.classList.add("border-zozzo-bleu-fonce", "scale-105");
+            btn.querySelector(".check")?.classList.replace("hidden", "flex");
+            selectedAvatarId = avatar.id;
+            saveAvatarBtn.disabled = false;
+          });
+
           grid.appendChild(btn);
         });
       } catch {
@@ -236,42 +253,98 @@ import AppLayout from "../../layouts/AppLayout.astro";
       }
     }
 
-    async function sauvegarderAvatar(avatar: any, btn: HTMLElement) {
-      const success = document.getElementById("change-success") as HTMLElement;
-      const errEl = document.getElementById("change-error") as HTMLElement;
-
-      success.classList.add("hidden");
-      errEl.classList.add("hidden");
+    saveAvatarBtn.addEventListener("click", async () => {
+      if (!selectedAvatarId || !currentUser) return;
+      const successEl = document.getElementById("modal-success") as HTMLElement;
+      const errorEl   = document.getElementById("modal-error")   as HTMLElement;
+      successEl.classList.add("hidden");
+      errorEl.classList.add("hidden");
+      saveAvatarBtn.disabled = true;
+      saveAvatarBtn.textContent = "Sauvegarde…";
 
       try {
-        await updateUserAvatar(currentUser.id, avatar.id);
+        await updateUserAvatar(currentUser.id, selectedAvatarId);
 
-        // Mettre à jour l'affichage principal
-        currentUser.avatar = avatar.id;
-        currentUser.expand = { avatar };
-        afficherAvatar(avatar);
+        // Afficher directement depuis la liste déjà chargée — pas de re-fetch risqué
+        const newAvatarRecord = loadedAvatars.find((a) => a.id === selectedAvatarId);
+        if (newAvatarRecord) {
+          currentUser.avatar = selectedAvatarId;
+          if (!currentUser.expand) currentUser.expand = {};
+          currentUser.expand.avatar = newAvatarRecord;
+          afficherAvatar(newAvatarRecord);
+        }
 
-        // Mettre à jour les bordures dans la grille
-        document.querySelectorAll<HTMLElement>(".avatar-change-btn").forEach((b) => {
-          b.classList.remove("border-zozzo-bleu-fonce", "scale-105");
-          b.classList.add("border-transparent");
-          b.querySelector(".check-icon")?.classList.remove("flex");
-          b.querySelector(".check-icon")?.classList.add("hidden");
-        });
-        btn.classList.remove("border-transparent");
-        btn.classList.add("border-zozzo-bleu-fonce", "scale-105");
-        btn.querySelector(".check-icon")?.classList.remove("hidden");
-        btn.querySelector(".check-icon")?.classList.add("flex");
-
-        success.classList.remove("hidden");
-        setTimeout(() => success.classList.add("hidden"), 3000);
+        successEl.classList.remove("hidden");
+        saveAvatarBtn.textContent = "Sauvegarder";
+        saveAvatarBtn.disabled = false;
+        setTimeout(() => { successEl.classList.add("hidden"); closeModal(); }, 1500);
       } catch {
-        errEl.classList.remove("hidden");
+        errorEl.classList.remove("hidden");
+        saveAvatarBtn.textContent = "Sauvegarder";
+        saveAvatarBtn.disabled = false;
       }
-    }
+    });
+
+    // ── Formulaire modification ──────────────────────────────────────
+    const editSection   = document.getElementById("edit-section")    as HTMLElement;
+    const toggleEditBtn = document.getElementById("toggle-edit-btn") as HTMLButtonElement;
+    const editSuccess   = document.getElementById("edit-success")    as HTMLElement;
+    const editError     = document.getElementById("edit-error")      as HTMLElement;
+    const saveEditBtn   = document.getElementById("save-edit-btn")   as HTMLButtonElement;
+
+    toggleEditBtn.addEventListener("click", () => {
+      const isOpen = !editSection.classList.contains("hidden");
+      editSection.classList.toggle("hidden", isOpen);
+      toggleEditBtn.textContent = isOpen ? "Modifier mes informations" : "Fermer le formulaire";
+    });
+
+    document.getElementById("cancel-edit-btn")?.addEventListener("click", () => {
+      editSection.classList.add("hidden");
+      toggleEditBtn.textContent = "Modifier mes informations";
+    });
+
+    (document.getElementById("edit-form") as HTMLFormElement).addEventListener("submit", async (e) => {
+      e.preventDefault();
+      editSuccess.classList.add("hidden");
+      editError.classList.add("hidden");
+
+      const g = (id: string) => (document.getElementById(id) as HTMLInputElement).value;
+      const pseudo = g("edit-pseudo").trim();
+      const email  = g("edit-email").trim();
+      const age    = g("edit-age");
+
+      saveEditBtn.disabled = true;
+      saveEditBtn.textContent = "Enregistrement…";
+
+      try {
+        await updateUserProfile({ pseudo, email, age });
+        currentUser.pseudo = pseudo;
+        currentUser.email  = email;
+        currentUser.age    = parseInt(age);
+
+        setText("profil-pseudo-display", pseudo || "—");
+        setText("info-pseudo", pseudo || "—");
+        setText("info-email",  email  || "—");
+        setText("info-age",    age    ? `${age} ans` : "—");
+
+        editSuccess.classList.remove("hidden");
+        setTimeout(() => editSuccess.classList.add("hidden"), 3000);
+      } catch (err: any) {
+        const d = err?.data?.data;
+        editError.textContent = d?.email?.message
+          ? "Cet email est déjà utilisé."
+          : d?.pseudo?.message
+            ? "Ce pseudo est déjà pris."
+            : "Impossible de mettre à jour. Vérifie les informations.";
+        editError.classList.remove("hidden");
+      } finally {
+        saveEditBtn.disabled = false;
+        saveEditBtn.textContent = "Enregistrer";
+      }
+    });
 
     // ── Déconnexion ──────────────────────────────────────────────────
-    document.getElementById("logout-profil-btn")?.addEventListener("click", () => {
+    document.getElementById("logout-btn")?.addEventListener("click", () => {
       logout();
       window.location.href = "/login";
     });
