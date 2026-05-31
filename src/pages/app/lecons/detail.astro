@@ -1,0 +1,302 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Leçon" showBack={true} backHref="/app/lecons" pageTitle="">
+
+  <!-- ══ ÉCRAN QUIZ ═══════════════════════════════════════════════════ -->
+  <div id="quiz-screen" class="flex min-h-[calc(100dvh-4rem)] flex-col" style="background-color:#fff9f7;">
+
+    <!-- En-tête leçon + progression -->
+    <div class="px-5 pt-5 text-center">
+      <h1 id="lecon-titre" class="font-title text-2xl text-zozzo-text">…</h1>
+      <p id="prog-label" class="mt-1 text-sm font-medium text-gray-400">Signe 1 / ?</p>
+      <div class="mx-auto mt-2 h-2 max-w-xs overflow-hidden rounded-full bg-gray-200">
+        <div id="prog-bar" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:#224ed1;"></div>
+      </div>
+    </div>
+
+    <!-- Image / vidéo du signe -->
+    <div class="flex flex-1 items-center justify-center px-6 py-4">
+      <div
+        class="relative flex h-52 w-52 items-center justify-center overflow-hidden rounded-3xl shadow-md sm:h-64 sm:w-64"
+        style="background:#f0eaff;"
+      >
+        <img
+          id="signe-img"
+          src=""
+          alt="Signe LSF"
+          class="hidden h-full w-full object-contain p-3"
+        />
+        <div id="signe-placeholder" class="text-center px-4">
+          <p class="font-subtitle text-4xl text-zozzo-bleu-fonce">?</p>
+          <p class="mt-1 text-sm text-gray-400">Chargement…</p>
+        </div>
+
+        <!-- Feedback personnage (affiché 1s) -->
+        <div id="feedback-zozzo" class="absolute inset-0 hidden items-center justify-center rounded-3xl">
+          <img id="feedback-img" src="" alt="" class="h-3/4 w-3/4 object-contain drop-shadow-lg" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <p class="px-5 text-center font-subtitle text-base font-semibold text-gray-600 sm:text-lg">
+      Quel est ce signe ?
+    </p>
+
+    <!-- 4 boutons réponses en grille 2×2 -->
+    <div id="answers-grid" class="grid grid-cols-2 gap-3 px-5 py-5 sm:px-10">
+      <!-- Génération JS -->
+    </div>
+
+  </div>
+
+  <!-- ══ ÉCRAN RÉSULTAT ════════════════════════════════════════════════ -->
+  <div
+    id="end-screen"
+    class="hidden min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-6 py-10 text-center"
+    style="background-color:#fff9f7;"
+  >
+    <img
+      src="/images/landing/zozzo-standing-like.png"
+      alt="ZOZZO content"
+      class="mb-4 h-32 w-auto"
+    />
+    <h1 class="font-title text-4xl text-zozzo-orange sm:text-5xl">Bravo ! 🎉</h1>
+
+    <div id="stars-row" class="my-4 text-5xl tracking-widest"></div>
+
+    <div class="w-full max-w-xs rounded-3xl bg-white p-5 shadow-sm">
+      <p id="score-txt" class="font-subtitle text-xl font-semibold text-zozzo-text"></p>
+      <p id="details-txt" class="mt-1 text-sm text-gray-500"></p>
+    </div>
+
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <a
+        href="/app/lecons"
+        class="rounded-full border-2 border-zozzo-orange px-7 py-3 font-semibold text-zozzo-orange transition hover:bg-zozzo-orange hover:text-white"
+      >
+        ← Leçons
+      </a>
+      <button
+        id="retry-btn"
+        class="rounded-full px-7 py-3 font-semibold text-white transition hover:opacity-90"
+        style="background:#224ed1;"
+      >
+        Recommencer
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getLeconById,
+      getSignesByLecon,
+      getRandomWrongAnswers,
+      getSigneImageUrl,
+      getCurrentUser,
+      saveProgression,
+    } from "../../../lib/pocketbase.js";
+
+    // ── Paramètre URL ────────────────────────────────────────────────
+    const leconId = new URLSearchParams(window.location.search).get("id");
+    if (!leconId) { window.location.href = "/app/lecons"; }
+
+    // ── État ─────────────────────────────────────────────────────────
+    let signes       = [];
+    let idx          = 0;
+    let score        = 0;
+    let bonnes       = 0;
+    let mauvaises    = 0;
+    let isAnswered   = false;
+
+    // ── DOM ──────────────────────────────────────────────────────────
+    const quizScreen    = document.getElementById("quiz-screen");
+    const endScreen     = document.getElementById("end-screen");
+    const leconTitre    = document.getElementById("lecon-titre");
+    const progLabel     = document.getElementById("prog-label");
+    const progBar       = document.getElementById("prog-bar");
+    const signeImg      = document.getElementById("signe-img");
+    const signePh       = document.getElementById("signe-placeholder");
+    const answersGrid   = document.getElementById("answers-grid");
+    const starsRow      = document.getElementById("stars-row");
+    const scoreTxt      = document.getElementById("score-txt");
+    const detailsTxt    = document.getElementById("details-txt");
+    const retryBtn      = document.getElementById("retry-btn");
+    const feedbackEl    = document.getElementById("feedback-zozzo");
+    const feedbackImg   = document.getElementById("feedback-img");
+
+    // Couleurs distinctes pour les 4 boutons (state initial)
+    const BTN_BG   = ["#84a5f2", "#f26748", "#f3e63f", "#c4b5fd"];
+    const BTN_TEXT = ["#fff",    "#fff",    "#1f1f1f", "#1f1f1f"];
+
+    // ── Afficher feedback personnage ─────────────────────────────────
+    function showFeedback(correct) {
+      const src = correct
+        ? "/images/landing/zozzo-standing-like.png"
+        : "/images/landing/zozzo-standing.png";
+      feedbackImg.src = src;
+      feedbackEl.style.background = correct ? "rgba(34,78,209,0.15)" : "rgba(244,67,54,0.15)";
+      feedbackEl.classList.remove("hidden");
+      feedbackEl.classList.add("flex");
+      setTimeout(() => {
+        feedbackEl.classList.add("hidden");
+        feedbackEl.classList.remove("flex");
+      }, 900);
+    }
+
+    // ── Afficher un signe ────────────────────────────────────────────
+    async function afficherSigne(index) {
+      isAnswered = false;
+      const signe = signes[index];
+      const total = signes.length;
+
+      progLabel.textContent = `Signe ${index + 1} / ${total}`;
+      progBar.style.width   = `${Math.round((index / total) * 100)}%`;
+
+      // Image du signe
+      const url = getSigneImageUrl(signe);
+      if (url) {
+        signeImg.src = url;
+        signeImg.classList.remove("hidden");
+        signePh.classList.add("hidden");
+      } else {
+        signeImg.classList.add("hidden");
+        signePh.querySelector("p:first-child").textContent = signe.mot ?? "?";
+        signePh.querySelector("p:last-child").textContent  = "Pas d'image";
+        signePh.classList.remove("hidden");
+      }
+
+      // 3 mauvaises réponses
+      let wrong = [];
+      try { wrong = await getRandomWrongAnswers(signe.id, 3); } catch { wrong = []; }
+
+      const reponses = [
+        { mot: signe.mot, correct: true },
+        ...wrong.slice(0, 3).map(s => ({ mot: s.mot, correct: false })),
+      ].sort(() => Math.random() - 0.5);
+
+      // Boutons
+      answersGrid.innerHTML = "";
+      reponses.forEach((rep, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = rep.mot ?? "?";
+        btn.className   = "rounded-2xl px-4 py-5 font-subtitle text-base font-semibold shadow-sm transition active:scale-95 sm:text-lg";
+        btn.style.backgroundColor = BTN_BG[i];
+        btn.style.color           = BTN_TEXT[i];
+
+        btn.addEventListener("click", () => {
+          if (isAnswered) return;
+          isAnswered = true;
+          handleReponse(rep.correct, btn, signe.mot);
+        });
+
+        answersGrid.appendChild(btn);
+      });
+    }
+
+    // ── Gérer une réponse ────────────────────────────────────────────
+    function handleReponse(correct, clicked, motCorrect) {
+      // Désactiver + mettre en évidence la bonne réponse
+      answersGrid.querySelectorAll("button").forEach(btn => {
+        btn.disabled       = true;
+        btn.style.opacity  = "0.45";
+        btn.style.transform = "";
+        if (btn.textContent === motCorrect) {
+          btn.style.backgroundColor = "#224ed1";
+          btn.style.color           = "#fff";
+          btn.style.opacity         = "1";
+        }
+      });
+
+      if (correct) {
+        score++;
+        bonnes++;
+        clicked.style.backgroundColor = "#224ed1";
+        clicked.style.color           = "#fff";
+        clicked.style.opacity         = "1";
+      } else {
+        mauvaises++;
+        clicked.style.backgroundColor = "#f44336";
+        clicked.style.color           = "#fff";
+        clicked.style.opacity         = "1";
+      }
+
+      showFeedback(correct);
+      setTimeout(() => {
+        idx++;
+        if (idx < signes.length) afficherSigne(idx);
+        else afficherResultat();
+      }, 1500);
+    }
+
+    // ── Résultat final ───────────────────────────────────────────────
+    async function afficherResultat() {
+      progBar.style.width = "100%";
+      quizScreen.classList.add("hidden");
+      endScreen.classList.remove("hidden");
+      endScreen.classList.add("flex");
+
+      const total   = signes.length || 1;
+      const pct     = Math.round((score / total) * 100);
+      const etoiles = pct >= 80 ? 3 : pct >= 50 ? 2 : 1;
+
+      starsRow.textContent  = "⭐".repeat(etoiles);
+      scoreTxt.textContent  = `Score : ${score} / ${total} · ${pct}%`;
+      detailsTxt.textContent = `${bonnes} bonne${bonnes > 1 ? "s" : ""} · ${mauvaises} mauvaise${mauvaises > 1 ? "s" : ""}`;
+
+      const user = getCurrentUser();
+      if (user) {
+        try {
+          await saveProgression({
+            utilisateur: user.id,
+            lecon: leconId,
+            termine: true,
+            etoiles,
+            score: pct,
+          });
+        } catch (e) {
+          console.warn("[ZOZZO] Sauvegarde progression :", e);
+        }
+      }
+    }
+
+    // ── Recommencer ──────────────────────────────────────────────────
+    retryBtn.addEventListener("click", () => {
+      idx = 0; score = 0; bonnes = 0; mauvaises = 0;
+      endScreen.classList.add("hidden");
+      endScreen.classList.remove("flex");
+      quizScreen.classList.remove("hidden");
+      afficherSigne(0);
+    });
+
+    // ── Initialisation ───────────────────────────────────────────────
+    (async () => {
+      try {
+        const [lecon, signesData] = await Promise.all([
+          getLeconById(leconId),
+          getSignesByLecon(leconId),
+        ]);
+
+        signes = signesData;
+        leconTitre.textContent = lecon.titre ?? "Leçon";
+
+        if (signes.length === 0) {
+          answersGrid.innerHTML = `<p class="col-span-2 py-10 text-center text-gray-400 font-subtitle">Aucun signe dans cette leçon.</p>`;
+          progLabel.textContent = "0 signe";
+          return;
+        }
+
+        afficherSigne(0);
+      } catch (err) {
+        console.error("[ZOZZO] Leçon :", err);
+        leconTitre.textContent = "Erreur";
+        answersGrid.innerHTML  = `<p class="col-span-2 py-10 text-center text-red-500">Impossible de charger la leçon.</p>`;
+      }
+    })();
+  </script>
+
+</AppLayout>

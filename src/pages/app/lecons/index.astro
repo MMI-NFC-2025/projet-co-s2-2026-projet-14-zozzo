@@ -1,0 +1,180 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Leçons" showBack={true} backHref="/app" pageTitle="Leçons">
+
+  <!-- Conteneur relatif : l'image fond détermine la hauteur totale de la page -->
+  <div class="relative w-full">
+
+    <!-- Image fond complète (toujours visible, page scrollable) -->
+    <img
+      src="/images/shapes/bg-lecon-menu.png"
+      alt=""
+      aria-hidden="true"
+      class="w-full h-auto block"
+    />
+
+    <!-- Overlay transparent avec les cartes positionnées sur le chemin -->
+    <div id="lecons-overlay" class="absolute inset-0">
+
+      <!-- Chargement -->
+      <div id="lecons-loading" class="flex flex-col items-center pt-16">
+        <div class="mb-3 h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+        <p class="font-subtitle text-white drop-shadow">Chargement…</p>
+      </div>
+
+      <!-- Erreur -->
+      <div id="lecons-error" class="hidden px-6 pt-16">
+        <div class="mx-auto max-w-xs rounded-3xl bg-white/95 p-5 shadow-lg">
+          <p class="font-semibold text-red-600">Erreur de chargement</p>
+          <p id="lecons-error-msg" class="mt-1 break-all text-xs text-gray-600"></p>
+        </div>
+      </div>
+
+      <!-- Cartes générées en JS avec position absolue -->
+
+    </div>
+
+    <!-- Bouton retour jaune fixé en bas à gauche -->
+    <a
+      href="/app"
+      class="fixed bottom-6 left-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95"
+      style="background:#f3e63f;"
+      aria-label="Retour"
+    >
+      <svg viewBox="0 0 24 24" class="h-7 w-7" fill="#224ed1"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </a>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getLecons, getCurrentUser, getProgressionByUser, getLeconImageUrl } from "../../../lib/pocketbase.js";
+
+    const loadingEl = document.getElementById("lecons-loading");
+    const errorEl   = document.getElementById("lecons-error");
+    const overlay   = document.getElementById("lecons-overlay");
+
+    // Couleur de fond par ordre de leçon
+    const COLORS = ["#b5c8f5", "#f5e845", "#f8c8c2", "#c0dfa1"];
+
+    // Positions sur le chemin (en % par rapport au conteneur relatif)
+    // Ajustées pour suivre le chemin de la maquette :
+    // ordre 1 → bas gauche, ordre 2 → milieu droit, ordre 3 → haut gauche, ordre 4 → tout en haut
+    const POSITIONS = [
+      { top: "72%", left: "5%",  right: "auto" }, // ordre 1 — bas gauche
+      { top: "52%", left: "auto", right: "5%"  }, // ordre 2 — milieu droite
+      { top: "30%", left: "5%",  right: "auto" }, // ordre 3 — haut gauche
+      { top: "7%",  left: "auto", right: "8%"  }, // ordre 4 — tout en haut droite
+    ];
+
+    function estDebloquee(lecon, toutes, progressions) {
+      if (lecon.ordre === 1) return true;
+      const prev = toutes.find(l => l.ordre === lecon.ordre - 1);
+      if (!prev) return true;
+      return progressions.some(p => p.lecon === prev.id && p.termine === true);
+    }
+
+    function estPremium(lecon, user) {
+      return (lecon.ordre === 4 || lecon.titre?.toLowerCase().includes("premium"))
+             && !user?.abonnement_actif;
+    }
+
+    function creerCarte(lecon, pos, bloquee, premiumBloquee) {
+      const imgUrl  = getLeconImageUrl(lecon);
+      const bgColor = bloquee && !premiumBloquee
+        ? "#d1d5db"
+        : (COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd");
+
+      const card = document.createElement("div");
+      card.style.position        = "absolute";
+      card.style.top             = pos.top;
+      card.style.left            = pos.left;
+      card.style.right           = pos.right;
+      card.style.width           = "78%";     // largeur comme dans la maquette
+      card.style.height          = "140px";
+      card.style.borderRadius    = "22px";
+      card.style.backgroundColor = bgColor;
+      card.style.overflow        = "hidden";
+      card.style.boxShadow       = "0 4px 14px rgba(0,0,0,0.18)";
+      card.style.transition      = "transform 0.2s";
+      card.style.cursor          = bloquee && !premiumBloquee ? "not-allowed" : "pointer";
+
+      if (bloquee && !premiumBloquee) {
+        // Carte verrouillée : image visible + overlay gris semi-transparent + cadenas
+        card.innerHTML = `
+          ${imgUrl
+            ? `<img src="${imgUrl}" alt="${lecon.titre}"
+                style="position:absolute;bottom:0;right:0;height:105%;width:62%;object-fit:contain;object-position:bottom right;"
+                onerror="this.style.display='none'" />`
+            : ""}
+          <div style="position:absolute;inset:0;background:rgba(209,213,219,0.75);"></div>
+          <p style="position:absolute;top:8px;left:12px;font-size:0.72rem;font-weight:600;color:#374151;z-index:2;">${lecon.titre}</p>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:44px;height:44px;color:#d97706;" fill="currentColor">
+              <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3A5.25 5.25 0 0012 1.5zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/>
+            </svg>
+          </div>`;
+      } else {
+        // Carte débloquée : titre + illustration
+        card.innerHTML = `
+          <p style="position:absolute;top:8px;left:12px;right:${imgUrl ? "42%" : "12px"};font-size:0.75rem;font-weight:700;color:#374151;z-index:1;line-height:1.2;">${lecon.titre}</p>
+          ${premiumBloquee ? `<span style="position:absolute;top:28px;left:12px;font-size:0.65rem;font-weight:700;color:#f26748;z-index:1;">Premium</span>` : ""}
+          ${imgUrl
+            ? `<img src="${imgUrl}" alt="${lecon.titre}"
+                style="position:absolute;bottom:0;right:0;height:105%;width:62%;object-fit:contain;object-position:bottom right;"
+                onerror="this.style.display='none'" />`
+            : ""}`;
+
+        card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.04)"; });
+        card.addEventListener("mouseleave", () => { card.style.transform = "scale(1)"; });
+        card.addEventListener("click", () => { window.location.href = `/app/lecons/detail?id=${lecon.id}`; });
+      }
+
+      if (premiumBloquee) {
+        card.style.cursor = "pointer";
+        card.addEventListener("click", () => { window.location.href = "/app/premium"; });
+      }
+
+      return card;
+    }
+
+    (async () => {
+      try {
+        const user = getCurrentUser();
+        const lecons = await getLecons(); // ASC ordre
+
+        let progressions = [];
+        try {
+          if (user) progressions = await getProgressionByUser(user.id);
+        } catch { /* non bloquant */ }
+
+        loadingEl.style.display = "none";
+
+        if (!lecons.length) {
+          overlay.innerHTML += `<div style="margin:40px auto;max-width:280px;background:rgba(255,255,255,0.9);border-radius:20px;padding:20px;text-align:center;"><p>Aucune leçon disponible.</p></div>`;
+          return;
+        }
+
+        // Affichage ordre 1 en bas → ordre N en haut (comme la maquette)
+        lecons.forEach((lecon) => {
+          const idx           = lecon.ordre - 1; // 0-based
+          const pos           = POSITIONS[idx] ?? POSITIONS[POSITIONS.length - 1];
+          const debloquee     = estDebloquee(lecon, lecons, progressions);
+          const premiumBlock  = estPremium(lecon, user);
+          const bloquee       = !debloquee || premiumBlock;
+          overlay.appendChild(creerCarte(lecon, pos, bloquee, premiumBlock));
+        });
+
+      } catch (err) {
+        console.error("[ZOZZO] Leçons :", err);
+        loadingEl.style.display = "none";
+        errorEl.classList.remove("hidden");
+        const msgEl = document.getElementById("lecons-error-msg");
+        if (msgEl) msgEl.textContent = `${err?.status ? "Status " + err.status + " — " : ""}${err?.message ?? String(err)}`;
+      }
+    })();
+  </script>
+
+</AppLayout>
