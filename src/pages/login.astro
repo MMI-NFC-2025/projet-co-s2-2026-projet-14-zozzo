@@ -81,6 +81,7 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
   </div>
 
   <script>
+    // @ts-nocheck
     import { login, isLoggedIn } from "../lib/pocketbase.js";
 
     if (isLoggedIn()) {

@@ -2,111 +2,105 @@
 import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
-<AppLayout title="ZOZZO | Mon espace">
+<AppLayout title="ZOZZO | Accueil">
 
-  <div class="container-zozzo py-10">
+  <!-- Mobile : flex-col | Desktop sm+ : flex-row 2 colonnes -->
+  <div class="flex flex-col items-center gap-6 px-5 py-8 sm:h-[calc(100dvh-4rem)] sm:flex-row sm:items-center sm:gap-4 sm:px-10 sm:py-0">
 
-    <!-- Message de bienvenue (rempli en JS) -->
-    <div class="mb-10">
-      <h1 id="welcome-title" class="font-title text-3xl text-zozzo-text sm:text-4xl">
-        Bonjour ! 👋
-      </h1>
-      <p class="mt-2 text-sm text-gray-500 sm:text-base">
-        Prêt·e à apprendre la langue des signes aujourd'hui ?
-      </p>
+    <!-- ── Avatar ──────────────────────────────────────────────── -->
+    <div class="flex w-full items-center justify-center sm:flex-1">
+      <div
+        id="home-avatar-circle"
+        class="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full sm:h-52 sm:w-52"
+        style="background-color:#c4b5fd;"
+      >
+        <img id="home-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-contain p-2" />
+        <span id="home-avatar-initiale" class="font-title text-5xl font-bold text-white sm:text-6xl">?</span>
+      </div>
     </div>
 
-    <!-- Statistiques rapides -->
-    <div class="mb-10 grid grid-cols-3 gap-4 sm:gap-6">
+    <!-- ── Séparateur jaune (caché sur mobile) ─────────────────── -->
+    <div class="hidden h-52 w-1 self-center rounded-full sm:block" style="background-color:#f3e63f;"></div>
 
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-niveau" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">Niveau</span>
-      </div>
+    <!-- ── Cartes de navigation ────────────────────────────────── -->
+    <div class="flex w-full flex-col gap-3 sm:flex-1">
 
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-vies" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">Vies</span>
-      </div>
-
-      <div class="flex flex-col items-center rounded-2xl bg-zozzo-beige p-4 text-center sm:p-6">
-        <span id="stat-xp" class="font-title text-3xl font-semibold text-zozzo-orange sm:text-4xl">—</span>
-        <span class="mt-1 text-xs font-medium text-gray-500 sm:text-sm">XP</span>
-      </div>
-
-    </div>
-
-    <!-- Navigation principale de l'app -->
-    <h2 class="mb-5 font-subtitle text-xl text-zozzo-text sm:text-2xl">Que veux-tu faire ?</h2>
-
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-      <a href="/app/lecons" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-beige text-2xl">📚</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Leçons</p>
-          <p class="text-xs text-gray-400">Apprendre par thème</p>
-        </div>
+      <!-- Leçons -->
+      <a
+        href="/app/lecons"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#84a5f2;"
+      >
+        <img src="/images/shapes/bg-lecon.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold text-white">Leçons</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/dictionnaire" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-bleu-clair/30 text-2xl">🔤</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Dictionnaire</p>
-          <p class="text-xs text-gray-400">Chercher un signe</p>
-        </div>
+      <!-- Dictionnaire — texte + flèche jaune -->
+      <a
+        href="/app/dictionnaire"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#224ed1;"
+      >
+        <img src="/images/shapes/bg-dico.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#f3e63f;">Dictionnaire</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#f3e63f;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/histoires" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-jaune/50 text-2xl">📖</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Histoires</p>
-          <p class="text-xs text-gray-400">Lire et signer</p>
-        </div>
+      <!-- Histoires — texte + flèche blanc -->
+      <a
+        href="/app/histoires"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#f26748;"
+      >
+        <img src="/images/shapes/bg-histoire.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold text-white">Histoires</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/mini-jeux" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-orange/20 text-2xl">🎮</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Mini-jeux</p>
-          <p class="text-xs text-gray-400">Jouer et progresser</p>
-        </div>
-      </a>
-
-      <a href="/app/profil" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-orange hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-2xl">👤</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Mon profil</p>
-          <p class="text-xs text-gray-400">Voir mes stats</p>
-        </div>
-      </a>
-
-      <a href="/app/premium" class="group flex items-center gap-4 rounded-2xl border-2 border-transparent bg-white p-5 shadow-sm transition hover:border-zozzo-jaune hover:shadow-md">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zozzo-jaune/50 text-2xl">⭐</div>
-        <div>
-          <p class="font-semibold text-zozzo-text">Premium</p>
-          <p class="text-xs text-gray-400">Débloquer tout</p>
-        </div>
+      <!-- Mini-jeux — texte + flèche bleu foncé -->
+      <a
+        href="/app/mini-jeux"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#f3e63f;"
+      >
+        <img src="/images/shapes/bg-minijeux.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#224ed1;">Mini-jeux</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
     </div>
-
   </div>
 
   <script>
-    import { getCurrentUser } from "../../lib/pocketbase.js";
+    // @ts-nocheck
+    import { getCurrentUserWithAvatar, getAvatarImageUrl } from "../../lib/pocketbase.js";
 
-    const user = getCurrentUser();
-    if (user) {
-      // Mettre à jour le message de bienvenue
-      const titleEl = document.getElementById("welcome-title");
-      if (titleEl) titleEl.textContent = `Bonjour ${user.pseudo || ""} ! 👋`;
+    (async () => {
+      try {
+        const user = await getCurrentUserWithAvatar();
+        if (!user) return;
 
-      // Remplir les stats
-      document.getElementById("stat-niveau").textContent = user.niveau ?? "1";
-      document.getElementById("stat-vies").textContent = "❤️".repeat(user.vies ?? 3);
-      document.getElementById("stat-xp").textContent = (user.experience ?? 0) + " XP";
-    }
+        const url = getAvatarImageUrl(user.expand?.avatar);
+        const img = document.getElementById("home-avatar-img");
+        const initiale = document.getElementById("home-avatar-initiale");
+
+        if (url && img) {
+          img.src = url;
+          img.classList.remove("hidden");
+          if (initiale) initiale.classList.add("hidden");
+        } else if (initiale) {
+          const pseudo = user.pseudo || "?";
+          initiale.textContent = pseudo[0].toUpperCase();
+        }
+      } catch (e) {
+        console.error("[ZOZZO] Erreur chargement accueil :", e);
+      }
+    })();
   </script>
 
 </AppLayout>
