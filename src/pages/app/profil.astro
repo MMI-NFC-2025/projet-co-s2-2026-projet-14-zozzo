@@ -1,4 +1,5 @@
 ---
+// @ts-nocheck
 import AppLayout from "../../layouts/AppLayout.astro";
 ---
 
@@ -45,7 +46,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
     <!-- ── Avatar + pseudo ────────────────────────────────────────── -->
     <div class="mb-8 flex flex-col items-center gap-3 text-center">
       <div class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige shadow-md">
-        <img id="profil-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
+        <img id="profil-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-contain p-2" />
         <span id="profil-avatar-initiale" class="font-title text-4xl text-zozzo-orange">?</span>
       </div>
       <p id="profil-pseudo-display" class="font-title text-2xl text-zozzo-text">—</p>

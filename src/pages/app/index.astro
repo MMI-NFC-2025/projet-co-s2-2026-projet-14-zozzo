@@ -4,58 +4,73 @@ import AppLayout from "../../layouts/AppLayout.astro";
 
 <AppLayout title="ZOZZO | Accueil">
 
-  <div class="flex flex-col items-center px-5 py-8 sm:px-8">
+  <!-- Mobile : flex-col | Desktop sm+ : flex-row 2 colonnes -->
+  <div class="flex flex-col items-center gap-6 px-5 py-8 sm:h-[calc(100dvh-4rem)] sm:flex-row sm:items-center sm:gap-4 sm:px-10 sm:py-0">
 
-    <!-- ── Avatar ──────────────────────────────────────────────────── -->
-    <div
-      id="home-avatar-wrapper"
-      class="mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-zozzo-beige shadow-md sm:h-28 sm:w-28"
-    >
-      <img id="home-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-cover" />
-      <span id="home-avatar-initiale" class="font-title text-3xl text-zozzo-orange sm:text-4xl">?</span>
+    <!-- ── Avatar ──────────────────────────────────────────────── -->
+    <div class="flex w-full items-center justify-center sm:flex-1">
+      <div
+        id="home-avatar-circle"
+        class="flex h-36 w-36 items-center justify-center overflow-hidden rounded-full sm:h-52 sm:w-52"
+        style="background-color:#c4b5fd;"
+      >
+        <img id="home-avatar-img" src="" alt="Avatar" class="hidden h-full w-full object-contain p-2" />
+        <span id="home-avatar-initiale" class="font-title text-5xl font-bold text-white sm:text-6xl">?</span>
+      </div>
     </div>
 
-    <!-- ── Bonjour ─────────────────────────────────────────────────── -->
-    <h1 id="home-greeting" class="mb-1 font-title text-2xl text-zozzo-text sm:text-3xl">
-      Bonjour !
-    </h1>
+    <!-- ── Séparateur jaune (caché sur mobile) ─────────────────── -->
+    <div class="hidden h-52 w-1 self-center rounded-full sm:block" style="background-color:#f3e63f;"></div>
 
-    <!-- ── Niveau ──────────────────────────────────────────────────── -->
-    <p id="home-niveau" class="mb-8 text-sm font-medium text-gray-400">Niveau —</p>
+    <!-- ── Cartes de navigation ────────────────────────────────── -->
+    <div class="flex w-full flex-col gap-3 sm:flex-1">
 
-    <!-- ── Cartes de navigation ────────────────────────────────────── -->
-    <div class="w-full max-w-md space-y-3">
-
-      <a href="/app/lecons"
-        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
-        style="background-color:#224ed1;">
-        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">📚</span>
-        <span class="font-subtitle text-xl font-semibold text-white">Leçons</span>
-        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+      <!-- Leçons -->
+      <a
+        href="/app/lecons"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#84a5f2;"
+      >
+        <img src="/images/shapes/bg-lecon.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold text-white">Leçons</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/histoires"
-        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
-        style="background-color:#f26748;">
-        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">📖</span>
-        <span class="font-subtitle text-xl font-semibold text-white">Histoires</span>
-        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+      <!-- Dictionnaire — texte + flèche jaune -->
+      <a
+        href="/app/dictionnaire"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#224ed1;"
+      >
+        <img src="/images/shapes/bg-dico.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#f3e63f;">Dictionnaire</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#f3e63f;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/mini-jeux"
-        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
-        style="background-color:#f3e63f;">
-        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black/10 text-3xl">🎮</span>
-        <span class="font-subtitle text-xl font-semibold text-zozzo-text">Mini-jeux</span>
-        <svg class="ml-auto h-5 w-5 shrink-0 text-zozzo-text/50" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+      <!-- Histoires — texte + flèche blanc -->
+      <a
+        href="/app/histoires"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#f26748;"
+      >
+        <img src="/images/shapes/bg-histoire.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold text-white">Histoires</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
-      <a href="/app/dictionnaire"
-        class="flex w-full items-center gap-4 rounded-3xl px-4 py-4 shadow-sm transition active:scale-[0.98]"
-        style="background-color:#84a5f2;">
-        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-3xl">🔤</span>
-        <span class="font-subtitle text-xl font-semibold text-white">Dictionnaire</span>
-        <svg class="ml-auto h-5 w-5 shrink-0 text-white/70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke-linecap="round"/></svg>
+      <!-- Mini-jeux — texte + flèche bleu foncé -->
+      <a
+        href="/app/mini-jeux"
+        class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
+        style="background-color:#f3e63f;"
+      >
+        <img src="/images/shapes/bg-minijeux.png" alt="" aria-hidden="true"
+          class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#224ed1;">Mini-jeux</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
     </div>
@@ -65,19 +80,10 @@ import AppLayout from "../../layouts/AppLayout.astro";
     // @ts-nocheck
     import { getCurrentUserWithAvatar, getAvatarImageUrl } from "../../lib/pocketbase.js";
 
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value;
-    }
-
     (async () => {
       try {
         const user = await getCurrentUserWithAvatar();
         if (!user) return;
-
-        const pseudo = user.pseudo || "";
-        setText("home-greeting", pseudo ? `Bonjour ${pseudo} !` : "Bonjour !");
-        setText("home-niveau", `Niveau ${user.niveau ?? 1}`);
 
         const url = getAvatarImageUrl(user.expand?.avatar);
         const img = document.getElementById("home-avatar-img");
@@ -87,7 +93,8 @@ import AppLayout from "../../layouts/AppLayout.astro";
           img.src = url;
           img.classList.remove("hidden");
           if (initiale) initiale.classList.add("hidden");
-        } else if (pseudo && initiale) {
+        } else if (initiale) {
+          const pseudo = user.pseudo || "?";
           initiale.textContent = pseudo[0].toUpperCase();
         }
       } catch (e) {
