@@ -1,0 +1,179 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Dictionnaire">
+
+  <!-- Barre de recherche -->
+  <div class="sticky top-[56px] z-30 px-4 pt-3 pb-2" style="background:#fff9f7;">
+    <div class="relative">
+      <svg class="absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
+      </svg>
+      <input
+        id="search-input"
+        type="search"
+        placeholder="Rechercher un signe…"
+        class="w-full rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm outline-none transition focus:border-zozzo-bleu-clair"
+      />
+    </div>
+  </div>
+
+  <!-- Chargement -->
+  <div id="dico-loading" class="flex flex-col items-center justify-center py-16">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="mt-3 text-sm text-gray-400 font-subtitle">Chargement…</p>
+  </div>
+
+  <!-- Erreur -->
+  <div id="dico-error" class="hidden px-6 py-10 text-center">
+    <p class="font-subtitle text-sm text-red-500"></p>
+  </div>
+
+  <!-- Contenu : catégories + signes -->
+  <div id="dico-content" class="hidden px-4 pb-10 pt-2"></div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getCategories,
+      getSignes,
+      getCurrentUser,
+      getSigneImageUrl,
+    } from "../../../lib/pocketbase.js";
+
+    const loadingEl = document.getElementById("dico-loading");
+    const errorEl   = document.getElementById("dico-error");
+    const contentEl = document.getElementById("dico-content");
+    const searchEl  = document.getElementById("search-input");
+
+    // Catégorie gratuite : Les bases uniquement
+    const isFree = (cat) => cat.titre?.toLowerCase().includes("bases");
+
+    // Même couleur de bordure orange pour toutes les cartes (comme Les animaux)
+    function getCouleur(cat) {
+      return "#f26748";
+    }
+
+    // Trier : Les bases en premier
+    function sortCategories(cats) {
+      return [...cats].sort((a, b) => {
+        if (isFree(a)) return -1;
+        if (isFree(b)) return 1;
+        return (a.titre ?? "").localeCompare(b.titre ?? "");
+      });
+    }
+
+    function buildCard(signe, color, locked, catId) {
+      const imgUrl = getSigneImageUrl(signe);
+      const img = imgUrl
+        ? `<img src="${imgUrl}" alt="${signe.mot}"
+            class="h-16 w-full object-contain sm:h-20"
+            onerror="this.style.display='none'" />`
+        : `<div class="flex h-16 items-center justify-center text-xs text-gray-300 sm:h-20">?</div>`;
+
+      if (locked) {
+        return `
+          <div class="sign-card flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl bg-white p-1.5 opacity-60 transition active:scale-95"
+            style="border:2px solid ${color};"
+            onclick="window.location.href='/app/premium'">
+            <div class="relative w-full">
+              ${img}
+              <div class="absolute inset-0 flex items-center justify-center" style="background:rgba(255,255,255,0.55);">
+                <img src="/images/shapes/lock.png" style="width:26px;height:26px;object-fit:contain;" />
+              </div>
+            </div>
+            <p class="mt-1 w-full truncate text-center text-[11px] font-medium text-gray-400">${signe.mot}</p>
+          </div>`;
+      }
+
+      return `
+        <div class="sign-card flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl bg-white p-1.5 transition hover:scale-105 active:scale-95"
+          style="border:2px solid ${color};"
+          data-mot="${(signe.mot ?? "").toLowerCase()}"
+          onclick="window.location.href='/app/dictionnaire/detail?id=${signe.id}&cat=${catId}'">
+          ${img}
+          <p class="mt-1 w-full truncate text-center text-[11px] font-semibold text-gray-700">${signe.mot}</p>
+        </div>`;
+    }
+
+    function render(categories, signesByCategorie, user) {
+      contentEl.innerHTML = "";
+      const sorted = sortCategories(categories);
+
+      sorted.forEach(cat => {
+        const signes = signesByCategorie[cat.id] ?? [];
+        if (!signes.length) return;
+
+        const locked = !isFree(cat) && !user?.abonnement_actif;
+        const color  = getCouleur(cat);
+
+        const section = document.createElement("section");
+        section.className = "mb-8";
+        section.dataset.categorie = cat.id;
+
+        const cards = signes.map(s => buildCard(s, color, locked, cat.id)).join("");
+
+        section.innerHTML = `
+          <h2 class="mb-3 text-center font-subtitle text-sm font-semibold text-gray-600">${cat.titre}</h2>
+          <div class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+            ${cards}
+          </div>`;
+
+        contentEl.appendChild(section);
+      });
+    }
+
+    // Recherche en temps réel
+    searchEl.addEventListener("input", () => {
+      const q = searchEl.value.toLowerCase().trim();
+      document.querySelectorAll(".sign-card[data-mot]").forEach(card => {
+        card.style.display = (!q || card.dataset.mot.includes(q)) ? "" : "none";
+      });
+    });
+
+    // Initialisation
+    (async () => {
+      try {
+        const user = getCurrentUser();
+
+        // Fallback : si getSignes() échoue (filtre actif), on charge sans filtre
+        let categories, signes;
+        try {
+          [categories, signes] = await Promise.all([
+            getCategories(),
+            getSignes(),
+          ]);
+        } catch {
+          const { pb } = await import("../../../lib/pocketbase.js");
+          [categories, signes] = await Promise.all([
+            pb.collection("categories").getFullList({ sort: "titre" }),
+            pb.collection("signes").getFullList({ sort: "mot" }),
+          ]);
+        }
+
+        // Grouper les signes par catégorie
+        const byCategorie = {};
+        signes.forEach(s => {
+          const catId = s.categorie;
+          if (!catId) return;
+          if (!byCategorie[catId]) byCategorie[catId] = [];
+          byCategorie[catId].push(s);
+        });
+
+        loadingEl.style.display = "none";
+        contentEl.classList.remove("hidden");
+        render(categories, byCategorie, user);
+
+      } catch (err) {
+        console.error("[ZOZZO] Dictionnaire :", err);
+        loadingEl.style.display = "none";
+        errorEl.classList.remove("hidden");
+        const msg = err?.data?.message || err?.message || String(err);
+        errorEl.querySelector("p").textContent = `Erreur : ${msg}`;
+      }
+    })();
+  </script>
+
+</AppLayout>

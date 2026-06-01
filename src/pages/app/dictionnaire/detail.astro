@@ -1,0 +1,216 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout
+  title="ZOZZO | Signe"
+  showBack={true}
+  backHref="/app/dictionnaire"
+  pageTitle=""
+>
+  <!-- CHARGEMENT -->
+  <div
+    id="loading-screen"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
+    style="background:white;"
+  >
+    <div
+      class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"
+    >
+    </div>
+    <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
+  </div>
+
+  <!-- SIGNE -->
+  <div
+    id="signe-screen"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)]"
+    style="background:white;"
+  >
+    <!-- Zone centrale : image + mot centrés verticalement -->
+    <div
+      class="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-4"
+    >
+      <!-- Image ou vidéo -->
+      <video
+        id="signe-video"
+        class="hidden object-contain"
+        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+        autoplay
+        muted
+        loop
+        playsinline
+        controls
+      >
+      </video>
+      <img
+        id="signe-img"
+        src=""
+        alt="Signe"
+        class="hidden object-contain"
+        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+      />
+      <div
+        id="signe-ph"
+        class="flex items-center justify-center"
+        style="height:35dvh;"
+      >
+        <span class="font-title text-6xl" style="color:#c4b5fd;">?</span>
+      </div>
+
+      <!-- Mot centré juste sous l'image -->
+      <h1
+        id="signe-mot"
+        class="text-center font-title text-2xl text-zozzo-text sm:text-3xl"
+      >
+        …
+      </h1>
+    </div>
+
+    <!-- Flèche jaune fixée en bas à droite -->
+    <div class="shrink-0 pb-5 pr-6 flex justify-end">
+      <button
+        id="next-btn"
+        aria-label="Signe suivant"
+        class="transition hover:scale-110 active:scale-95"
+      >
+        <svg viewBox="0 0 60 24" class="h-7 w-16 sm:h-9 sm:w-20" fill="none">
+          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ÉCRAN FIN DE CATÉGORIE -->
+  <div
+    id="end-screen"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-8 py-10 text-center"
+    style="background:white;"
+  >
+    <img
+      src="/images/about/fin-dico.png"
+      alt="Fin du dictionnaire"
+      class="mb-5 w-44 h-auto"
+    />
+    <h2 class="font-title text-2xl text-zozzo-orange sm:text-3xl">
+      Dictionnaire
+    </h2>
+    <p class="mt-3 font-subtitle text-base text-gray-500">
+      Vous venez de débloquer d'autres mots !
+    </p>
+    <p class="mt-3 font-subtitle text-base text-gray-500">
+      Grâce à ses nouveaux mots, vous pouvez parler avec Zozzo des animaux de la
+      forêt !
+    </p>
+    <a
+      href="/app/premium"
+      class="mt-8 rounded-full px-8 py-3 font-subtitle font-semibold text-white transition hover:opacity-90"
+      style="background:#224ed1;"
+    >
+      Découvrir plus
+    </a>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getSigneById,
+      getSignesByCategorie,
+      getSigneImageUrl,
+      getSigneVideoUrl,
+    } from "../../../lib/pocketbase.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const signeId = params.get("id");
+    const catId = params.get("cat");
+
+    if (!signeId) {
+      window.location.href = "/app/dictionnaire";
+    }
+
+    const loadingScreen = document.getElementById("loading-screen");
+    const signeScreen = document.getElementById("signe-screen");
+    const endScreen = document.getElementById("end-screen");
+    const signeMotEl = document.getElementById("signe-mot");
+    const signeVideo = document.getElementById("signe-video");
+    const signeImg = document.getElementById("signe-img");
+    const signePh = document.getElementById("signe-ph");
+    const nextBtn = document.getElementById("next-btn");
+
+    let signes = [];
+    let current = 0;
+
+    function afficherSigne(signe) {
+      signeMotEl.textContent = signe.mot ?? "—";
+
+      signeVideo.classList.add("hidden");
+      signeImg.classList.add("hidden");
+      signePh.classList.add("hidden");
+
+      const videoUrl = getSigneVideoUrl(signe);
+      if (videoUrl) {
+        signeVideo.src = videoUrl;
+        signeVideo.load();
+        signeVideo.classList.remove("hidden");
+        return;
+      }
+
+      const imgUrl = getSigneImageUrl(signe);
+      if (imgUrl) {
+        signeImg.src = imgUrl;
+        signeImg.classList.remove("hidden");
+      } else {
+        signePh.classList.remove("hidden");
+      }
+    }
+
+    function allerSuivant() {
+      current++;
+      if (current < signes.length) {
+        afficherSigne(signes[current]);
+        const url = new URL(window.location.href);
+        url.searchParams.set("id", signes[current].id);
+        window.history.replaceState({}, "", url.toString());
+      } else {
+        signeScreen.classList.add("hidden");
+        signeScreen.classList.remove("flex");
+        endScreen.classList.remove("hidden");
+        endScreen.classList.add("flex");
+      }
+    }
+
+    nextBtn.addEventListener("click", allerSuivant);
+
+    (async () => {
+      try {
+        const [signe, tousLesSignes] = await Promise.all([
+          getSigneById(signeId),
+          catId ? getSignesByCategorie(catId) : Promise.resolve([]),
+        ]);
+
+        signes = tousLesSignes.length ? tousLesSignes : [signe];
+        current = signes.findIndex((s) => s.id === signeId);
+        if (current === -1) current = 0;
+
+        loadingScreen.classList.add("hidden");
+        signeScreen.classList.remove("hidden");
+        signeScreen.classList.add("flex");
+
+        afficherSigne(signes[current]);
+      } catch (err) {
+        console.error("[ZOZZO] Signe :", err);
+        loadingScreen.innerHTML = `
+          <div class="text-center px-6">
+            <p class="font-subtitle font-semibold text-red-500">Impossible de charger le signe.</p>
+            <p class="mt-1 text-xs text-gray-400">${err?.data?.message || err?.message || ""}</p>
+            <a href="/app/dictionnaire" class="mt-4 inline-block rounded-full bg-zozzo-orange px-6 py-2 text-sm text-white font-semibold">
+              Retour
+            </a>
+          </div>`;
+      }
+    })();
+  </script>
+</AppLayout>
