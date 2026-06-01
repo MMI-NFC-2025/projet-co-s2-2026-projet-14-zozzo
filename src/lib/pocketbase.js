@@ -118,6 +118,72 @@ export async function updateUserProfile({ pseudo, email, age }) {
   });
 }
 
+// ── Mini-jeux ─────────────────────────────────────────────────────────────
+
+export async function getJeux() {
+  return await pb.collection("jeux").getFullList({ filter: "actif = true", sort: "titre" });
+}
+
+export async function getJeuBySlug(slug) {
+  const all = await pb.collection("jeux").getFullList({ filter: `actif = true && slug = "${slug}"` });
+  return all[0] ?? null;
+}
+
+// Questions d'un jeu (mélangées, limitées au niveau)
+// Filtrage JS côté client pour éviter les problèmes de filtre multi-relation PocketBase
+export async function getQuestionsJeu(jeuId, limit = 15) {
+  // Charger toutes les questions actives puis filtrer en JS
+  let all = [];
+  try {
+    all = await pb.collection("questions_jeux").getFullList({
+      filter: "actif = true",
+      expand: "signe",
+    });
+  } catch {
+    // Fallback sans filtre actif
+    all = await pb.collection("questions_jeux").getFullList({ expand: "signe" });
+  }
+
+  // Filtrer : la relation jeu contient jeuId (mono ou multi-valeur)
+  const filtered = all.filter(q => {
+    const jeux = Array.isArray(q.jeu) ? q.jeu : [q.jeu];
+    return jeux.includes(jeuId);
+  });
+
+  // Fallback : si aucune correspondance, utiliser toutes les questions
+  const pool = filtered.length > 0 ? filtered : all;
+
+  // Si le pool est plus petit que la limite, répéter les questions (mélangées à chaque cycle)
+  const result = [];
+  while (result.length < limit) {
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    result.push(...shuffled);
+  }
+  return result.slice(0, limit);
+}
+
+// Sauvegarder un score
+export async function saveScore({ utilisateur, jeu, niveau, nombre_mots, score, temps_secondes }) {
+  return await pb.collection("scores").create({
+    utilisateur, jeu, niveau, nombre_mots, score, temps_secondes,
+    date_partie: new Date().toISOString(),
+  });
+}
+
+// Classement d'un jeu + niveau
+export async function getClassement(jeuId, niveau, limit = 10) {
+  try {
+    const all = await pb.collection("scores").getFullList({
+      filter: `jeu ?= "${jeuId}" && niveau = "${niveau}"`,
+      sort: "-score,+temps_secondes",
+      expand: "utilisateur",
+    });
+    return all.slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 // ── Histoires ─────────────────────────────────────────────────────────────
 
 export async function getHistoires() {

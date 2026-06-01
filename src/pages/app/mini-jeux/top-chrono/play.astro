@@ -1,0 +1,334 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Top Chrono" showBack={true} backHref="/app/mini-jeux/top-chrono" pageTitle="Top Chrono">
+
+  <style>
+    @keyframes bounce-in {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(5px); }
+    }
+    .anim-bounce { animation: bounce-in 0.4s ease forwards; }
+    .anim-shake  { animation: shake 0.4s ease; }
+  </style>
+
+  <!-- ══ CHARGEMENT ════════════════════════════════════════════════ -->
+  <div id="loading-screen"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
+    style="background:white;">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="font-subtitle text-sm text-gray-400">Préparation du jeu…</p>
+  </div>
+
+  <!-- ══ JEU ═══════════════════════════════════════════════════════ -->
+  <div id="game-screen" class="hidden flex-col min-h-[calc(100dvh-4rem)]" style="background:white;">
+
+    <!-- Timer camembert + progression texte -->
+    <div class="flex shrink-0 items-center justify-between px-5 pt-8 pb-3">
+      <p id="prog-label" class="font-subtitle text-sm font-medium text-gray-400">1 / ?</p>
+
+      <!-- Timer circulaire (camembert SVG) -->
+      <div class="flex items-center gap-3">
+        <svg id="pie-timer" viewBox="0 0 40 40" class="h-16 w-16 sm:h-20 sm:w-20">
+          <circle cx="20" cy="20" r="20" fill="#224ed1"/>
+          <path id="pie-slice" d="" fill="#f3e63f"/>
+        </svg>
+        <span id="timer-display" class="font-title text-lg text-zozzo-text sm:text-xl">0 s</span>
+      </div>
+    </div>
+
+    <!-- Signe (vidéo ou image) -->
+    <div class="flex flex-1 w-full items-center justify-center px-5 py-2">
+      <div class="relative flex items-center justify-center overflow-hidden rounded-3xl shadow-sm"
+        style="width:min(88vw,420px);aspect-ratio:4/3;background:#f0eaff;">
+        <video id="signe-video" class="hidden h-full w-full object-contain" autoplay muted loop playsinline controls></video>
+        <img  id="signe-img"   src="" alt="Signe" class="hidden h-full w-full object-contain p-2" />
+        <div  id="signe-ph"   class="text-5xl" style="color:#c4b5fd;">?</div>
+
+        <!-- ZOZZO feedback -->
+        <div id="zozzo-feedback" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:rgba(77,163,255,0.18);">
+          <img src="/images/about/zozzo-bon-reponse.png" alt="Bravo" class="h-4/5 w-4/5 object-contain anim-bounce" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 boutons réponses -->
+    <div id="answers-grid" class="shrink-0 grid grid-cols-2 gap-3 px-5 py-4 sm:px-10"></div>
+
+  </div>
+
+  <!-- ══ RÉSULTAT ══════════════════════════════════════════════════ -->
+  <div id="result-screen"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-6 py-8 text-center"
+    style="background:white;">
+
+    <h1 class="font-title text-3xl text-zozzo-orange sm:text-4xl">Résultat</h1>
+    <img src="/images/about/zozzo-bon-reponse.png" alt="Zozzo" class="my-4 w-36 h-auto" />
+
+    <div class="w-full max-w-xs rounded-3xl bg-white p-5 shadow-sm border border-gray-100 space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Temps :</span>
+        <span id="result-temps" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Score :</span>
+        <span id="result-score" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+    </div>
+
+    <!-- Flèche vers classement -->
+    <div class="mt-8 flex justify-end w-full max-w-xs pr-2">
+      <button id="go-classement" class="transition hover:scale-110 active:scale-95">
+        <svg viewBox="0 0 60 24" class="h-8 w-16 sm:h-9 sm:w-20" fill="none">
+          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getJeuBySlug,
+      getQuestionsJeu,
+      getCurrentUser,
+      saveScore,
+      getSigneImageUrl,
+      getSigneVideoUrl,
+      pb,
+    } from "../../../../lib/pocketbase.js";
+
+    // ── Paramètres ───────────────────────────────────────────────
+    const params  = new URLSearchParams(window.location.search);
+    const level   = parseInt(params.get("level") ?? "15");
+    const niveauLabel = `${level}_mots`;
+
+    // ── État ─────────────────────────────────────────────────────
+    let questions  = [];
+    let idx        = 0;
+    let score      = 0;
+    let answered   = false;
+    let startTime  = null;
+    let timerInt   = null;
+    let elapsedSec = 0;
+    let jeuId      = null;
+
+    // ── DOM ──────────────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+    const loadingScreen = $("loading-screen");
+    const gameScreen    = $("game-screen");
+    const resultScreen  = $("result-screen");
+    const progLabel     = $("prog-label");
+    const timerDisplay  = $("timer-display");
+    const pieSlice      = $("pie-slice");
+
+    // ── Camembert SVG ────────────────────────────────────────────
+    function updatePie(fraction) {
+      if (!pieSlice) return;
+      if (fraction <= 0)  { pieSlice.setAttribute("d", ""); return; }
+      if (fraction >= 1)  {
+        pieSlice.setAttribute("d", `M 20 0 A 20 20 0 1 1 19.99 0 Z`);
+        return;
+      }
+      const angle  = fraction * 360;
+      const rad    = (angle - 90) * Math.PI / 180;
+      const x      = 20 + 20 * Math.cos(rad);
+      const y      = 20 + 20 * Math.sin(rad);
+      const large  = angle > 180 ? 1 : 0;
+      pieSlice.setAttribute("d", `M 20 20 L 20 0 A 20 20 0 ${large} 1 ${x} ${y} Z`);
+    }
+    const signeVideo    = $("signe-video");
+    const signeImg      = $("signe-img");
+    const signePh       = $("signe-ph");
+    const answersGrid   = $("answers-grid");
+    const zozzoFeedback = $("zozzo-feedback");
+    const resultTemps   = $("result-temps");
+    const resultScore   = $("result-score");
+    const goClassement  = $("go-classement");
+
+    // ── Timer ────────────────────────────────────────────────────
+    function startTimer() {
+      startTime = Date.now();
+      timerInt  = setInterval(() => {
+        elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+        const m = Math.floor(elapsedSec / 60);
+        const s = elapsedSec % 60;
+        timerDisplay.textContent = m > 0 ? `${m} min ${s} s` : `${s} s`;
+      }, 1000);
+    }
+    function stopTimer() { clearInterval(timerInt); }
+
+    // ── Afficher le signe ────────────────────────────────────────
+    function afficherSigne(signe) {
+      signeVideo.classList.add("hidden");
+      signeImg.classList.add("hidden");
+      signePh.classList.add("hidden");
+      zozzoFeedback.classList.add("hidden");
+      zozzoFeedback.classList.remove("flex");
+
+      if (!signe) { signePh.classList.remove("hidden"); return; }
+
+      // Priorité vidéo
+      const videoUrl = signe.video ? pb.files.getURL(signe, signe.video) : null;
+      if (videoUrl) {
+        signeVideo.src = videoUrl;
+        signeVideo.load();
+        signeVideo.classList.remove("hidden");
+        return;
+      }
+      const imgUrl = getSigneImageUrl(signe);
+      if (imgUrl) {
+        signeImg.src = imgUrl;
+        signeImg.classList.remove("hidden");
+      } else {
+        signePh.textContent = signe.mot ?? "?";
+        signePh.classList.remove("hidden");
+      }
+    }
+
+    // ── Afficher une question ────────────────────────────────────
+    function afficherQuestion(index) {
+      answered = false;
+      const q     = questions[index];
+      const total = questions.length;
+      const signe = q.expand?.signe ?? null;
+
+      progLabel.textContent = `${index + 1} / ${total}`;
+      updatePie(index / total);
+
+      afficherSigne(signe);
+
+      // Mélanger les 4 choix
+      const choix = [q.choix_1, q.choix_2, q.choix_3, q.choix_4]
+        .filter(Boolean)
+        .sort(() => Math.random() - 0.5);
+
+      answersGrid.innerHTML = "";
+      choix.forEach(rep => {
+        const btn = document.createElement("button");
+        btn.textContent           = rep;
+        btn.className             = "w-full rounded-full py-4 px-3 font-subtitle text-base font-semibold shadow-sm transition active:scale-95";
+        btn.style.backgroundColor = "#fcded6";
+        btn.style.color           = "#1f1f1f";
+        btn.addEventListener("click", () => {
+          if (answered) return;
+          answered = true;
+          reagir(rep === q.bonne_reponse, btn, q.bonne_reponse);
+        });
+        answersGrid.appendChild(btn);
+      });
+    }
+
+    // ── Réaction réponse ─────────────────────────────────────────
+    function reagir(correct, clicked, bonneReponse) {
+      answersGrid.querySelectorAll("button").forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent === bonneReponse) {
+          btn.style.backgroundColor = "#4DA3FF";
+          btn.style.color           = "#fff";
+          btn.style.opacity         = "1";
+        } else {
+          btn.style.opacity = "0.4";
+        }
+      });
+
+      if (correct) {
+        score++;
+        clicked.style.backgroundColor = "#4DA3FF";
+        clicked.style.color           = "#fff";
+        clicked.style.opacity         = "1";
+        zozzoFeedback.classList.remove("hidden");
+        zozzoFeedback.classList.add("flex");
+      } else {
+        clicked.style.backgroundColor = "#FF4D4D";
+        clicked.style.color           = "#fff";
+        clicked.style.opacity         = "1";
+        clicked.classList.add("anim-shake");
+      }
+
+      setTimeout(() => {
+        idx++;
+        if (idx < questions.length) afficherQuestion(idx);
+        else                         afficherResultat();
+      }, 1500);
+    }
+
+    // ── Résultat ─────────────────────────────────────────────────
+    async function afficherResultat() {
+      stopTimer();
+      updatePie(1); // camembert plein à la fin
+      gameScreen.classList.add("hidden");
+      gameScreen.classList.remove("flex");
+      resultScreen.classList.remove("hidden");
+      resultScreen.classList.add("flex");
+
+      const m = Math.floor(elapsedSec / 60);
+      const s = elapsedSec % 60;
+      resultTemps.textContent = m > 0 ? `${m} mins ${s} s` : `${s} s`;
+      resultScore.textContent = `${score}/ ${questions.length} mots`;
+
+      // Sauvegarder
+      const user = getCurrentUser();
+      if (user && jeuId) {
+        try {
+          await saveScore({
+            utilisateur:  user.id,
+            jeu:          jeuId,
+            niveau:       niveauLabel,
+            nombre_mots:  level,
+            score,
+            temps_secondes: elapsedSec,
+          });
+        } catch (e) { console.warn("[ZOZZO] Score :", e); }
+      }
+
+      // Bouton classement
+      goClassement.addEventListener("click", () => {
+        window.location.href = `/app/mini-jeux/top-chrono/classement?level=${level}&jeu=${jeuId ?? ""}`;
+      });
+    }
+
+    // ── Démarrage ────────────────────────────────────────────────
+    (async () => {
+      try {
+        const jeu = await getJeuBySlug("top_chrono");
+        if (!jeu) throw new Error("Jeu top_chrono introuvable");
+        jeuId = jeu.id;
+
+        questions = await getQuestionsJeu(jeu.id, level);
+        if (!questions.length) throw new Error("Aucune question disponible");
+
+        loadingScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+        gameScreen.classList.add("flex");
+
+        afficherQuestion(0);
+        startTimer();
+
+      } catch (err) {
+        console.error("[ZOZZO] Top Chrono :", err);
+        loadingScreen.innerHTML = `
+          <div class="text-center px-6">
+            <p class="font-subtitle font-semibold text-red-500">Impossible de charger le jeu.</p>
+            <p class="mt-1 text-xs text-gray-400">${err?.message ?? ""}</p>
+            <a href="/app/mini-jeux/top-chrono" class="mt-4 inline-block rounded-full bg-zozzo-orange px-6 py-2 text-sm text-white font-semibold">
+              Retour
+            </a>
+          </div>`;
+      }
+    })();
+  </script>
+
+</AppLayout>

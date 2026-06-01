@@ -1,0 +1,116 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Mini-jeux">
+
+  <div class="px-4 py-8 pb-12">
+    <h1 class="mb-6 text-center font-title text-2xl text-zozzo-text sm:text-3xl">Mini-jeux</h1>
+
+    <div id="jeux-loading" class="flex flex-col items-center gap-3 py-10">
+      <div class="h-9 w-9 animate-spin rounded-full border-4 border-t-transparent" style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    </div>
+
+    <div id="jeux-container" class="hidden flex flex-col gap-5 max-w-md mx-auto"></div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getJeux, pb } from "../../../lib/pocketbase.js";
+
+    const loadingEl   = document.getElementById("jeux-loading");
+    const containerEl = document.getElementById("jeux-container");
+
+    // Config statique de chaque jeu
+    // Ordre d'affichage forcé : 1=Top Chrono, 2=Relis-tout, 3=Reconsti
+    const JEUX_CONFIG = {
+      "top_chrono": {
+        ordre: 1,
+        icon: `<svg viewBox="0 0 24 24" fill="#224ed1" style="width:46px;height:46px;"><path d="M7 2v1h10V2H7zm5 4C8.13 6 5 9.13 5 13s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm1 11.5V13h-1.5L13 8.5 11 14h1.5V18H8.5z"/></svg>`,
+        route: "/app/mini-jeux/top-chrono",
+        active: true,
+      },
+      "relis-tout": {
+        ordre: 2,
+        icon: `<svg viewBox="0 0 24 24" style="width:38px;height:38px;"><circle cx="5" cy="12" r="2.5" fill="#224ed1"/><circle cx="19" cy="6" r="2.5" fill="#224ed1"/><circle cx="19" cy="18" r="2.5" fill="#224ed1"/><line x1="7.4" y1="11" x2="16.6" y2="6.8" stroke="#224ed1" stroke-width="1.8"/><line x1="7.4" y1="13" x2="16.6" y2="17.2" stroke="#224ed1" stroke-width="1.8"/></svg>`,
+        route: null,
+        active: false,
+      },
+      "reconsti": {
+        ordre: 3,
+        icon: `<svg viewBox="0 0 24 24" fill="#224ed1" style="width:42px;height:42px;"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V19c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V21H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg>`,
+        route: null,
+        active: false,
+      },
+    };
+
+    (async () => {
+      try {
+        const jeuxRaw = await getJeux();
+        // Trier selon l'ordre défini dans JEUX_CONFIG (pas alphabétique)
+        const jeux = [...jeuxRaw].sort((a, b) => {
+          const oa = JEUX_CONFIG[a.slug]?.ordre ?? 99;
+          const ob = JEUX_CONFIG[b.slug]?.ordre ?? 99;
+          return oa - ob;
+        });
+
+        loadingEl.style.display = "none";
+        containerEl.classList.remove("hidden");
+
+        jeux.forEach(jeu => {
+          // Exclure le jeu Quiz (utilisé uniquement pour les leçons)
+          if (jeu.type === "quiz" || jeu.slug === "quiz" || jeu.slug === "Quiz") return;
+
+          const cfg     = JEUX_CONFIG[jeu.slug] ?? {};
+          const active  = cfg.active ?? false;
+          const onclick = active
+            ? `window.location.href='${cfg.route}'`
+            : `alert("Ce jeu arrive bientôt !")`;
+
+          // Icône depuis PocketBase si disponible, sinon fallback config
+          const iconHTML = jeu.image
+            ? `<img src="${pb.files.getURL(jeu, jeu.image)}" style="width:44px;height:44px;object-fit:contain;" />`
+            : (cfg.icon ?? `<span style="font-size:2rem;">🎮</span>`);
+
+          const iconSide = "left"; // toutes les icônes à gauche
+
+          const texte = `
+            <div style="flex:1; text-align:center; padding: 0 8px;">
+              <p style="font-family:var(--font-title);font-size:1.05rem;font-weight:700;color:#224ed1;margin:0;">
+                ${jeu.titre}
+              </p>
+              <p style="margin-top:4px;font-size:0.75rem;color:#374151;margin-bottom:0;">
+                ${jeu.description ?? ""}
+              </p>
+            </div>`;
+
+          const icone = `<div style="flex-shrink:0;">${iconHTML}</div>`;
+
+          const card = document.createElement("div");
+          card.onclick = () => { if (active) window.location.href = cfg.route; else alert("Ce jeu arrive bientôt !"); };
+          card.style.cssText = `
+            cursor:pointer; border-radius:22px; padding:16px 18px;
+            background:#f3e63f; box-shadow:0 4px 12px rgba(0,0,0,0.13);
+            display:flex; align-items:center; gap:10px;
+            opacity:${active ? "1" : "0.72"};
+            transition:transform 0.18s;
+          `;
+          card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.02)"; });
+          card.addEventListener("mouseleave", () => { card.style.transform = "scale(1)"; });
+
+          // Icône gauche ou droite selon config
+          card.innerHTML = iconSide === "left"
+            ? `${icone}${texte}`
+            : `${texte}${icone}`;
+
+          containerEl.appendChild(card);
+        });
+
+      } catch (err) {
+        loadingEl.innerHTML = `<p class="text-sm text-red-500">Erreur : ${err?.message ?? err}</p>`;
+      }
+    })();
+  </script>
+
+</AppLayout>
