@@ -1,0 +1,109 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Histoire" showBack={true} backHref="/app/histoires" pageTitle="">
+
+  <!-- CHARGEMENT -->
+  <div id="loading-screen"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
+    style="background:white;">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="text-sm text-gray-400 font-subtitle">Chargement de l'histoire…</p>
+  </div>
+
+  <!-- CONTENU : BD verticale -->
+  <div id="histoire-screen" class="hidden" style="background:white;">
+
+    <!-- Titre de l'histoire -->
+    <div class="px-4 pt-5 pb-3 text-center">
+      <h1 id="histoire-titre" class="font-title text-xl text-zozzo-text sm:text-2xl"></h1>
+    </div>
+
+    <!-- Pages en style BD (grille responsive) -->
+    <div id="pages-container" class="px-3 pb-6">
+      <!-- Injecté en JS : grilles de pages -->
+    </div>
+
+    <!-- Écran de fin -->
+      <div class="mt-5 flex justify-end pr-5">
+        <a href="/app/histoires" class="transition hover:scale-110 active:scale-95" aria-label="Retour aux histoires">
+          <svg viewBox="0 0 60 24" class="h-8 w-16 sm:h-10 sm:w-20" fill="none">
+            <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
+            <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getHistoireById,
+      getPagesByHistoire,
+      getPageImageUrl,
+    } from "../../../lib/pocketbase.js";
+
+    const params      = new URLSearchParams(window.location.search);
+    const histoireId  = params.get("id");
+
+    if (!histoireId) { window.location.href = "/app/histoires"; }
+
+    const loadingScreen   = document.getElementById("loading-screen");
+    const histoireScreen  = document.getElementById("histoire-screen");
+    const histoireTitreEl = document.getElementById("histoire-titre");
+    const pagesContainer  = document.getElementById("pages-container");
+
+    // Construire une page BD (case individuelle)
+    function buildCase(page) {
+      const imgUrl = getPageImageUrl(page);
+      const img = imgUrl
+        ? `<img src="${imgUrl}" alt=""
+            class="w-full h-auto object-contain rounded-xl"
+            onerror="this.style.display='none'" />`
+        : `<div class="flex h-32 w-full items-center justify-center rounded-xl bg-gray-100 text-gray-300 text-sm">Image</div>`;
+
+      return `<div class="flex flex-col">${img}</div>`;
+    }
+
+    // Regrouper les pages en rangées (2 par ligne sur mobile, 3 sur sm+)
+    function buildRangees(pages) {
+      // Toutes les pages en grille responsive
+      const cases = pages.map(buildCase).join("");
+      return `
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          ${cases}
+        </div>`;
+    }
+
+    (async () => {
+      try {
+        const [histoire, pages] = await Promise.all([
+          getHistoireById(histoireId),
+          getPagesByHistoire(histoireId),
+        ]);
+
+        histoireTitreEl.textContent = histoire.titre ?? "Histoire";
+        pagesContainer.innerHTML    = buildRangees(pages);
+
+        loadingScreen.classList.add("hidden");
+        histoireScreen.classList.remove("hidden");
+
+      } catch (err) {
+        console.error("[ZOZZO] Histoire :", err);
+        loadingScreen.innerHTML = `
+          <div class="text-center px-6">
+            <p class="font-subtitle font-semibold text-red-500">Impossible de charger l'histoire.</p>
+            <p class="mt-1 text-xs text-gray-400">${err?.data?.message || err?.message || ""}</p>
+            <a href="/app/histoires" class="mt-4 inline-block rounded-full bg-zozzo-orange px-6 py-2 text-sm text-white font-semibold">
+              Retour
+            </a>
+          </div>`;
+      }
+    })();
+  </script>
+
+</AppLayout>

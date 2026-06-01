@@ -1,0 +1,99 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Histoires">
+
+  <!-- Chargement -->
+  <div id="hist-loading" class="flex min-h-[50vh] flex-col items-center justify-center gap-3">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
+  </div>
+
+  <!-- Erreur -->
+  <div id="hist-error" class="hidden px-6 py-10 text-center text-sm text-red-500"></div>
+
+  <!-- Liste des histoires -->
+  <div id="hist-content" class="hidden px-4 py-6 space-y-5 pb-10"></div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getHistoires,
+      getCouvertureUrl,
+      getCurrentUser,
+    } from "../../../lib/pocketbase.js";
+
+    const loadingEl = document.getElementById("hist-loading");
+    const errorEl   = document.getElementById("hist-error");
+    const contentEl = document.getElementById("hist-content");
+
+    const FLECHE = `
+      <svg viewBox="0 0 60 24" class="h-7 w-14 sm:h-8 sm:w-16" fill="none">
+        <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
+        <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+
+    function buildCard(histoire, user) {
+      const isPremium = histoire.premium === true;
+      const isLocked  = isPremium && !user?.abonnement_actif;
+      const imgUrl    = getCouvertureUrl(histoire);
+      const onclick   = isLocked
+        ? `window.location.href='/app/premium'`
+        : `window.location.href='/app/histoires/detail?id=${histoire.id}'`;
+
+      // Image pleine largeur
+      const imgHTML = imgUrl
+        ? `<img src="${imgUrl}" alt="${histoire.titre}"
+            class="w-full object-cover" style="height:clamp(140px,38vw,220px);"
+            onerror="this.style.display='none'" />`
+        : `<div class="flex w-full items-center justify-center bg-zozzo-beige" style="height:clamp(140px,38vw,220px);">
+            <span class="text-5xl">📖</span>
+           </div>`;
+
+      return `
+        <div onclick="${onclick}"
+          class="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md transition active:scale-[0.98]">
+
+          <!-- Titre centré au-dessus -->
+          <p class="px-4 py-2 text-center font-subtitle text-sm font-semibold text-gray-700 sm:text-base">
+            ${histoire.titre}
+          </p>
+
+          <!-- Image + overlay + flèche superposée -->
+          <div style="position:relative;">
+            ${imgHTML}
+            ${isLocked ? `
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.28);">
+                <img src="/images/shapes/lock.png" style="width:48px;height:48px;object-fit:contain;" />
+              </div>` : ""}
+            <!-- Flèche sur l'image, en bas à droite -->
+            <div style="position:absolute;bottom:10px;right:12px;">
+              ${FLECHE}
+            </div>
+          </div>
+
+        </div>`;
+    }
+
+    (async () => {
+      try {
+        const user     = getCurrentUser();
+        const histoires = await getHistoires();
+
+        loadingEl.style.display = "none";
+        contentEl.classList.remove("hidden");
+        contentEl.innerHTML = histoires.map(h => buildCard(h, user)).join("");
+
+      } catch (err) {
+        console.error("[ZOZZO] Histoires :", err);
+        loadingEl.style.display = "none";
+        errorEl.classList.remove("hidden");
+        errorEl.textContent = `Erreur : ${err?.data?.message || err?.message || String(err)}`;
+      }
+    })();
+  </script>
+
+</AppLayout>
