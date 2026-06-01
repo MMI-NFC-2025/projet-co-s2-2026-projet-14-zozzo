@@ -3,237 +3,301 @@
 import AppLayout from "../../../layouts/AppLayout.astro";
 ---
 
-<AppLayout title="ZOZZO | Leçon" showBack={true} backHref="/app/lecons" pageTitle="">
+<AppLayout title="ZOZZO | Quiz" showBack={true} backHref="/app/lecons" pageTitle="">
 
-  <!-- ══ ÉCRAN QUIZ ═══════════════════════════════════════════════════ -->
-  <div id="quiz-screen" class="flex min-h-[calc(100dvh-4rem)] flex-col" style="background-color:#fff9f7;">
+  <style>
+    @keyframes bounce-in {
+      0%   { transform: scale(0.3); opacity: 0; }
+      60%  { transform: scale(1.12); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(5px); }
+    }
+    .anim-bounce { animation: bounce-in 0.45s ease forwards; }
+    .anim-shake  { animation: shake 0.4s ease; }
+  </style>
 
-    <!-- En-tête leçon + progression -->
-    <div class="px-5 pt-5 text-center">
-      <h1 id="lecon-titre" class="font-title text-2xl text-zozzo-text">…</h1>
-      <p id="prog-label" class="mt-1 text-sm font-medium text-gray-400">Signe 1 / ?</p>
+  <!-- CHARGEMENT ──────────────────────────────────────────────────── -->
+  <div id="loading-screen"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-4"
+    style="background:#fff9f7;">
+    <div class="h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="font-subtitle text-gray-400">Chargement du quiz…</p>
+  </div>
+
+  <!-- QUIZ ────────────────────────────────────────────────────────── -->
+  <div id="quiz-screen"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)]"
+    style="background:#fff9f7;">
+
+    <!-- Titre + barre de progression -->
+    <div class="shrink-0 px-5 pt-5 text-center">
+      <h1 id="lecon-titre" class="font-title text-xl text-zozzo-text"></h1>
+      <p id="prog-label" class="mt-1 text-xs font-medium text-gray-400">Signe 1 / ?</p>
       <div class="mx-auto mt-2 h-2 max-w-xs overflow-hidden rounded-full bg-gray-200">
-        <div id="prog-bar" class="h-2 rounded-full transition-all duration-500" style="width:0%;background:#224ed1;"></div>
+        <div id="prog-bar" class="h-full rounded-full transition-all duration-500"
+          style="width:0%;background:#224ed1;"></div>
       </div>
     </div>
 
-    <!-- Image / vidéo du signe -->
-    <div class="flex flex-1 items-center justify-center px-6 py-4">
-      <div
-        class="relative flex h-52 w-52 items-center justify-center overflow-hidden rounded-3xl shadow-md sm:h-64 sm:w-64"
-        style="background:#f0eaff;"
-      >
-        <img
-          id="signe-img"
-          src=""
-          alt="Signe LSF"
-          class="hidden h-full w-full object-contain p-3"
-        />
-        <div id="signe-placeholder" class="text-center px-4">
-          <p class="font-subtitle text-4xl text-zozzo-bleu-fonce">?</p>
-          <p class="mt-1 text-sm text-gray-400">Chargement…</p>
+    <!-- Signe : vidéo ou image ───────────────────────────────────── -->
+    <div class="flex flex-1 items-center justify-center px-6 py-3">
+      <div id="signe-container"
+        class="relative flex w-full items-center justify-center overflow-hidden rounded-3xl shadow-md"
+        style="aspect-ratio:4/3; max-width:min(90vw, 480px);"
+        style="background:#f0eaff;">
+
+        <!-- Vidéo du signe -->
+        <video id="signe-video"
+          class="hidden h-full w-full object-contain"
+          autoplay muted loop playsinline controls>
+        </video>
+
+        <!-- Image du signe -->
+        <img id="signe-img" src="" alt="Signe LSF"
+          class="hidden h-full w-full object-contain p-2" />
+
+        <!-- Placeholder -->
+        <div id="signe-ph" class="flex flex-col items-center gap-1">
+          <span class="font-title text-4xl" style="color:#224ed1;">?</span>
+          <span class="text-sm text-gray-400">Chargement…</span>
         </div>
 
-        <!-- Feedback personnage (affiché 1s) -->
-        <div id="feedback-zozzo" class="absolute inset-0 hidden items-center justify-center rounded-3xl">
-          <img id="feedback-img" src="" alt="" class="h-3/4 w-3/4 object-contain drop-shadow-lg" />
+        <!-- ZOZZO contente (bonne réponse) -->
+        <div id="zozzo-feedback"
+          class="absolute inset-0 hidden items-center justify-center rounded-3xl"
+          style="background:rgba(77,163,255,0.22);">
+          <img src="/images/about/zozzo-bon-reponse.png" alt="Bravo !"
+            class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
       </div>
     </div>
 
     <!-- Question -->
-    <p class="px-5 text-center font-subtitle text-base font-semibold text-gray-600 sm:text-lg">
+    <p class="shrink-0 px-4 text-center text-sm font-semibold text-gray-500 sm:text-base">
       Quel est ce signe ?
     </p>
 
-    <!-- 4 boutons réponses en grille 2×2 -->
-    <div id="answers-grid" class="grid grid-cols-2 gap-3 px-5 py-5 sm:px-10">
-      <!-- Génération JS -->
+    <!-- Boutons réponses 2 × 2 -->
+    <div id="answers-grid"
+      class="shrink-0 grid grid-cols-2 gap-3 px-5 py-5 sm:px-10">
     </div>
-
   </div>
 
-  <!-- ══ ÉCRAN RÉSULTAT ════════════════════════════════════════════════ -->
-  <div
-    id="end-screen"
-    class="hidden min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-6 py-10 text-center"
-    style="background-color:#fff9f7;"
-  >
-    <img
-      src="/images/landing/zozzo-standing-like.png"
-      alt="ZOZZO content"
-      class="mb-4 h-32 w-auto"
-    />
-    <h1 class="font-title text-4xl text-zozzo-orange sm:text-5xl">Bravo ! 🎉</h1>
+  <!-- RÉSULTAT ─────────────────────────────────────────────────────── -->
+  <div id="end-screen"
+    class="hidden flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-8 py-6 text-center"
+    style="background:#fff9f7;">
 
-    <div id="stars-row" class="my-4 text-5xl tracking-widest"></div>
+    <!-- ZOZZO contente -->
+    <img src="/images/about/zozzo-bon-reponse.png" alt="Zozzo" class="mb-2 w-48 max-w-[55vw] h-auto sm:w-56 md:w-64" />
 
-    <div class="w-full max-w-xs rounded-3xl bg-white p-5 shadow-sm">
-      <p id="score-txt" class="font-subtitle text-xl font-semibold text-zozzo-text"></p>
-      <p id="details-txt" class="mt-1 text-sm text-gray-500"></p>
+    <!-- Bravo ! -->
+    <h1 class="font-title text-3xl text-zozzo-orange">Bravo !</h1>
+
+    <!-- Étoiles -->
+    <div id="stars-row" class="my-4 flex items-center justify-center gap-3"></div>
+
+    <!-- Carte Score + Temps -->
+    <div class="w-full max-w-xs space-y-4">
+
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Score :</span>
+        <span id="score-txt" class="font-title text-2xl text-zozzo-text"></span>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Temps :</span>
+        <span id="temps-txt" class="font-title text-2xl text-zozzo-text"></span>
+      </div>
+
     </div>
 
-    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-      <a
-        href="/app/lecons"
-        class="rounded-full border-2 border-zozzo-orange px-7 py-3 font-semibold text-zozzo-orange transition hover:bg-zozzo-orange hover:text-white"
-      >
-        ← Leçons
-      </a>
-      <button
-        id="retry-btn"
-        class="rounded-full px-7 py-3 font-semibold text-white transition hover:opacity-90"
-        style="background:#224ed1;"
-      >
-        Recommencer
-      </button>
-    </div>
+    <!-- Élément caché (garde la compatibilité JS) -->
+    <p id="details-txt" class="hidden"></p>
+
+    <!-- Flèche jaune bas droite -->
+    <a href="/app/lecons"
+      class="fixed bottom-6 right-6 transition hover:scale-110 active:scale-95"
+      aria-label="Continuer"
+    >
+      <svg viewBox="0 0 24 24" class="h-12 w-12 drop-shadow-md" fill="#f3e63f"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </a>
   </div>
 
   <script>
     // @ts-nocheck
-    import {
-      getLeconById,
-      getSignesByLecon,
-      getRandomWrongAnswers,
-      getSigneImageUrl,
-      getCurrentUser,
-      saveProgression,
-    } from "../../../lib/pocketbase.js";
+    import { getLeconById, getSigneImageUrl, getCurrentUser, saveProgression, pb } from "../../../lib/pocketbase.js";
 
     // ── Paramètre URL ────────────────────────────────────────────────
     const leconId = new URLSearchParams(window.location.search).get("id");
     if (!leconId) { window.location.href = "/app/lecons"; }
 
-    // ── État ─────────────────────────────────────────────────────────
-    let signes       = [];
-    let idx          = 0;
-    let score        = 0;
-    let bonnes       = 0;
-    let mauvaises    = 0;
-    let isAnswered   = false;
+    // ── État quiz ────────────────────────────────────────────────────
+    let signes    = [];
+    let idx       = 0;
+    let score     = 0;
+    let bonnes    = 0;
+    let mauvaises = 0;
+    let answered  = false;
+    let startTime = null;
 
     // ── DOM ──────────────────────────────────────────────────────────
-    const quizScreen    = document.getElementById("quiz-screen");
-    const endScreen     = document.getElementById("end-screen");
-    const leconTitre    = document.getElementById("lecon-titre");
-    const progLabel     = document.getElementById("prog-label");
-    const progBar       = document.getElementById("prog-bar");
-    const signeImg      = document.getElementById("signe-img");
-    const signePh       = document.getElementById("signe-placeholder");
-    const answersGrid   = document.getElementById("answers-grid");
-    const starsRow      = document.getElementById("stars-row");
-    const scoreTxt      = document.getElementById("score-txt");
-    const detailsTxt    = document.getElementById("details-txt");
-    const retryBtn      = document.getElementById("retry-btn");
-    const feedbackEl    = document.getElementById("feedback-zozzo");
-    const feedbackImg   = document.getElementById("feedback-img");
+    const $  = id => document.getElementById(id);
+    const loadingScreen = $("loading-screen");
+    const quizScreen    = $("quiz-screen");
+    const endScreen     = $("end-screen");
+    const leconTitre    = $("lecon-titre");
+    const progLabel     = $("prog-label");
+    const progBar       = $("prog-bar");
+    const signeVideo    = $("signe-video");
+    const signeImg      = $("signe-img");
+    const signePh       = $("signe-ph");
+    const zozzoFeedback = $("zozzo-feedback");
+    const answersGrid   = $("answers-grid");
+    const starsRow      = $("stars-row");
+    const scoreTxt      = $("score-txt");
+    const detailsTxt    = $("details-txt");
 
-    // Couleurs distinctes pour les 4 boutons (state initial)
-    const BTN_BG   = ["#84a5f2", "#f26748", "#f3e63f", "#c4b5fd"];
-    const BTN_TEXT = ["#fff",    "#fff",    "#1f1f1f", "#1f1f1f"];
-
-    // ── Afficher feedback personnage ─────────────────────────────────
-    function showFeedback(correct) {
-      const src = correct
-        ? "/images/landing/zozzo-standing-like.png"
-        : "/images/landing/zozzo-standing.png";
-      feedbackImg.src = src;
-      feedbackEl.style.background = correct ? "rgba(34,78,209,0.15)" : "rgba(244,67,54,0.15)";
-      feedbackEl.classList.remove("hidden");
-      feedbackEl.classList.add("flex");
-      setTimeout(() => {
-        feedbackEl.classList.add("hidden");
-        feedbackEl.classList.remove("flex");
-      }, 900);
+    // ── Construire l'URL vidéo du signe ─────────────────────────────
+    // Gère video_url (texte) et video (fichier PocketBase)
+    function getVideoUrl(signe) {
+      if (signe.video_url) return signe.video_url;
+      if (signe.video)     return pb.files.getURL(signe, signe.video);
+      return null;
     }
 
-    // ── Afficher un signe ────────────────────────────────────────────
-    async function afficherSigne(index) {
-      isAnswered = false;
+    // ── Afficher vidéo OU image du signe ────────────────────────────
+    function afficherSigne(signe) {
+      signeVideo.classList.add("hidden");
+      signeImg.classList.add("hidden");
+      signePh.classList.add("hidden");
+      zozzoFeedback.classList.add("hidden");
+      zozzoFeedback.classList.remove("flex");
+
+      if (!signe) { signePh.classList.remove("hidden"); return; }
+
+      const videoUrl = getVideoUrl(signe);
+      if (videoUrl) {
+        signeVideo.src = videoUrl;
+        signeVideo.load();
+        signeVideo.classList.remove("hidden");
+        return;
+      }
+
+      const imgUrl = getSigneImageUrl(signe);
+      if (imgUrl) {
+        signeImg.src = imgUrl;
+        signeImg.classList.remove("hidden");
+      } else {
+        signePh.querySelector("span:first-child").textContent = signe.mot ?? "?";
+        signePh.querySelector("span:last-child").textContent  = "";
+        signePh.classList.remove("hidden");
+      }
+    }
+
+    // ── Générer 3 mauvaises réponses ─────────────────────────────────
+    // Priorité aux autres signes de la leçon, fallback sur collection complète
+    async function getMauvaisesReponses(signeCorrect) {
+      const autres = signes.filter(s => s.id !== signeCorrect.id && s.mot);
+
+      if (autres.length >= 3) {
+        return autres.sort(() => Math.random() - 0.5).slice(0, 3).map(s => s.mot);
+      }
+
+      // Pas assez de signes dans la leçon → compléter depuis la collection complète
+      try {
+        const tous = await pb.collection("signes").getFullList({ fields: "id,mot" });
+        const idsLecon = new Set(signes.map(s => s.id));
+        const extras = tous
+          .filter(s => !idsLecon.has(s.id) && s.mot)
+          .sort(() => Math.random() - 0.5);
+
+        const pool = [...autres, ...extras];
+        return pool.slice(0, 3).map(s => s.mot);
+      } catch {
+        return autres.slice(0, 3).map(s => s.mot);
+      }
+    }
+
+    // ── Afficher une question ────────────────────────────────────────
+    async function afficherQuestion(index) {
+      // Démarrer le chrono à la première question
+      if (index === 0) startTime = Date.now();
+
+      answered = false;
       const signe = signes[index];
       const total = signes.length;
 
       progLabel.textContent = `Signe ${index + 1} / ${total}`;
       progBar.style.width   = `${Math.round((index / total) * 100)}%`;
 
-      // Image du signe
-      const url = getSigneImageUrl(signe);
-      if (url) {
-        signeImg.src = url;
-        signeImg.classList.remove("hidden");
-        signePh.classList.add("hidden");
-      } else {
-        signeImg.classList.add("hidden");
-        signePh.querySelector("p:first-child").textContent = signe.mot ?? "?";
-        signePh.querySelector("p:last-child").textContent  = "Pas d'image";
-        signePh.classList.remove("hidden");
-      }
+      afficherSigne(signe);
 
-      // 3 mauvaises réponses
-      let wrong = [];
-      try { wrong = await getRandomWrongAnswers(signe.id, 3); } catch { wrong = []; }
+      // Construire les 4 choix mélangés
+      const mauvaises3 = await getMauvaisesReponses(signe);
+      const choix = [signe.mot, ...mauvaises3].filter(Boolean)
+        .sort(() => Math.random() - 0.5);
 
-      const reponses = [
-        { mot: signe.mot, correct: true },
-        ...wrong.slice(0, 3).map(s => ({ mot: s.mot, correct: false })),
-      ].sort(() => Math.random() - 0.5);
-
-      // Boutons
       answersGrid.innerHTML = "";
-      reponses.forEach((rep, i) => {
+      choix.forEach(rep => {
         const btn = document.createElement("button");
-        btn.textContent = rep.mot ?? "?";
-        btn.className   = "rounded-2xl px-4 py-5 font-subtitle text-base font-semibold shadow-sm transition active:scale-95 sm:text-lg";
-        btn.style.backgroundColor = BTN_BG[i];
-        btn.style.color           = BTN_TEXT[i];
-
+        btn.textContent            = rep;
+        btn.className              = "w-full rounded-full py-4 px-3 font-subtitle text-base font-semibold shadow-sm transition duration-200 active:scale-95";
+        btn.style.backgroundColor  = "#fcded6";
+        btn.style.color            = "#1f1f1f";
         btn.addEventListener("click", () => {
-          if (isAnswered) return;
-          isAnswered = true;
-          handleReponse(rep.correct, btn, signe.mot);
+          if (answered) return;
+          answered = true;
+          reagir(rep === signe.mot, btn, signe.mot);
         });
-
         answersGrid.appendChild(btn);
       });
     }
 
-    // ── Gérer une réponse ────────────────────────────────────────────
-    function handleReponse(correct, clicked, motCorrect) {
-      // Désactiver + mettre en évidence la bonne réponse
+    // ── Bonne / mauvaise réponse ─────────────────────────────────────
+    function reagir(correct, clicked, bonneReponse) {
       answersGrid.querySelectorAll("button").forEach(btn => {
-        btn.disabled       = true;
-        btn.style.opacity  = "0.45";
-        btn.style.transform = "";
-        if (btn.textContent === motCorrect) {
-          btn.style.backgroundColor = "#224ed1";
+        btn.disabled = true;
+        if (btn.textContent === bonneReponse) {
+          btn.style.backgroundColor = "#4DA3FF";
           btn.style.color           = "#fff";
           btn.style.opacity         = "1";
+        } else {
+          btn.style.opacity = "0.45";
         }
       });
 
       if (correct) {
         score++;
         bonnes++;
-        clicked.style.backgroundColor = "#224ed1";
+        clicked.style.backgroundColor = "#4DA3FF";
         clicked.style.color           = "#fff";
         clicked.style.opacity         = "1";
+        zozzoFeedback.classList.remove("hidden");
+        zozzoFeedback.classList.add("flex");
       } else {
         mauvaises++;
-        clicked.style.backgroundColor = "#f44336";
+        clicked.style.backgroundColor = "#FF4D4D";
         clicked.style.color           = "#fff";
         clicked.style.opacity         = "1";
+        clicked.classList.add("anim-shake");
       }
 
-      showFeedback(correct);
-      setTimeout(() => {
+      setTimeout(async () => {
         idx++;
-        if (idx < signes.length) afficherSigne(idx);
-        else afficherResultat();
+        if (idx < signes.length) await afficherQuestion(idx);
+        else                      afficherResultat();
       }, 1500);
     }
 
-    // ── Résultat final ───────────────────────────────────────────────
+    // ── Écran résultat ───────────────────────────────────────────────
     async function afficherResultat() {
       progBar.style.width = "100%";
       quizScreen.classList.add("hidden");
@@ -244,57 +308,73 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       const pct     = Math.round((score / total) * 100);
       const etoiles = pct >= 80 ? 3 : pct >= 50 ? 2 : 1;
 
-      starsRow.textContent  = "⭐".repeat(etoiles);
-      scoreTxt.textContent  = `Score : ${score} / ${total} · ${pct}%`;
-      detailsTxt.textContent = `${bonnes} bonne${bonnes > 1 ? "s" : ""} · ${mauvaises} mauvaise${mauvaises > 1 ? "s" : ""}`;
+      starsRow.innerHTML = Array.from({ length: etoiles }, () =>
+        `<img src="/images/shapes/un-etoil-score.svg" alt="étoile" style="width:52px;height:52px;display:inline-block;" />`
+      ).join("");
+      // Calcul du temps écoulé
+      const elapsed = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
+      const mins    = Math.floor(elapsed / 60);
+      const secs    = elapsed % 60;
+      const tempsStr = mins > 0 ? `${mins} min${mins > 1 ? "s" : ""} ${secs} s` : `${secs} s`;
+
+      scoreTxt.textContent      = `${score}/ ${total} mots`;
+      $("temps-txt").textContent = tempsStr;
 
       const user = getCurrentUser();
       if (user) {
         try {
-          await saveProgression({
-            utilisateur: user.id,
-            lecon: leconId,
-            termine: true,
-            etoiles,
-            score: pct,
-          });
-        } catch (e) {
-          console.warn("[ZOZZO] Sauvegarde progression :", e);
-        }
+          await saveProgression({ utilisateur: user.id, lecon: leconId, termine: true, etoiles, score: pct });
+        } catch (e) { console.warn("[ZOZZO] progression :", e); }
       }
     }
 
-    // ── Recommencer ──────────────────────────────────────────────────
-    retryBtn.addEventListener("click", () => {
-      idx = 0; score = 0; bonnes = 0; mauvaises = 0;
-      endScreen.classList.add("hidden");
-      endScreen.classList.remove("flex");
-      quizScreen.classList.remove("hidden");
-      afficherSigne(0);
-    });
-
-    // ── Initialisation ───────────────────────────────────────────────
+    // ── Démarrage ────────────────────────────────────────────────────
     (async () => {
       try {
-        const [lecon, signesData] = await Promise.all([
-          getLeconById(leconId),
-          getSignesByLecon(leconId),
-        ]);
+        // 1. Charger la leçon
+        const lecon = await getLeconById(leconId);
+        leconTitre.textContent = lecon.titre ?? "Quiz";
 
-        signes = signesData;
-        leconTitre.textContent = lecon.titre ?? "Leçon";
+        // 2. Charger les signes de la leçon via lecon_signes
+        const leconSignesData = await pb.collection("lecon_signes").getFullList({
+          filter: `lecon = "${leconId}"`,
+          expand: "signe",
+          sort: "ordre",
+        });
 
-        if (signes.length === 0) {
-          answersGrid.innerHTML = `<p class="col-span-2 py-10 text-center text-gray-400 font-subtitle">Aucun signe dans cette leçon.</p>`;
-          progLabel.textContent = "0 signe";
+        signes = leconSignesData
+          .map(ls => ls.expand?.signe)
+          .filter(s => s && s.mot); // garder uniquement les signes avec un mot
+
+        loadingScreen.classList.add("hidden");
+
+        if (!signes.length) {
+          quizScreen.classList.remove("hidden");
+          quizScreen.classList.add("flex");
+          answersGrid.innerHTML = `
+            <p class="col-span-2 py-10 text-center font-subtitle text-gray-400">
+              Aucun signe trouvé dans cette leçon.<br/>
+              <span class="text-xs">Vérifie la collection <code>lecon_signes</code> dans PocketBase.</span>
+            </p>`;
+          progLabel.textContent = "—";
           return;
         }
 
-        afficherSigne(0);
+        // 3. Lancer le quiz
+        quizScreen.classList.remove("hidden");
+        quizScreen.classList.add("flex");
+        await afficherQuestion(0);
+
       } catch (err) {
-        console.error("[ZOZZO] Leçon :", err);
-        leconTitre.textContent = "Erreur";
-        answersGrid.innerHTML  = `<p class="col-span-2 py-10 text-center text-red-500">Impossible de charger la leçon.</p>`;
+        console.error("[ZOZZO] quiz :", err);
+        loadingScreen.innerHTML = `
+          <div class="text-center px-6">
+            <p class="font-subtitle font-semibold text-red-500">Impossible de charger le quiz</p>
+            <p class="mt-1 text-xs text-gray-400">${err?.message ?? String(err)}</p>
+            <a href="/app/lecons" class="mt-4 inline-block rounded-full bg-zozzo-orange px-6 py-3 text-sm font-semibold text-white">
+              Retour aux leçons
+            </a>
+          </div>`;
       }
     })();
   </script>

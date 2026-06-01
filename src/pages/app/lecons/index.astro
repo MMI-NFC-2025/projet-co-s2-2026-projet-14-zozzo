@@ -61,12 +61,11 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
     // Positions sur le chemin (en % par rapport au conteneur relatif)
     // Ajustées pour suivre le chemin de la maquette :
-    // ordre 1 → bas gauche, ordre 2 → milieu droit, ordre 3 → haut gauche, ordre 4 → tout en haut
     const POSITIONS = [
-      { top: "72%", left: "5%",  right: "auto" }, // ordre 1 — bas gauche
-      { top: "52%", left: "auto", right: "5%"  }, // ordre 2 — milieu droite
-      { top: "30%", left: "5%",  right: "auto" }, // ordre 3 — haut gauche
-      { top: "7%",  left: "auto", right: "8%"  }, // ordre 4 — tout en haut droite
+      { top: "6%",  left: "55%", right: "auto" }, // ordre 1 — Les bases
+      { top: "28%", left: "15%", right: "auto" }, // ordre 2 — La politesse
+      { top: "50%", left: "47%", right: "auto" }, // ordre 3 — Les animaux
+      { top: "71%", left: "auto", right: "15%" }, // ordre 4 — Magicienne
     ];
 
     function estDebloquee(lecon, toutes, progressions) {
@@ -77,64 +76,64 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     }
 
     function estPremium(lecon, user) {
-      return (lecon.ordre === 4 || lecon.titre?.toLowerCase().includes("premium"))
+      return (lecon.ordre === 4 || lecon.titre?.toLowerCase().includes("magicienne"))
              && !user?.abonnement_actif;
     }
 
     function creerCarte(lecon, pos, bloquee, premiumBloquee) {
       const imgUrl  = getLeconImageUrl(lecon);
-      const bgColor = bloquee && !premiumBloquee
-        ? "#d1d5db"
-        : (COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd");
+      // Toujours utiliser la couleur de la leçon — l'overlay gère l'effet verrouillé
+      const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd";
 
       const card = document.createElement("div");
       card.style.position        = "absolute";
       card.style.top             = pos.top;
       card.style.left            = pos.left;
       card.style.right           = pos.right;
-      card.style.width           = "78%";     // largeur comme dans la maquette
-      card.style.height          = "140px";
-      card.style.borderRadius    = "22px";
+      // Carte : plus étroite, titre centré en haut, image centrée en dessous
+      card.style.width           = "clamp(140px, 42vw, 210px)";
+      card.style.height          = "clamp(150px, 40vw, 220px)";
+      card.style.borderRadius    = "clamp(14px, 3vw, 22px)";
       card.style.backgroundColor = bgColor;
       card.style.overflow        = "hidden";
       card.style.boxShadow       = "0 4px 14px rgba(0,0,0,0.18)";
       card.style.transition      = "transform 0.2s";
-      card.style.cursor          = bloquee && !premiumBloquee ? "not-allowed" : "pointer";
+      card.style.cursor          = "pointer";
+      card.style.display         = "flex";
+      card.style.flexDirection   = "column";
+      card.style.alignItems      = "center";
+      card.style.padding         = "10px 8px 0";
 
-      if (bloquee && !premiumBloquee) {
-        // Carte verrouillée : image visible + overlay gris semi-transparent + cadenas
+      // Titre centré en haut
+      const titreHTML = `<p style="font-size:clamp(0.8rem,2.5vw,1rem);font-weight:700;color:#374151;text-align:center;width:100%;flex-shrink:0;margin-bottom:6px;">${lecon.titre}</p>`;
+
+      // Image centrée, prend l'espace restant
+      const imgInnerHTML = imgUrl
+        ? `<img src="${imgUrl}" alt="${lecon.titre}"
+            style="flex:1;min-height:0;width:100%;object-fit:contain;object-position:bottom center;"
+            onerror="this.style.display='none'" />`
+        : "";
+
+      if (bloquee) {
+        card.style.position = "absolute";
         card.innerHTML = `
-          ${imgUrl
-            ? `<img src="${imgUrl}" alt="${lecon.titre}"
-                style="position:absolute;bottom:0;right:0;height:105%;width:62%;object-fit:contain;object-position:bottom right;"
-                onerror="this.style.display='none'" />`
-            : ""}
-          <div style="position:absolute;inset:0;background:rgba(209,213,219,0.75);"></div>
-          <p style="position:absolute;top:8px;left:12px;font-size:0.72rem;font-weight:600;color:#374151;z-index:2;">${lecon.titre}</p>
+          ${titreHTML}
+          ${imgInnerHTML}
+          <div style="position:absolute;inset:0;background:rgba(200,200,200,0.72);border-radius:inherit;"></div>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:44px;height:44px;color:#d97706;" fill="currentColor">
-              <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3A5.25 5.25 0 0012 1.5zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/>
-            </svg>
+            <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,9vw,52px);height:clamp(36px,9vw,52px);object-fit:contain;" />
           </div>`;
-      } else {
-        // Carte débloquée : titre + illustration
-        card.innerHTML = `
-          <p style="position:absolute;top:8px;left:12px;right:${imgUrl ? "42%" : "12px"};font-size:0.75rem;font-weight:700;color:#374151;z-index:1;line-height:1.2;">${lecon.titre}</p>
-          ${premiumBloquee ? `<span style="position:absolute;top:28px;left:12px;font-size:0.65rem;font-weight:700;color:#f26748;z-index:1;">Premium</span>` : ""}
-          ${imgUrl
-            ? `<img src="${imgUrl}" alt="${lecon.titre}"
-                style="position:absolute;bottom:0;right:0;height:105%;width:62%;object-fit:contain;object-position:bottom right;"
-                onerror="this.style.display='none'" />`
-            : ""}`;
 
-        card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.04)"; });
+        card.addEventListener("click", () => {
+          if (premiumBloquee) window.location.href = "/app/premium";
+        });
+      } else {
+        card.style.position = "absolute";
+        card.innerHTML = `${titreHTML}${imgInnerHTML}`;
+
+        card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.05)"; });
         card.addEventListener("mouseleave", () => { card.style.transform = "scale(1)"; });
         card.addEventListener("click", () => { window.location.href = `/app/lecons/detail?id=${lecon.id}`; });
-      }
-
-      if (premiumBloquee) {
-        card.style.cursor = "pointer";
-        card.addEventListener("click", () => { window.location.href = "/app/premium"; });
       }
 
       return card;
