@@ -118,6 +118,69 @@ export async function updateUserProfile({ pseudo, email, age }) {
   });
 }
 
+// ── Histoires ─────────────────────────────────────────────────────────────
+
+export async function getHistoires() {
+  return await pb.collection("histoires").getFullList({ sort: "ordre" });
+}
+
+export async function getHistoireById(id) {
+  return await pb.collection("histoires").getOne(id);
+}
+
+export async function getPagesByHistoire(histoireId) {
+  return await pb.collection("pages_histoires").getFullList({
+    filter: `histoire = "${histoireId}"`,
+    sort: "ordre",
+  });
+}
+
+export function getCouvertureUrl(histoire) {
+  if (!histoire?.couverture) return null;
+  return pb.files.getURL(histoire, histoire.couverture);
+}
+
+export function getPageImageUrl(page) {
+  if (!page?.image) return null;
+  return pb.files.getURL(page, page.image);
+}
+
+// ── Dictionnaire ─────────────────────────────────────────────────────────
+
+export async function getCategories() {
+  return await pb.collection("categories").getFullList({ sort: "titre" });
+}
+
+export async function getSignes() {
+  return await pb.collection("signes").getFullList({
+    filter: "actif = true",
+    sort: "mot",
+  });
+}
+
+export async function getSignesByCategorie(categorieId) {
+  // Essai avec filtre actif, fallback sans si le champ n'existe pas
+  try {
+    return await pb.collection("signes").getFullList({
+      filter: `actif = true && categorie = "${categorieId}"`,
+      sort: "mot",
+    });
+  } catch {
+    const all = await pb.collection("signes").getFullList({ sort: "mot" });
+    return all.filter(s => s.categorie === categorieId);
+  }
+}
+
+export async function getSigneById(id) {
+  // Sans expand pour éviter les erreurs de permissions sur la relation
+  return await pb.collection("signes").getOne(id);
+}
+
+export function getSigneVideoUrl(signe) {
+  if (!signe?.video) return null;
+  return pb.files.getURL(signe, signe.video);
+}
+
 // ── Leçons ───────────────────────────────────────────────────────────────
 
 export async function getLecons() {
