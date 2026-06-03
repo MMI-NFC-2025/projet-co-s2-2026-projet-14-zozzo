@@ -40,15 +40,23 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       "reconsti": {
         ordre: 3,
         icon: `<svg viewBox="0 0 24 24" fill="#224ed1" style="width:42px;height:42px;"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V19c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V21H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg>`,
-        route: null,
-        active: false,
+        route: "/app/mini-jeux/reconsti",
+        active: true,
       },
     };
 
     (async () => {
       try {
-        const jeuxRaw = await getJeux();
-        // Trier selon l'ordre défini dans JEUX_CONFIG (pas alphabétique)
+        // Fallback statique si PocketBase ne répond pas
+        let jeuxRaw = [];
+        try {
+          jeuxRaw = await getJeux();
+        } catch {
+          // Utiliser les slugs de la config comme fallback
+          jeuxRaw = Object.keys(JEUX_CONFIG).map(slug => ({ slug, titre: slug, description: "", image: null, type: slug, actif: true }));
+        }
+
+        // Trier selon l'ordre défini dans JEUX_CONFIG
         const jeux = [...jeuxRaw].sort((a, b) => {
           const oa = JEUX_CONFIG[a.slug]?.ordre ?? 99;
           const ob = JEUX_CONFIG[b.slug]?.ordre ?? 99;

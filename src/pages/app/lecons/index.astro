@@ -5,18 +5,57 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
 <AppLayout title="ZOZZO | Leçons" showBack={true} backHref="/app" pageTitle="Leçons">
 
-  <!-- Conteneur relatif : l'image fond détermine la hauteur totale de la page -->
-  <div class="relative w-full">
+  <style is:global>
+    /* Taille des cartes leçon — responsive via media queries */
+    .lecon-card {
+      position: absolute;
+      width: 40vw;           /* mobile */
+      height: 40vw;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      transition: transform 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 6px 0;
+    }
 
-    <!-- Image fond complète (toujours visible, page scrollable) -->
-    <img
-      src="/images/shapes/bg-lecon-menu.png"
-      alt=""
-      aria-hidden="true"
-      class="w-full h-auto block"
-    />
+    @media (min-width: 640px) {   /* sm */
+      .lecon-card { width: 32vw; height: 32vw; border-radius: 16px; }
+    }
+    @media (min-width: 768px) {   /* md */
+      .lecon-card { width: 26vw; height: 26vw; border-radius: 18px; }
+    }
+    @media (min-width: 1024px) {  /* lg */
+      .lecon-card { width: 20vw; height: 20vw; max-width: 260px; max-height: 260px; border-radius: 20px; }
+    }
 
-    <!-- Overlay transparent avec les cartes positionnées sur le chemin -->
+    .lecon-card p.lecon-titre {
+      font-size: clamp(0.7rem, 2vw, 0.95rem);
+      font-weight: 700;
+      color: #374151;
+      text-align: center;
+      width: 100%;
+      flex-shrink: 0;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .lecon-card img.lecon-img {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+  </style>
+
+  <!-- Conteneur avec fond en repeat-y, hauteur 250vh pour que les cartes soient bien espacées -->
+  <div class="relative w-full"
+    style="background-image:url('/images/shapes/bg-lecon-menu.png');background-repeat:repeat-y;background-size:100% auto;min-height:250vh;">
+
+    <!-- Overlay avec les cartes positionnées -->
     <div id="lecons-overlay" class="absolute inset-0">
 
       <!-- Chargement -->
@@ -59,13 +98,12 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     // Couleur de fond par ordre de leçon
     const COLORS = ["#b5c8f5", "#f5e845", "#f8c8c2", "#c0dfa1"];
 
-    // Positions sur le chemin (en % par rapport au conteneur relatif)
-    // Ajustées pour suivre le chemin de la maquette :
+    // Positions sur le chemin — % relatif à 250vh de hauteur
     const POSITIONS = [
-      { top: "6%",  left: "55%", right: "auto" }, // ordre 1 — Les bases
-      { top: "28%", left: "15%", right: "auto" }, // ordre 2 — La politesse
-      { top: "50%", left: "47%", right: "auto" }, // ordre 3 — Les animaux
-      { top: "71%", left: "auto", right: "15%" }, // ordre 4 — Magicienne
+      { top: "4%",  left: "55%", right: "auto" }, // ordre 1 — Les bases
+      { top: "27%", left: "15%", right: "auto" }, // ordre 2 — La politesse
+      { top: "52%", left: "47%", right: "auto" }, // ordre 3 — Les animaux
+      { top: "74%", left: "auto", right: "15%" }, // ordre 4 — Magicienne
     ];
 
     function estDebloquee(lecon, toutes, progressions) {
@@ -86,36 +124,20 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd";
 
       const card = document.createElement("div");
-      card.style.position        = "absolute";
+      // Position absolue sur le fond — taille via CSS responsive (.lecon-card)
+      card.className             = "lecon-card";
       card.style.top             = pos.top;
       card.style.left            = pos.left;
       card.style.right           = pos.right;
-      // Carte : plus étroite, titre centré en haut, image centrée en dessous
-      card.style.width           = "clamp(140px, 42vw, 210px)";
-      card.style.height          = "clamp(150px, 40vw, 220px)";
-      card.style.borderRadius    = "clamp(14px, 3vw, 22px)";
       card.style.backgroundColor = bgColor;
-      card.style.overflow        = "hidden";
-      card.style.boxShadow       = "0 4px 14px rgba(0,0,0,0.18)";
-      card.style.transition      = "transform 0.2s";
-      card.style.cursor          = "pointer";
-      card.style.display         = "flex";
-      card.style.flexDirection   = "column";
-      card.style.alignItems      = "center";
-      card.style.padding         = "10px 8px 0";
 
-      // Titre centré en haut
-      const titreHTML = `<p style="font-size:clamp(0.8rem,2.5vw,1rem);font-weight:700;color:#374151;text-align:center;width:100%;flex-shrink:0;margin-bottom:6px;">${lecon.titre}</p>`;
-
-      // Image centrée, prend l'espace restant
+      // Titre + image via classes CSS globales
+      const titreHTML    = `<p class="lecon-titre">${lecon.titre}</p>`;
       const imgInnerHTML = imgUrl
-        ? `<img src="${imgUrl}" alt="${lecon.titre}"
-            style="flex:1;min-height:0;width:100%;object-fit:contain;object-position:bottom center;"
-            onerror="this.style.display='none'" />`
+        ? `<img class="lecon-img" src="${imgUrl}" alt="${lecon.titre}" onerror="this.style.display='none'" />`
         : "";
 
       if (bloquee) {
-        card.style.position = "absolute";
         card.innerHTML = `
           ${titreHTML}
           ${imgInnerHTML}
@@ -128,7 +150,6 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           if (premiumBloquee) window.location.href = "/app/premium";
         });
       } else {
-        card.style.position = "absolute";
         card.innerHTML = `${titreHTML}${imgInnerHTML}`;
 
         card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.05)"; });

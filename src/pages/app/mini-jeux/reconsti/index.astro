@@ -1,0 +1,85 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Reconsti" showBack={true} backHref="/app/mini-jeux" pageTitle="Reconsti">
+
+  <div class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-4 py-8">
+
+    <h2 class="mb-8 text-center font-subtitle text-sm font-medium text-gray-600 sm:text-base">
+      Choisis le niveau de difficulté
+    </h2>
+
+    <div class="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-3 sm:px-2" style="max-width:min(98vw,700px);">
+
+      <!-- Facile — gratuit -->
+      <div
+        onclick="window.location.href='/app/mini-jeux/reconsti/play?level=facile'"
+        class="flex cursor-pointer flex-col items-center justify-between rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
+        style="background:#84a5f2; padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px);"
+      >
+        <p class="text-center font-subtitle font-semibold text-white" style="font-size:clamp(0.65rem,2.8vw,1.1rem);">Une partie rapide</p>
+        <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(30px,9vw,80px);height:clamp(30px,9vw,80px);margin:8px 0;" />
+        <p class="font-title font-semibold text-white" style="font-size:clamp(0.72rem,3vw,1.2rem);">Facile</p>
+      </div>
+
+      <!-- Moyen — premium -->
+      <div
+        id="level-moyen"
+        class="relative cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
+        style="background:#f3e63f; padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px); display:flex; flex-direction:column; align-items:center; justify-content:space-between;"
+      >
+        <p class="text-center font-subtitle font-semibold" style="color:#224ed1;font-size:clamp(0.65rem,2.8vw,1.1rem);">Presque un expert</p>
+        <div style="display:flex;gap:4px;margin:8px 0;">
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(24px,7vw,60px);height:clamp(24px,7vw,60px);" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(24px,7vw,60px);height:clamp(24px,7vw,60px);" />
+        </div>
+        <p class="font-title font-semibold" style="color:#224ed1;font-size:clamp(0.72rem,3vw,1.2rem);">Moyen</p>
+        <div id="overlay-moyen" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl" style="background:rgba(0,0,0,0.35);">
+          <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,10vw,56px);height:clamp(36px,10vw,56px);object-fit:contain;" />
+        </div>
+      </div>
+
+      <!-- Difficile — premium -->
+      <div
+        id="level-difficile"
+        class="relative cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
+        style="background:#f26748; padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px); display:flex; flex-direction:column; align-items:center; justify-content:space-between;"
+      >
+        <p class="text-center font-subtitle font-semibold" style="color:#224ed1;font-size:clamp(0.65rem,2.8vw,1.1rem);">J'ai pas peur du challenge</p>
+        <div style="display:flex;gap:3px;margin:8px 0;">
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
+        </div>
+        <p class="font-title font-semibold" style="color:#224ed1;font-size:clamp(0.72rem,3vw,1.2rem);">Difficile</p>
+        <div id="overlay-difficile" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl" style="background:rgba(0,0,0,0.35);">
+          <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,10vw,56px);height:clamp(36px,10vw,56px);object-fit:contain;" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getCurrentUser } from "../../../../lib/pocketbase.js";
+
+    const user      = getCurrentUser();
+    const isPremium = user?.abonnement_actif === true;
+
+    if (!isPremium) {
+      const ovM = document.getElementById("overlay-moyen");
+      const ovD = document.getElementById("overlay-difficile");
+      if (ovM) { ovM.classList.remove("hidden"); ovM.style.display = "flex"; }
+      if (ovD) { ovD.classList.remove("hidden"); ovD.style.display = "flex"; }
+      document.getElementById("level-moyen").addEventListener("click",    () => window.location.href = "/app/premium");
+      document.getElementById("level-difficile").addEventListener("click", () => window.location.href = "/app/premium");
+    } else {
+      document.getElementById("level-moyen").addEventListener("click",    () => window.location.href = "/app/mini-jeux/reconsti/play?level=moyen");
+      document.getElementById("level-difficile").addEventListener("click", () => window.location.href = "/app/mini-jeux/reconsti/play?level=difficile");
+    }
+  </script>
+
+</AppLayout>
