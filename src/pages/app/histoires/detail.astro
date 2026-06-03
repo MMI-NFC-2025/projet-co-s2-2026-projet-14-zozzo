@@ -45,7 +45,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       getHistoireById,
       getPagesByHistoire,
       getPageImageUrl,
-    } from "../../../lib/pocketbase.js";
+    } from "../../../lib/backend.js";
 
     const params      = new URLSearchParams(window.location.search);
     const histoireId  = params.get("id");

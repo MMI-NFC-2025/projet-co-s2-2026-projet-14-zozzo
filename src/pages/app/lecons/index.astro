@@ -53,7 +53,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
   <!-- Conteneur avec fond en repeat-y, hauteur 250vh pour que les cartes soient bien espacées -->
   <div class="relative w-full"
-    style="background-image:url('/images/shapes/bg-lecon-menu.png');background-repeat:repeat-y;background-size:100% auto;min-height:250vh;">
+    style="background-image:url('/images/shapes/bg-lecon-menu.png');background-repeat:no-repeat;background-size:100% auto;min-height:250vh;">
 
     <!-- Overlay avec les cartes positionnées -->
     <div id="lecons-overlay" class="absolute inset-0">
@@ -89,7 +89,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getLecons, getCurrentUser, getProgressionByUser, getLeconImageUrl } from "../../../lib/pocketbase.js";
+    import { getLecons, getCurrentUser, getProgressionByUser, getLeconImageUrl } from "../../../lib/backend.js";
 
     const loadingEl = document.getElementById("lecons-loading");
     const errorEl   = document.getElementById("lecons-error");

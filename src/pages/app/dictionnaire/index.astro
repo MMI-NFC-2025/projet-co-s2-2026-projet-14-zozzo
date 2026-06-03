@@ -41,7 +41,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       getSignes,
       getCurrentUser,
       getSigneImageUrl,
-    } from "../../../lib/pocketbase.js";
+    } from "../../../lib/backend.js";
 
     const loadingEl = document.getElementById("dico-loading");
     const errorEl   = document.getElementById("dico-error");
@@ -146,7 +146,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
             getSignes(),
           ]);
         } catch {
-          const { pb } = await import("../../../lib/pocketbase.js");
+          const { pb } = await import("../../../lib/backend.js");
           [categories, signes] = await Promise.all([
             pb.collection("categories").getFullList({ sort: "titre" }),
             pb.collection("signes").getFullList({ sort: "mot" }),

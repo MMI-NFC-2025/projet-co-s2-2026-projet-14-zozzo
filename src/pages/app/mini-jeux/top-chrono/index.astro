@@ -68,7 +68,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getCurrentUser } from "../../../../lib/pocketbase.js";
+    import { getCurrentUser } from "../../../../lib/backend.js";
 
     const user      = getCurrentUser();
     const isPremium = user?.abonnement_actif === true;

@@ -62,7 +62,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       getCurrentUserWithAvatar,
       getAvatarImageUrl,
       pb,
-    } from "../../../lib/pocketbase.js";
+    } from "../../../lib/backend.js";
 
     const params = new URLSearchParams(window.location.search);
     const slug   = params.get("slug")   ?? "";

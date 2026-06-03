@@ -18,7 +18,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getClassement, getCurrentUser, getAvatarImageUrl } from "../../../../lib/pocketbase.js";
+    import { getClassement, getCurrentUser, getAvatarImageUrl } from "../../../../lib/backend.js";
 
     const params  = new URLSearchParams(window.location.search);
     const level   = params.get("level") ?? "15";

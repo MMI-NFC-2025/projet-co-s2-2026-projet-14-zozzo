@@ -114,7 +114,7 @@ const mobileNavigation = [...desktopNavigation];
   }
 
   // ── Bouton auth : adapte selon connexion PocketBase ──
-  import { isLoggedIn, getCurrentUser, logout } from "../lib/pocketbase.js";
+  import { isLoggedIn, getCurrentUser, logout } from "../lib/backend.js";
 
   const btnDesktop = document.getElementById("auth-btn-desktop");
   const btnMobile = document.getElementById("auth-btn-mobile");

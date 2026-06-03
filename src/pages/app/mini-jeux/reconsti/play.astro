@@ -137,7 +137,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       getCurrentUser,
       saveScore,
       pb,
-    } from "../../../../lib/pocketbase.js";
+    } from "../../../../lib/backend.js";
 
     const params  = new URLSearchParams(window.location.search);
     const niveau  = params.get("level") ?? "facile";

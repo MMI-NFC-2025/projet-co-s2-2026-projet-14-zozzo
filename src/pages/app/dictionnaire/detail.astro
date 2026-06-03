@@ -121,7 +121,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       getSignesByCategorie,
       getSigneImageUrl,
       getSigneVideoUrl,
-    } from "../../../lib/pocketbase.js";
+    } from "../../../lib/backend.js";
 
     const params = new URLSearchParams(window.location.search);
     const signeId = params.get("id");

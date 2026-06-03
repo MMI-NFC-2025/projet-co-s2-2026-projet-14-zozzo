@@ -141,7 +141,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getLeconById, getSigneImageUrl, getCurrentUser, saveProgression, pb } from "../../../lib/pocketbase.js";
+    import { getLeconById, getSigneImageUrl, getCurrentUser, saveProgression, pb } from "../../../lib/backend.js";
 
     // ── Paramètre URL ────────────────────────────────────────────────
     const leconId = new URLSearchParams(window.location.search).get("id");

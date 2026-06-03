@@ -144,7 +144,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getJeuBySlug, getSignesForGame, getCategorieLesBases, getCurrentUser, saveScore, pb } from "../../../../lib/pocketbase.js";
+    import { getJeuBySlug, getSignesForGame, getCategorieLesBases, getCurrentUser, saveScore, pb } from "../../../../lib/backend.js";
 
     const params      = new URLSearchParams(window.location.search);
     const level       = parseInt(params.get("level") ?? "15");

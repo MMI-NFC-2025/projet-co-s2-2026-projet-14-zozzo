@@ -82,7 +82,7 @@ import MinimalLayout from "../layouts/MinimalLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { login, isLoggedIn } from "../lib/pocketbase.js";
+    import { login, isLoggedIn } from "../lib/backend.js";
 
     if (isLoggedIn()) {
       window.location.replace("/app");
