@@ -12,11 +12,13 @@ export {
 } from "./utils.js";
 
 export {
+  requireAuth,
+  isAuthenticated,
+  isLoggedIn,
   login,
   register,
   logout,
   getCurrentUser,
-  isLoggedIn,
   getCurrentUserWithAvatar,
   updateUser,
   updateUserProfile,

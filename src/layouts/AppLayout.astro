@@ -142,15 +142,14 @@ const {
     <script>
       // @ts-nocheck
       import {
-        isLoggedIn,
+        requireAuth,
         getCurrentUserWithAvatar,
         logout,
         getAvatarImageUrl,
       } from "../lib/backend.js";
 
-      if (!isLoggedIn()) {
-        window.location.replace("/login");
-      }
+      // Protection centralisée — redirige vers /login si non connecté
+      requireAuth();
 
       const menu    = document.getElementById("app-menu");
       const menuBtn = document.getElementById("open-menu-btn");
