@@ -191,8 +191,8 @@ import AppLayout from "../../layouts/AppLayout.astro";
     let modalLoaded     = false;
     let loadedAvatars: any[] = []; // garde les records en mémoire pour affichage immédiat
 
-    const openModal  = () => { modal.style.transform = "translateY(0)"; modal.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; if (!modalLoaded) loadAvatarGrid(); };
-    const closeModal = () => { modal.style.transform = "translateY(100%)"; modal.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; };
+    const openModal  = () => { modal.classList.remove("translate-y-full"); modal.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; if (!modalLoaded) loadAvatarGrid(); };
+    const closeModal = () => { modal.classList.add("translate-y-full"); modal.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; };
 
     document.getElementById("change-avatar-btn")?.addEventListener("click", openModal);
     document.getElementById("close-avatar-modal")?.addEventListener("click", closeModal);

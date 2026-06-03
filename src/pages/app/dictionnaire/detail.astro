@@ -33,8 +33,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       <!-- Image ou vidéo -->
       <video
         id="signe-video"
-        class="hidden object-contain"
-        class="max-w-[min(80vw,420px)] max-h-[45dvh] w-full h-auto"
+        class="hidden h-auto w-[72vw] max-w-[320px] max-h-[36dvh] object-contain sm:w-[56vw] sm:max-w-[360px] sm:max-h-[38dvh]"
         autoplay
         muted
         loop
@@ -46,13 +45,11 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         id="signe-img"
         src=""
         alt="Signe"
-        class="hidden object-contain"
-        class="max-w-[min(80vw,420px)] max-h-[45dvh] w-full h-auto"
+        class="hidden h-auto w-[72vw] max-w-[320px] max-h-[36dvh] object-contain sm:w-[56vw] sm:max-w-[360px] sm:max-h-[38dvh]"
       />
       <div
         id="signe-ph"
-        class="flex items-center justify-center"
-        class="h-[35dvh]"
+        class="flex h-[26dvh] items-center justify-center sm:h-[28dvh]"
       >
         <span class="font-title text-6xl text-zozzo-violet">?</span>
       </div>
@@ -74,8 +71,20 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         class="transition hover:scale-110 active:scale-95"
       >
         <svg viewBox="0 0 60 24" class="h-7 w-16 sm:h-9 sm:w-20" fill="none">
-          <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
-          <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line
+            x1="0"
+            y1="12"
+            x2="50"
+            y2="12"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"></line>
+          <polyline
+            points="38,3 54,12 38,21"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
         </svg>
       </button>
     </div>
