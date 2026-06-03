@@ -25,3 +25,15 @@ export function shuffleArray(array) {
   }
   return arr;
 }
+
+// URL de l'image d'un signe (source unique — partagé entre leçons et dictionnaire)
+export function getSigneImageUrl(signe) {
+  if (!signe?.image) return null;
+  return pb.files.getURL(signe, signe.image);
+}
+
+// URL de la vidéo d'un signe
+export function getSigneVideoUrl(signe) {
+  if (!signe?.video) return null;
+  return pb.files.getURL(signe, signe.video);
+}
