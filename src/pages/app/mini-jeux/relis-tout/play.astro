@@ -1,0 +1,322 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Relis-tout" showBack={true} backHref="/app/mini-jeux/relis-tout" pageTitle="Relis-tout">
+
+  <style is:global>
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-7px)}
+      40%{transform:translateX(7px)}
+      60%{transform:translateX(-4px)}
+      80%{transform:translateX(4px)}
+    }
+    .rt-shake{animation:shake 0.38s ease}
+  </style>
+
+  <!-- CHARGEMENT -->
+  <div id="ls" class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-[#F8F6F6]">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
+      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+    <p class="font-subtitle text-sm text-gray-400">Préparation…</p>
+    <p id="err-msg" class="hidden px-6 text-center text-xs text-red-400"></p>
+  </div>
+
+  <!-- JEU -->
+  <div id="gs" class="hidden bg-[#F8F6F6] pb-4">
+    <div class="mx-auto max-w-[1200px] px-4">
+
+      <div class="flex items-center justify-between px-2 pb-3 pt-5">
+        <p id="prog" class="font-subtitle text-sm font-medium text-gray-400">0 / ?</p>
+        <span id="timer" class="font-title text-base text-zozzo-text">0 s</span>
+      </div>
+
+      <!-- Zone de jeu : SVG en absolute, paires en lignes -->
+      <div id="ga" class="relative px-2">
+        <svg id="svg" class="pointer-events-none absolute left-0 top-0 overflow-visible" style="z-index:15;"></svg>
+
+        <!-- Chaque ligne contient UN signe et UN mot → même hauteur garantie -->
+        <div id="pairs" class="relative flex flex-col gap-2" style="z-index:10;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RÉSULTAT -->
+  <div id="rs" class="hidden min-h-[calc(100dvh-4rem)] flex-col items-center justify-center bg-[#F8F6F6] px-6 py-8 text-center">
+    <h1 class="font-title text-3xl text-zozzo-orange">Résultat</h1>
+    <img src="/images/about/zozzo-bon-reponse.png" alt="Zozzo" class="my-4 h-auto w-36" />
+    <div class="w-full max-w-xs space-y-3 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Temps :</span>
+        <span id="rt" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Score :</span>
+        <span id="rs2" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+    </div>
+    <div class="mt-8 flex w-full max-w-xs justify-end pr-2">
+      <button id="gc" class="transition hover:scale-110 active:scale-95">
+        <svg viewBox="0 0 60 24" class="h-8 w-16" fill="none">
+          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getJeuBySlug, getSignesForGame, getCategorieLesBases, getCurrentUser, saveScore, pb } from "../../../../lib/pocketbase.js";
+
+    const params      = new URLSearchParams(window.location.search);
+    const level       = parseInt(params.get("level") ?? "15");
+    const niveauLabel = `${level}_mots`;
+
+    let signes = [], motsMelanges = [];
+    let selIdx = null, matched = 0, score = 0, elapsed = 0, timerInt = null, jeuId = null;
+    const permLines  = [];   // {si, mi, color}
+    let tmpLine      = null;
+
+    // Références aux cartes créées
+    const signCards = [];
+    const wordCards = [];
+
+    const ga     = document.getElementById("ga");
+    const svgEl  = document.getElementById("svg");
+    const pairs  = document.getElementById("pairs");
+
+    // ── Classes Tailwind ──────────────────────────────────────────
+    const S_BASE     = "relative overflow-visible rounded-3xl bg-white flex items-center justify-center shadow-md transition-all duration-150 border-[3px]";
+    const S_NORMAL   = "border-[#f3e63f] cursor-pointer";
+    const S_SELECTED = "border-[#224ed1] scale-[1.03]";
+    const S_MATCHED  = "border-[#4DA3FF] opacity-60 pointer-events-none";
+
+    const W_BASE     = "relative overflow-visible rounded-[20px] bg-white flex items-center justify-center text-center font-subtitle font-bold shadow transition-all duration-150 border-[3px]";
+    const W_NORMAL   = "border-[#84a5f2] text-[#224ed1] cursor-pointer";
+    const W_MATCHED  = "border-[#4DA3FF] text-[#4DA3FF] opacity-60 pointer-events-none";
+
+    // ── Timer ─────────────────────────────────────────────────────
+    function startTimer() {
+      timerInt = setInterval(() => {
+        elapsed++;
+        const m = Math.floor(elapsed/60), s = elapsed%60;
+        document.getElementById("timer").textContent = m ? `${m}min ${s}s` : `${s} s`;
+      }, 1000);
+    }
+
+    // ── SVG : taille fixe, overflow:visible gère les lignes hors limites ──
+    function syncSvg() {
+      // On ne se base pas sur scrollHeight pour éviter la boucle infinie
+      svgEl.style.width  = "100%";
+      svgEl.style.height = "1px"; // hauteur symbolique, overflow:visible fait le reste
+    }
+
+    function dotCenter(cardEl, side) {
+      const gr  = ga.getBoundingClientRect();
+      const dot = cardEl.querySelector(`[data-dot="${side}"]`);
+      const r   = (dot ?? cardEl).getBoundingClientRect();
+      return { x: r.left + r.width/2 - gr.left, y: r.top + r.height/2 - gr.top };
+    }
+
+    function drawLine(si, wi, color) {
+      const se = signCards[si], we = wordCards[wi];
+      if (!se || !we) return null;
+      const p1 = dotCenter(se, "r"), p2 = dotCenter(we, "l");
+      const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ln.setAttribute("x1", p1.x); ln.setAttribute("y1", p1.y);
+      ln.setAttribute("x2", p2.x); ln.setAttribute("y2", p2.y);
+      ln.setAttribute("stroke", color); ln.setAttribute("stroke-width", "3"); ln.setAttribute("stroke-linecap", "round");
+      svgEl.appendChild(ln);
+      return ln;
+    }
+
+    let resizeT;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => {
+        // Redessiner les lignes après resize (sans resync SVG)
+        svgEl.innerHTML = "";
+        permLines.forEach(({si, mi, color}) => drawLine(si, mi, color));
+        if (tmpLine) tmpLine = null;
+      }, 120);
+    });
+
+    // ── Dot de connexion ─────────────────────────────────────────
+    function makeDot(side) {
+      const d = document.createElement("div");
+      d.dataset.dot = side;
+      d.className   = "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full pointer-events-none z-30";
+      d.style.cssText = side === "r"
+        ? "right:-9px; background:#f3e63f; border:2px solid #c9ab10;"
+        : "left:-9px;  background:#224ed1;";
+      return d;
+    }
+
+    // ── Carte SIGNE ───────────────────────────────────────────────
+    function makeSign(signe, signIdx) {
+      const c = document.createElement("div");
+      c.className = `${S_BASE} ${S_NORMAL}`;
+
+      // Wrapper interne avec overflow:hidden pour que le média ne déborde pas
+      // (la carte garde overflow:visible pour que le dot jaune soit visible)
+      // Wrapper contraint : occupe tout l'espace de la carte sans déborder
+      const inner = document.createElement("div");
+      inner.className = "absolute inset-0 overflow-hidden rounded-[22px] flex items-center justify-center";
+
+      const videoUrl = signe.video ? pb.files.getURL(signe, signe.video) : null;
+      if (videoUrl) {
+        const v = document.createElement("video");
+        v.src = videoUrl; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+        v.className = "w-full h-full object-contain";
+        inner.appendChild(v);
+      } else if (signe.image) {
+        const img = document.createElement("img");
+        img.src = pb.files.getURL(signe, signe.image); img.alt = signe.mot;
+        img.className = "w-full h-full object-contain p-2";
+        inner.appendChild(img);
+      } else {
+        const sp = document.createElement("span");
+        sp.textContent = signe.mot[0]?.toUpperCase() ?? "?";
+        sp.className = "text-2xl text-[#f3e63f]";
+        inner.appendChild(sp);
+      }
+      c.appendChild(inner);
+
+      c.appendChild(makeDot("r"));
+
+      c.addEventListener("click", () => {
+        if (c.classList.contains("pointer-events-none")) return;
+        // Désélectionner le précédent
+        signCards.forEach(x => {
+          if (x.dataset.sel) { x.className = `${S_BASE} ${S_NORMAL}`; delete x.dataset.sel; }
+        });
+        selIdx = signIdx;
+        c.className = `${S_BASE} ${S_SELECTED}`; c.dataset.sel = "1";
+      });
+
+      return c;
+    }
+
+    // ── Carte MOT ─────────────────────────────────────────────────
+    function makeMot(mot, mi) {
+      const c = document.createElement("div");
+      c.className    = `${W_BASE} ${W_NORMAL}`;
+      c.style.fontSize = "clamp(1rem,4vw,1.25rem)";
+      c.style.padding  = "14px 20px 14px 24px";
+
+      c.appendChild(makeDot("l"));
+
+      const sp = document.createElement("span"); sp.textContent = mot; c.appendChild(sp);
+
+      c.addEventListener("click", () => {
+        if (c.classList.contains("pointer-events-none")) return;
+        if (selIdx === null) return;
+
+        const si = selIdx; selIdx = null;
+        signCards.forEach(x => { if (x.dataset.sel) { x.className = `${S_BASE} ${S_NORMAL}`; delete x.dataset.sel; } });
+        if (tmpLine && svgEl.contains(tmpLine)) { svgEl.removeChild(tmpLine); tmpLine = null; }
+
+        const correct = signes[si].mot === motsMelanges[mi];
+
+        if (correct) {
+          drawLine(si, mi, "#4DA3FF");
+          permLines.push({ si, mi, color: "#4DA3FF" });
+          signCards[si].className = `${S_BASE} ${S_MATCHED}`;
+          c.className = `${W_BASE} ${W_MATCHED}`;
+          c.style.fontSize = "clamp(1rem,4vw,1.25rem)"; c.style.padding = "14px 20px 14px 24px";
+          score++; matched++;
+          document.getElementById("prog").textContent = `${matched} / ${signes.length}`;
+          if (matched === signes.length) setTimeout(showResult, 700);
+        } else {
+          tmpLine = drawLine(si, mi, "#FF4D4D");
+          c.classList.add("rt-shake");
+          setTimeout(() => {
+            if (tmpLine && svgEl.contains(tmpLine)) { svgEl.removeChild(tmpLine); tmpLine = null; }
+            c.classList.remove("rt-shake");
+          }, 900);
+        }
+      });
+
+      return c;
+    }
+
+    // ── Résultat ──────────────────────────────────────────────────
+    async function showResult() {
+      clearInterval(timerInt);
+      document.getElementById("gs").classList.add("hidden");
+      const rs = document.getElementById("rs");
+      rs.classList.remove("hidden"); rs.classList.add("flex");
+      const m = Math.floor(elapsed/60), s = elapsed%60;
+      document.getElementById("rt").textContent  = m ? `${m} mins ${s} s` : `${s} s`;
+      document.getElementById("rs2").textContent = `${score}/ ${signes.length} mots`;
+      const user = getCurrentUser();
+      if (user && jeuId) {
+        try { await saveScore({ utilisateur: user.id, jeu: jeuId, niveau: niveauLabel, nombre_mots: level, score, temps_secondes: elapsed }); }
+        catch(e) { console.warn(e); }
+      }
+      document.getElementById("gc").addEventListener("click", () => {
+        window.location.href = `/app/mini-jeux/relis-tout/classement?level=${level}&jeu=${jeuId ?? ""}`;
+      });
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    (async () => {
+      try {
+        const jeu   = await getJeuBySlug("relis-tout").catch(() => null);
+        jeuId       = jeu?.id ?? null;
+        const catId = await getCategorieLesBases().catch(() => null);
+        signes      = await getSignesForGame(level, catId);
+        if (!signes.length) throw new Error("Aucun signe trouvé");
+
+        motsMelanges = [...signes.map(s => s.mot)].sort(() => Math.random() - 0.5);
+        let tries = 0;
+        while (signes.length > 1 && motsMelanges.every((m,i) => m === signes[i].mot) && tries++ < 10)
+          motsMelanges = [...motsMelanges].sort(() => Math.random() - 0.5);
+
+        // ── Créer les paires en lignes de grille ────────────────
+        // Hauteur fixe identique pour toutes les lignes → cartes parfaitement alignées
+        const ROW_H = "clamp(90px, 20vw, 140px)";
+
+        signes.forEach((signe, i) => {
+          const signCard = makeSign(signe, i);
+          const wordCard = makeMot(motsMelanges[i], i);
+
+          // Hauteur fixe sur les cartes (pas min-height)
+          signCard.style.height = ROW_H;
+          wordCard.style.height = ROW_H;
+
+          signCards.push(signCard);
+          wordCards.push(wordCard);
+
+          const row = document.createElement("div");
+          row.style.cssText = `
+            display: grid;
+            grid-template-columns: 5fr 4fr;
+            gap: clamp(60px,10vw,120px);
+            align-items: stretch;
+            height: ${ROW_H};
+          `;
+          row.appendChild(signCard);
+          row.appendChild(wordCard);
+          pairs.appendChild(row);
+        });
+
+        document.getElementById("prog").textContent = `0 / ${signes.length}`;
+        document.getElementById("ls").classList.add("hidden");
+        document.getElementById("gs").classList.remove("hidden");
+        syncSvg(); // SVG height=1px, overflow:visible pour les lignes
+        startTimer();
+
+      } catch(err) {
+        console.error("[ZOZZO] Relis-tout:", err);
+        const e = document.getElementById("err-msg");
+        e.textContent = `Erreur : ${err?.message ?? String(err)}`; e.classList.remove("hidden");
+      }
+    })();
+  </script>
+
+</AppLayout>

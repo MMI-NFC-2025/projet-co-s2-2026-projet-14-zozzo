@@ -60,6 +60,10 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
         <div id="zozzo-feedback" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:rgba(77,163,255,0.18);">
           <img src="/images/about/zozzo-bon-reponse.png" alt="Bravo" class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
+
+        <div id="zozzo-mauvaise" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:rgba(255,77,77,0.18);">
+          <img src="/images/about/mouvaise-reponse.png" alt="Oups" class="h-4/5 w-4/5 object-contain anim-bounce" />
+        </div>
       </div>
     </div>
 
@@ -154,6 +158,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     const signePh       = $("signe-ph");
     const answersGrid   = $("answers-grid");
     const zozzoFeedback = $("zozzo-feedback");
+    const zozzoMauvaise = $("zozzo-mauvaise");
     const resultTemps   = $("result-temps");
     const resultScore   = $("result-score");
     const goClassement  = $("go-classement");
@@ -177,6 +182,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       signePh.classList.add("hidden");
       zozzoFeedback.classList.add("hidden");
       zozzoFeedback.classList.remove("flex");
+      zozzoMauvaise.classList.add("hidden");
+      zozzoMauvaise.classList.remove("flex");
 
       if (!signe) { signePh.classList.remove("hidden"); return; }
 
@@ -256,6 +263,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
         clicked.style.color           = "#fff";
         clicked.style.opacity         = "1";
         clicked.classList.add("anim-shake");
+        zozzoMauvaise.classList.remove("hidden");
+        zozzoMauvaise.classList.add("flex");
       }
 
       setTimeout(() => {

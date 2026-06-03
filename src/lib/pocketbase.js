@@ -184,6 +184,29 @@ export async function getClassement(jeuId, niveau, limit = 10) {
   }
 }
 
+// Signes actifs aléatoires pour les jeux — sans répétition
+export async function getSignesForGame(limit = 15, categorieId = null) {
+  try {
+    let filter = "actif = true";
+    if (categorieId) filter += ` && categorie = "${categorieId}"`;
+    const all = await pb.collection("signes").getFullList({ filter });
+    // Pas de répétition : on prend au maximum ce qui est disponible
+    return all.sort(() => Math.random() - 0.5).slice(0, Math.min(limit, all.length));
+  } catch {
+    const all = await pb.collection("signes").getFullList();
+    const filtered = categorieId ? all.filter(s => s.categorie === categorieId) : all;
+    return filtered.sort(() => Math.random() - 0.5).slice(0, Math.min(limit, filtered.length));
+  }
+}
+
+// Récupère l'ID de la catégorie "Les bases"
+export async function getCategorieLesBases() {
+  try {
+    const cats = await pb.collection("categories").getFullList();
+    return cats.find(c => c.titre?.toLowerCase().includes("base"))?.id ?? null;
+  } catch { return null; }
+}
+
 // ── Histoires ─────────────────────────────────────────────────────────────
 
 export async function getHistoires() {
