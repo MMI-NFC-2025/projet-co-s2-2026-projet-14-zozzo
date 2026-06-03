@@ -6,8 +6,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 <AppLayout title="ZOZZO | Leçons" showBack={true} backHref="/app" pageTitle="Leçons">
 
   <!-- Conteneur avec fond en repeat-y, hauteur 250vh pour que les cartes soient bien espacées -->
-  <div class="relative w-full"
-    style="background-image:url('/images/shapes/bg-lecon-menu.png');background-repeat:no-repeat;background-size:100% auto;min-height:250vh;">
+  <div class="relative w-full bg-[url('/images/shapes/bg-lecon-menu.png')] bg-no-repeat bg-[length:100%_auto] min-h-[250vh]">
 
     <!-- Overlay avec les cartes positionnées -->
     <div id="lecons-overlay" class="absolute inset-0">
@@ -33,11 +32,10 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     <!-- Bouton retour jaune fixé en bas à gauche -->
     <a
       href="/app"
-      class="fixed bottom-6 left-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95"
-      style="background:var(--color-zozzo-jaune);"
+      class="fixed bottom-6 left-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95 bg-zozzo-jaune"
       aria-label="Retour"
     >
-      <svg viewBox="0 0 24 24" class="h-7 w-7" fill="var(--color-zozzo-bleu-fonce)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <svg viewBox="0 0 24 24" class="h-7 w-7 fill-zozzo-bleu-fonce"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </a>
   </div>
 

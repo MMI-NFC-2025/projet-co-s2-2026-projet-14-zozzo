@@ -18,7 +18,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
   <script>
     // @ts-nocheck
-    import { getClassement, getCurrentUser, getAvatarImageUrl } from "../../../../lib/backend.js";
+    import { getClassement, getCurrentUser, getAvatarImageUrl, formatTime } from "../../../../lib/backend.js";
 
     const params  = new URLSearchParams(window.location.search);
     const level   = params.get("level") ?? "15";
@@ -28,11 +28,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     const loadingEl = document.getElementById("rank-loading");
     const contentEl = document.getElementById("rank-content");
 
-    function formatTemps(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return m > 0 ? `${m}min ${s}s` : `${s}s`;
-    }
+    // formatTime importé depuis lib/utils.js via backend.js
 
     (async () => {
       try {
@@ -70,7 +66,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
               ${avatarHTML}
               <div class="flex-1 min-w-0">
                 <p class="font-subtitle text-sm font-semibold truncate text-zozzo-text">${pseudo}</p>
-                <p class="text-xs text-gray-400">${s.score}/${s.nombre_mots} mots · ${formatTemps(s.temps_secondes)}</p>
+                <p class="text-xs text-gray-400">${s.score}/${s.nombre_mots} mots · ${formatTime(s.temps_secondes)}</p>
               </div>
               ${isCurrent ? `<span class="shrink-0 text-xs font-semibold text-zozzo-orange">Toi</span>` : ""}
             </div>`;

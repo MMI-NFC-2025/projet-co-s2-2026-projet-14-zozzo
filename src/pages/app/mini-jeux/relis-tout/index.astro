@@ -11,51 +11,48 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       Choisis le nombre de mots à relier
     </h2>
 
-    <div class="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-3 sm:px-2" style="max-width:min(98vw,700px);">
+    <div class="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-3 sm:px-2 max-w-[min(98vw,700px)]">
 
       <!-- 15 mots — gratuit -->
       <div
         onclick="window.location.href='/app/mini-jeux/relis-tout/play?level=15'"
-        class="flex cursor-pointer flex-col items-center justify-between rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
-        style="background:var(--color-zozzo-bleu-clair); padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px);"
+        class="flex cursor-pointer flex-col items-center justify-between rounded-3xl shadow-md transition hover:scale-105 active:scale-95 bg-zozzo-bleu-clair px-[clamp(6px,2vw,16px)] py-[clamp(10px,3.5vw,24px)] min-h-[clamp(160px,45vw,320px)]"
       >
-        <p class="text-center font-subtitle font-semibold text-white" style="font-size:clamp(0.65rem,2.8vw,1.1rem);">Une partie rapide</p>
-        <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(30px,9vw,80px);height:clamp(30px,9vw,80px);margin:8px 0;" />
-        <p class="font-title font-semibold text-white" style="font-size:clamp(0.72rem,3vw,1.2rem);">15 mots</p>
+        <p class="text-center font-subtitle font-semibold text-white text-[clamp(0.65rem,2.8vw,1.1rem)]">Une partie rapide</p>
+        <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(30px,9vw,80px)] h-[clamp(30px,9vw,80px)] my-2" />
+        <p class="font-title font-semibold text-white text-[clamp(0.72rem,3vw,1.2rem)]">15 mots</p>
       </div>
 
       <!-- 30 mots — premium -->
       <div
         id="level-30"
-        class="relative cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
-        style="background:var(--color-zozzo-jaune); padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px); display:flex; flex-direction:column; align-items:center; justify-content:space-between;"
+        class="relative flex flex-col items-center justify-between cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95 bg-zozzo-jaune px-[clamp(6px,2vw,16px)] py-[clamp(10px,3.5vw,24px)] min-h-[clamp(160px,45vw,320px)]"
       >
-        <p class="text-center font-subtitle font-semibold" style="color:var(--color-zozzo-bleu-fonce);font-size:clamp(0.65rem,2.8vw,1.1rem);">Presque un expert</p>
-        <div style="display:flex;gap:4px;margin:8px 0;">
-          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(24px,7vw,60px);height:clamp(24px,7vw,60px);" />
-          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(24px,7vw,60px);height:clamp(24px,7vw,60px);" />
+        <p class="text-center font-subtitle font-semibold text-zozzo-bleu-fonce text-[clamp(0.65rem,2.8vw,1.1rem)]">Presque un expert</p>
+        <div class="flex gap-1 my-2">
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(24px,7vw,60px)] h-[clamp(24px,7vw,60px)]" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(24px,7vw,60px)] h-[clamp(24px,7vw,60px)]" />
         </div>
-        <p class="font-title font-semibold" style="color:var(--color-zozzo-bleu-fonce);font-size:clamp(0.72rem,3vw,1.2rem);">30 mots</p>
-        <div id="overlay-30" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl" style="background:var(--color-zozzo-overlay-dark);">
-          <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,10vw,56px);height:clamp(36px,10vw,56px);object-fit:contain;" />
+        <p class="font-title font-semibold text-zozzo-bleu-fonce text-[clamp(0.72rem,3vw,1.2rem)]">30 mots</p>
+        <div id="overlay-30" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl bg-zozzo-overlay-dark">
+          <img src="/images/shapes/lock.png" alt="Verrouillé" class="w-[clamp(36px,10vw,56px)] h-[clamp(36px,10vw,56px)] object-contain" />
         </div>
       </div>
 
       <!-- 50 mots — premium -->
       <div
         id="level-50"
-        class="relative cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95"
-        style="background:var(--color-zozzo-orange); padding:clamp(10px,3.5vw,24px) clamp(6px,2vw,16px); min-height:clamp(160px,45vw,320px); display:flex; flex-direction:column; align-items:center; justify-content:space-between;"
+        class="relative flex flex-col items-center justify-between cursor-pointer overflow-hidden rounded-3xl shadow-md transition hover:scale-105 active:scale-95 bg-zozzo-orange px-[clamp(6px,2vw,16px)] py-[clamp(10px,3.5vw,24px)] min-h-[clamp(160px,45vw,320px)]"
       >
-        <p class="text-center font-subtitle font-semibold" style="color:var(--color-zozzo-bleu-fonce);font-size:clamp(0.65rem,2.8vw,1.1rem);">J'ai pas peur du challenge</p>
-        <div style="display:flex;gap:3px;margin:8px 0;">
-          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
-          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
-          <img src="/images/shapes/un-etoil-score.svg" alt="★" style="width:clamp(20px,6vw,52px);height:clamp(20px,6vw,52px);" />
+        <p class="text-center font-subtitle font-semibold text-zozzo-bleu-fonce text-[clamp(0.65rem,2.8vw,1.1rem)]">J'ai pas peur du challenge</p>
+        <div class="flex gap-[3px] my-2">
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(20px,6vw,52px)] h-[clamp(20px,6vw,52px)]" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(20px,6vw,52px)] h-[clamp(20px,6vw,52px)]" />
+          <img src="/images/shapes/un-etoil-score.svg" alt="★" class="w-[clamp(20px,6vw,52px)] h-[clamp(20px,6vw,52px)]" />
         </div>
-        <p class="font-title font-semibold" style="color:var(--color-zozzo-bleu-fonce);font-size:clamp(0.72rem,3vw,1.2rem);">50 mots</p>
-        <div id="overlay-50" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl" style="background:var(--color-zozzo-overlay-dark);">
-          <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,10vw,56px);height:clamp(36px,10vw,56px);object-fit:contain;" />
+        <p class="font-title font-semibold text-zozzo-bleu-fonce text-[clamp(0.72rem,3vw,1.2rem)]">50 mots</p>
+        <div id="overlay-50" class="hidden absolute inset-0 flex-col items-center justify-center rounded-3xl bg-zozzo-overlay-dark">
+          <img src="/images/shapes/lock.png" alt="Verrouillé" class="w-[clamp(36px,10vw,56px)] h-[clamp(36px,10vw,56px)] object-contain" />
         </div>
       </div>
 

@@ -7,34 +7,29 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
   <!-- CHARGEMENT ──────────────────────────────────────────────────── -->
   <div id="loading-screen"
-    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-4"
-    style="background:var(--color-zozzo-surface-rose);">
-    <div class="h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"></div>
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-4 bg-zozzo-surface-rose">
+    <div class="h-12 w-12 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"></div>
     <p class="font-subtitle text-gray-400">Chargement du quiz…</p>
   </div>
 
   <!-- QUIZ ────────────────────────────────────────────────────────── -->
   <div id="quiz-screen"
-    class="hidden flex-col min-h-[calc(100dvh-4rem)]"
-    style="background:var(--color-zozzo-surface-rose);">
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] bg-zozzo-surface-rose">
 
     <!-- Titre + barre de progression -->
     <div class="shrink-0 px-5 pt-5 text-center">
       <h1 id="lecon-titre" class="font-title text-xl text-zozzo-text"></h1>
       <p id="prog-label" class="mt-1 text-xs font-medium text-gray-400">Signe 1 / ?</p>
       <div class="mx-auto mt-2 h-2 max-w-xs overflow-hidden rounded-full bg-gray-200">
-        <div id="prog-bar" class="h-full rounded-full transition-all duration-500"
-          style="width:0%;background:var(--color-zozzo-bleu-fonce);"></div>
+        <div id="prog-bar" class="h-full rounded-full transition-all duration-500 bg-zozzo-bleu-fonce"
+          style="width:0%;"></div>
       </div>
     </div>
 
     <!-- Signe : vidéo ou image ───────────────────────────────────── -->
     <div class="flex flex-1 items-center justify-center px-6 py-3">
       <div id="signe-container"
-        class="relative flex w-full items-center justify-center overflow-hidden rounded-3xl shadow-md"
-        style="aspect-ratio:4/3; max-width:min(90vw, 480px);"
-        style="background:var(--color-zozzo-surface-violet);">
+        class="relative flex w-full items-center justify-center overflow-hidden rounded-3xl shadow-md aspect-[4/3] max-w-[min(90vw,480px)] bg-zozzo-surface-violet">
 
         <!-- Vidéo du signe -->
         <video id="signe-video"
@@ -48,22 +43,20 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
         <!-- Placeholder -->
         <div id="signe-ph" class="flex flex-col items-center gap-1">
-          <span class="font-title text-4xl" style="color:var(--color-zozzo-bleu-fonce);">?</span>
+          <span class="font-title text-4xl text-zozzo-bleu-fonce">?</span>
           <span class="text-sm text-gray-400">Chargement…</span>
         </div>
 
         <!-- ZOZZO contente (bonne réponse) -->
         <div id="zozzo-feedback"
-          class="absolute inset-0 hidden items-center justify-center rounded-3xl"
-          style="background:var(--color-zozzo-success-overlay-fort);">
+          class="absolute inset-0 hidden items-center justify-center rounded-3xl bg-zozzo-success-overlay-fort">
           <img src="/images/about/zozzo-bon-reponse.png" alt="Bravo !"
             class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
 
         <!-- ZOZZO triste (mauvaise réponse) -->
         <div id="zozzo-mauvaise"
-          class="absolute inset-0 hidden items-center justify-center rounded-3xl"
-          style="background:var(--color-zozzo-danger-overlay);">
+          class="absolute inset-0 hidden items-center justify-center rounded-3xl bg-zozzo-danger-overlay">
           <img src="/images/about/mouvaise-reponse.png" alt="Oups !"
             class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
@@ -83,8 +76,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
   <!-- RÉSULTAT ─────────────────────────────────────────────────────── -->
   <div id="end-screen"
-    class="hidden flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-8 py-6 text-center"
-    style="background:var(--color-zozzo-surface-rose);">
+    class="hidden flex-col items-center justify-center min-h-[calc(100dvh-4rem)] px-8 py-6 text-center bg-zozzo-surface-rose">
 
     <!-- ZOZZO contente -->
     <img src="/images/about/zozzo-bon-reponse.png" alt="Zozzo" class="mb-2 w-48 max-w-[55vw] h-auto sm:w-56 md:w-64" />
@@ -118,7 +110,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       class="fixed bottom-6 right-6 transition hover:scale-110 active:scale-95"
       aria-label="Continuer"
     >
-      <svg viewBox="0 0 24 24" class="h-12 w-12 drop-shadow-md" fill="var(--color-zozzo-jaune)"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+      <svg viewBox="0 0 24 24" class="h-12 w-12 drop-shadow-md fill-zozzo-jaune"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
     </a>
   </div>
 

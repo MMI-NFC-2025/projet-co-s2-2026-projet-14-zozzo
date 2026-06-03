@@ -12,12 +12,10 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- CHARGEMENT -->
   <div
     id="loading-screen"
-    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
-    style="background:white;"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-white"
   >
     <div
-      class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"
+      class="h-10 w-10 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"
     >
     </div>
     <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
@@ -26,8 +24,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- SIGNE -->
   <div
     id="signe-screen"
-    class="hidden flex-col min-h-[calc(100dvh-4rem)]"
-    style="background:white;"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] bg-white"
   >
     <!-- Zone centrale : image + mot centrés verticalement -->
     <div
@@ -37,7 +34,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       <video
         id="signe-video"
         class="hidden object-contain"
-        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+        class="max-w-[min(80vw,420px)] max-h-[45dvh] w-full h-auto"
         autoplay
         muted
         loop
@@ -50,14 +47,14 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         src=""
         alt="Signe"
         class="hidden object-contain"
-        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+        class="max-w-[min(80vw,420px)] max-h-[45dvh] w-full h-auto"
       />
       <div
         id="signe-ph"
         class="flex items-center justify-center"
-        style="height:35dvh;"
+        class="h-[35dvh]"
       >
-        <span class="font-title text-6xl" style="color:var(--color-zozzo-violet);">?</span>
+        <span class="font-title text-6xl text-zozzo-violet">?</span>
       </div>
 
       <!-- Mot centré juste sous l'image -->
@@ -87,8 +84,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- ÉCRAN FIN DE CATÉGORIE -->
   <div
     id="end-screen"
-    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-8 py-10 text-center"
-    style="background:white;"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-8 py-10 text-center bg-white"
   >
     <img
       src="/images/about/fin-dico.png"
@@ -107,8 +103,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     </p>
     <a
       href="/app/premium"
-      class="mt-8 rounded-full px-8 py-3 font-subtitle font-semibold text-white transition hover:opacity-90"
-      style="background:var(--color-zozzo-bleu-fonce);"
+      class="mt-8 rounded-full px-8 py-3 font-subtitle font-semibold text-white transition hover:opacity-90 bg-zozzo-bleu-fonce"
     >
       Découvrir plus
     </a>
