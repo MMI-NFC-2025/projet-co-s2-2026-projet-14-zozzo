@@ -8,7 +8,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- Chargement -->
   <div id="hist-loading" class="flex min-h-[50vh] flex-col items-center justify-center gap-3">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"></div>
     <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
   </div>
 
@@ -32,8 +32,8 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
     const FLECHE = `
       <svg viewBox="0 0 60 24" class="h-7 w-14 sm:h-8 sm:w-16" fill="none">
-        <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
-        <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
+        <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>`;
 
     function buildCard(histoire, user) {
@@ -66,7 +66,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           <div style="position:relative;">
             ${imgHTML}
             ${isLocked ? `
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.28);">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--color-zozzo-overlay-dark-soft);">
                 <img src="/images/shapes/lock.png" style="width:48px;height:48px;object-fit:contain;" />
               </div>` : ""}
             <!-- Flèche sur l'image, en bas à droite -->

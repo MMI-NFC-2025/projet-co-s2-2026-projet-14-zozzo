@@ -10,7 +10,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
     style="background:white;">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"></div>
     <p class="font-subtitle text-sm text-gray-400">Chargement…</p>
   </div>
 
@@ -49,8 +49,8 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <a id="back-btn" href="/app/mini-jeux"
     class="fixed bottom-6 right-6 transition hover:scale-110 active:scale-95">
     <svg viewBox="0 0 60 24" class="h-8 w-16" fill="none">
-      <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
-      <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
+      <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </a>
 
@@ -167,9 +167,15 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           row.className = [
             "flex items-center gap-3 rounded-2xl px-4 py-3 shadow-sm transition",
             isMoi
-              ? "bg-[#fffde7] border-2 border-zozzo-bleu-clair"
-              : i % 2 === 0 ? "bg-white border border-gray-100" : "bg-[#f0f5ff] border border-[#e0eaff]",
+              ? "border-2 border-zozzo-bleu-clair"
+              : i % 2 === 0 ? "bg-white border border-gray-100" : "border",
           ].join(" ");
+          if (isMoi) {
+            row.style.backgroundColor = "var(--color-zozzo-surface-jaune)";
+          } else if (i % 2 !== 0) {
+            row.style.backgroundColor = "var(--color-zozzo-surface-bleu)";
+            row.style.borderColor = "var(--color-zozzo-border-soft-blue)";
+          }
 
           row.innerHTML = `
             <!-- Médaille -->

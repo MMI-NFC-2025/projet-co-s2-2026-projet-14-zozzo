@@ -9,6 +9,46 @@
     --color-zozzo-bleu-fonce: #224ed1;
     --color-zozzo-bg: #ffffff;
     --color-zozzo-text: #1f1f1f;
+    --color-zozzo-bleu-menu: #6c8ff5;
+    --color-zozzo-violet: #c4b5fd;
+    --color-zozzo-lilas: #b5c8f5;
+    --color-zozzo-jaune-vif: #f5e845;
+    --color-zozzo-rose-clair: #f8c8c2;
+    --color-zozzo-vert-clair: #c0dfa1;
+    --color-zozzo-surface-page: #efefef;
+    --color-zozzo-surface-rose: #fff9f7;
+    --color-zozzo-surface-violet: #f0eaff;
+    --color-zozzo-surface-bleu: #f0f5ff;
+    --color-zozzo-surface-jaune: #fffde7;
+    --color-zozzo-surface-muted: #f8f6f6;
+    --color-zozzo-input-bg: #d9d9d9;
+    --color-zozzo-text-placeholder: #b5b5b5;
+    --color-zozzo-text-muted: #3a3a3a;
+    --color-zozzo-border-soft: #eceff3;
+    --color-zozzo-border-soft-blue: #e0eaff;
+    --color-zozzo-jaune-trace: #e9df33;
+    --color-zozzo-jaune-fonce: #c9ab10;
+    --color-zozzo-bulle-chaude: #ffe2b0;
+    --color-zozzo-bulle-froide: #d9ecff;
+    --color-zozzo-gradient-fin: #f9fbff;
+    --color-zozzo-success: #4da3ff;
+    --color-zozzo-success-bg: #e8f4ff;
+    --color-zozzo-success-overlay: rgba(77, 163, 255, 0.18);
+    --color-zozzo-success-overlay-fort: rgba(77, 163, 255, 0.22);
+    --color-zozzo-danger: #ff4d4d;
+    --color-zozzo-danger-bg: #fff0f0;
+    --color-zozzo-danger-overlay: rgba(255, 77, 77, 0.18);
+    --color-zozzo-overlay-dark: rgba(0, 0, 0, 0.35);
+    --color-zozzo-overlay-dark-soft: rgba(0, 0, 0, 0.28);
+    --color-zozzo-overlay-light: rgba(255, 255, 255, 0.55);
+    --color-zozzo-overlay-light-fort: rgba(255, 255, 255, 0.9);
+    --color-zozzo-overlay-neutral: rgba(200, 200, 200, 0.72);
+    --color-zozzo-shadow-45: rgba(0, 0, 0, 0.45);
+    --color-zozzo-shadow-18: rgba(0, 0, 0, 0.18);
+    --color-zozzo-shadow-13: rgba(0, 0, 0, 0.13);
+    --color-zozzo-shadow-12: rgba(0, 0, 0, 0.12);
+    --color-zozzo-shadow-08: rgba(0, 0, 0, 0.08);
+    --color-zozzo-shadow-06: rgba(0, 0, 0, 0.06);
 
     /* Polices — génère automatiquement font-sans, font-title, font-subtitle */
     --font-sans: "Montserrat", sans-serif;
@@ -42,9 +82,10 @@
 
     /* Carte des pages légales */
     .legal-page {
-        @apply relative mx-auto my-8 sm:mt-11 max-w-7xl overflow-hidden rounded-3xl border border-[#eceff3] p-6 sm:p-8;
-        background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-        box-shadow: 0 24px 55px -38px rgba(0, 0, 0, 0.45);
+        @apply relative mx-auto my-8 sm:mt-11 max-w-7xl overflow-hidden rounded-3xl p-6 sm:p-8;
+        border: 1px solid var(--color-zozzo-border-soft);
+        background: linear-gradient(180deg, var(--color-zozzo-bg) 0%, var(--color-zozzo-gradient-fin) 100%);
+        box-shadow: 0 24px 55px -38px var(--color-zozzo-shadow-45);
     }
 
     .legal-page::before,
@@ -61,7 +102,7 @@
         right: -45px;
         width: 170px;
         height: 170px;
-        background: #ffe2b0;
+        background: var(--color-zozzo-bulle-chaude);
     }
 
     .legal-page::after {
@@ -69,7 +110,7 @@
         left: -55px;
         width: 200px;
         height: 200px;
-        background: #d9ecff;
+        background: var(--color-zozzo-bulle-froide);
     }
 
     .legal-page .content {
@@ -77,12 +118,14 @@
     }
 
     .legal-page .content > div {
-        @apply rounded-2xl border border-[#eceff3] bg-white p-4 sm:p-5;
+        @apply rounded-2xl bg-white p-4 sm:p-5;
+        border: 1px solid var(--color-zozzo-border-soft);
     }
 
     .legal-page p,
     .legal-page li {
-        @apply text-[#1f2937] leading-[1.6];
+        @apply leading-[1.6];
+        color: var(--color-zozzo-text);
     }
 }
 
@@ -111,7 +154,7 @@
     height: 40vw;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    box-shadow: 0 4px 14px var(--color-zozzo-shadow-18);
     transition: transform 0.2s;
     cursor: pointer;
     display: flex;
@@ -163,13 +206,13 @@
 }
 .sign-tile:active  { transform: scale(0.95); }
 .sign-tile.used    { opacity: 0.35; pointer-events: none; }
-.sign-tile.correct { border-color: #4DA3FF; background: #e8f4ff; }
-.sign-tile.wrong   { border-color: #FF4D4D; background: #fff0f0; }
+.sign-tile.correct { border-color: var(--color-zozzo-success); background: var(--color-zozzo-success-bg); }
+.sign-tile.wrong   { border-color: var(--color-zozzo-danger); background: var(--color-zozzo-danger-bg); }
 
 .answer-tile {
     border: 2px dashed var(--color-zozzo-bleu-clair);
     border-radius: 14px;
-    background: #f0f5ff;
+    background: var(--color-zozzo-surface-bleu);
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -181,8 +224,8 @@
     transition: transform 0.15s;
 }
 .answer-tile:active  { transform: scale(0.95); }
-.answer-tile.correct { border-color: #4DA3FF; border-style: solid; background: #e8f4ff; }
-.answer-tile.wrong   { border-color: #FF4D4D; border-style: solid; background: #fff0f0; }
+.answer-tile.correct { border-color: var(--color-zozzo-success); border-style: solid; background: var(--color-zozzo-success-bg); }
+.answer-tile.wrong   { border-color: var(--color-zozzo-danger); border-style: solid; background: var(--color-zozzo-danger-bg); }
 
 /* ── Jeu Relis-tout ──────────────────────────────────────────────────── */
 .rt-sign {
@@ -195,12 +238,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 3px 12px var(--color-zozzo-shadow-08);
     transition: transform 0.15s, border-color 0.15s;
 }
 .rt-sign:active { transform: scale(0.97); }
 .rt-sign.sel    { border-color: var(--color-zozzo-bleu-fonce); transform: scale(1.03); }
-.rt-sign.done   { border-color: #4DA3FF; opacity: 0.6; pointer-events: none; }
+.rt-sign.done   { border-color: var(--color-zozzo-success); opacity: 0.6; pointer-events: none; }
 
 .rt-sign-inner {
     position: absolute;
@@ -217,7 +260,7 @@
     transform: translateY(-50%);
     width: 16px; height: 16px;
     background: var(--color-zozzo-jaune);
-    border: 2px solid #c9ab10;
+    border: 2px solid var(--color-zozzo-jaune-fonce);
     border-radius: 50%;
     z-index: 30;
     pointer-events: none;
@@ -238,12 +281,12 @@
     color: var(--color-zozzo-bleu-fonce);
     font-size: clamp(1rem, 4vw, 1.25rem);
     padding: 14px 20px 14px 24px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 3px 12px var(--color-zozzo-shadow-06);
     transition: transform 0.15s, border-color 0.15s;
 }
 .rt-word:active { transform: scale(0.97); }
 .rt-word.sel    { border-color: var(--color-zozzo-bleu-fonce); transform: scale(1.03); }
-.rt-word.done   { border-color: #4DA3FF; color: #4DA3FF; opacity: 0.6; pointer-events: none; }
+.rt-word.done   { border-color: var(--color-zozzo-success); color: var(--color-zozzo-success); opacity: 0.6; pointer-events: none; }
 
 .rt-dot-l {
     position: absolute;

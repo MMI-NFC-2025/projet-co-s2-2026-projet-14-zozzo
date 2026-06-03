@@ -10,7 +10,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
     style="background:white;">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"></div>
     <p class="font-subtitle text-sm text-gray-400">Préparation du jeu…</p>
   </div>
 
@@ -24,8 +24,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       <!-- Timer circulaire (camembert SVG) -->
       <div class="flex items-center gap-3">
         <svg id="pie-timer" viewBox="0 0 40 40" class="h-16 w-16 sm:h-20 sm:w-20">
-          <circle cx="20" cy="20" r="20" fill="#224ed1"/>
-          <path id="pie-slice" d="" fill="#f3e63f"/>
+          <circle cx="20" cy="20" r="20" fill="var(--color-zozzo-bleu-fonce)"/>
+          <path id="pie-slice" d="" fill="var(--color-zozzo-jaune)"/>
         </svg>
         <span id="timer-display" class="font-title text-lg text-zozzo-text sm:text-xl">0 s</span>
       </div>
@@ -34,17 +34,17 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     <!-- Signe (vidéo ou image) -->
     <div class="flex flex-1 w-full items-center justify-center px-5 py-2">
       <div class="relative flex items-center justify-center overflow-hidden rounded-3xl shadow-sm"
-        style="width:min(88vw,420px);aspect-ratio:4/3;background:#f0eaff;">
+        style="width:min(88vw,420px);aspect-ratio:4/3;background:var(--color-zozzo-surface-violet);">
         <video id="signe-video" class="hidden h-full w-full object-contain" autoplay muted loop playsinline controls></video>
         <img  id="signe-img"   src="" alt="Signe" class="hidden h-full w-full object-contain p-2" />
-        <div  id="signe-ph"   class="text-5xl" style="color:#c4b5fd;">?</div>
+        <div  id="signe-ph"   class="text-5xl" style="color:var(--color-zozzo-violet);">?</div>
 
         <!-- ZOZZO feedback -->
-        <div id="zozzo-feedback" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:rgba(77,163,255,0.18);">
+        <div id="zozzo-feedback" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:var(--color-zozzo-success-overlay);">
           <img src="/images/about/zozzo-bon-reponse.png" alt="Bravo" class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
 
-        <div id="zozzo-mauvaise" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:rgba(255,77,77,0.18);">
+        <div id="zozzo-mauvaise" class="absolute inset-0 hidden items-center justify-center rounded-3xl" style="background:var(--color-zozzo-danger-overlay);">
           <img src="/images/about/mouvaise-reponse.png" alt="Oups" class="h-4/5 w-4/5 object-contain anim-bounce" />
         </div>
       </div>
@@ -78,8 +78,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     <div class="mt-8 flex justify-end w-full max-w-xs pr-2">
       <button id="go-classement" class="transition hover:scale-110 active:scale-95">
         <svg viewBox="0 0 60 24" class="h-8 w-16 sm:h-9 sm:w-20" fill="none">
-          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
-          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </div>
@@ -210,8 +210,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
         const btn = document.createElement("button");
         btn.textContent           = rep;
         btn.className             = "w-full rounded-full py-4 px-3 font-subtitle text-base font-semibold shadow-sm transition active:scale-95";
-        btn.style.backgroundColor = "#fcded6";
-        btn.style.color           = "#1f1f1f";
+        btn.style.backgroundColor = "var(--color-zozzo-beige)";
+        btn.style.color           = "var(--color-zozzo-text)";
         btn.addEventListener("click", () => {
           if (answered) return;
           answered = true;
@@ -226,8 +226,8 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       answersGrid.querySelectorAll("button").forEach(btn => {
         btn.disabled = true;
         if (btn.textContent === bonneReponse) {
-          btn.style.backgroundColor = "#4DA3FF";
-          btn.style.color           = "#fff";
+          btn.style.backgroundColor = "var(--color-zozzo-success)";
+          btn.style.color           = "var(--color-zozzo-bg)";
           btn.style.opacity         = "1";
         } else {
           btn.style.opacity = "0.4";
@@ -236,14 +236,14 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
       if (correct) {
         score++;
-        clicked.style.backgroundColor = "#4DA3FF";
-        clicked.style.color           = "#fff";
+        clicked.style.backgroundColor = "var(--color-zozzo-success)";
+        clicked.style.color           = "var(--color-zozzo-bg)";
         clicked.style.opacity         = "1";
         zozzoFeedback.classList.remove("hidden");
         zozzoFeedback.classList.add("flex");
       } else {
-        clicked.style.backgroundColor = "#FF4D4D";
-        clicked.style.color           = "#fff";
+        clicked.style.backgroundColor = "var(--color-zozzo-danger)";
+        clicked.style.color           = "var(--color-zozzo-bg)";
         clicked.style.opacity         = "1";
         clicked.classList.add("anim-shake");
         zozzoMauvaise.classList.remove("hidden");

@@ -17,7 +17,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   >
     <div
       class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent var(--color-zozzo-bleu-fonce) var(--color-zozzo-bleu-fonce);"
     >
     </div>
     <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
@@ -57,7 +57,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         class="flex items-center justify-center"
         style="height:35dvh;"
       >
-        <span class="font-title text-6xl" style="color:#c4b5fd;">?</span>
+        <span class="font-title text-6xl" style="color:var(--color-zozzo-violet);">?</span>
       </div>
 
       <!-- Mot centré juste sous l'image -->
@@ -77,8 +77,8 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         class="transition hover:scale-110 active:scale-95"
       >
         <svg viewBox="0 0 60 24" class="h-7 w-16 sm:h-9 sm:w-20" fill="none">
-          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
-          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </div>

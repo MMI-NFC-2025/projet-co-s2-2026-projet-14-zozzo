@@ -37,7 +37,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       style="background:var(--color-zozzo-jaune);"
       aria-label="Retour"
     >
-      <svg viewBox="0 0 24 24" class="h-7 w-7" fill="#224ed1"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <svg viewBox="0 0 24 24" class="h-7 w-7" fill="var(--color-zozzo-bleu-fonce)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
     </a>
   </div>
 
@@ -50,7 +50,12 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     const overlay   = document.getElementById("lecons-overlay");
 
     // Couleur de fond par ordre de leçon
-    const COLORS = ["#b5c8f5", "#f5e845", "#f8c8c2", "#c0dfa1"];
+    const COLORS = [
+      "var(--color-zozzo-lilas)",
+      "var(--color-zozzo-jaune-vif)",
+      "var(--color-zozzo-rose-clair)",
+      "var(--color-zozzo-vert-clair)",
+    ];
 
     // Positions sur le chemin — % relatif à 250vh de hauteur
     const POSITIONS = [
@@ -75,7 +80,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     function creerCarte(lecon, pos, bloquee, premiumBloquee) {
       const imgUrl  = getLeconImageUrl(lecon);
       // Toujours utiliser la couleur de la leçon — l'overlay gère l'effet verrouillé
-      const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd";
+      const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "var(--color-zozzo-violet)";
 
       const card = document.createElement("div");
       // Position absolue sur le fond — taille via CSS responsive (.lecon-card)
@@ -95,7 +100,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         card.innerHTML = `
           ${titreHTML}
           ${imgInnerHTML}
-          <div style="position:absolute;inset:0;background:rgba(200,200,200,0.72);border-radius:inherit;"></div>
+          <div style="position:absolute;inset:0;background:var(--color-zozzo-overlay-neutral);border-radius:inherit;"></div>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
             <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,9vw,52px);height:clamp(36px,9vw,52px);object-fit:contain;" />
           </div>`;
@@ -127,7 +132,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         loadingEl.style.display = "none";
 
         if (!lecons.length) {
-          overlay.innerHTML += `<div style="margin:40px auto;max-width:280px;background:rgba(255,255,255,0.9);border-radius:20px;padding:20px;text-align:center;"><p>Aucune leçon disponible.</p></div>`;
+          overlay.innerHTML += `<div style="margin:40px auto;max-width:280px;background:var(--color-zozzo-overlay-light-fort);border-radius:20px;padding:20px;text-align:center;"><p>Aucune leçon disponible.</p></div>`;
           return;
         }
 
