@@ -75,23 +75,26 @@ import AppLayout from "../../../layouts/AppLayout.astro";
              && !user?.abonnement_actif;
     }
 
+    // Classes Tailwind pour les cartes leçon
+    const LECON_CARD  = "absolute w-[40vw] h-[40vw] rounded-[14px] sm:w-[32vw] sm:h-[32vw] sm:rounded-[16px] md:w-[26vw] md:h-[26vw] md:rounded-[18px] lg:w-[20vw] lg:h-[20vw] lg:max-w-[260px] lg:max-h-[260px] lg:rounded-[20px] overflow-hidden shadow-[0_4px_14px_var(--color-zozzo-shadow-18)] transition-transform duration-200 cursor-pointer flex flex-col items-center pt-2 px-[6px]";
+    const LECON_TITRE = "text-[clamp(0.7rem,2vw,0.95rem)] font-bold text-zozzo-text text-center w-full shrink-0 mb-1 leading-[1.2]";
+    const LECON_IMG   = "flex-1 min-h-0 w-full object-contain object-center";
+
     function creerCarte(lecon, pos, bloquee, premiumBloquee) {
       const imgUrl  = getLeconImageUrl(lecon);
       // Toujours utiliser la couleur de la leçon — l'overlay gère l'effet verrouillé
       const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "var(--color-zozzo-violet)";
 
       const card = document.createElement("div");
-      // Position absolue sur le fond — taille via CSS responsive (.lecon-card)
-      card.className             = "lecon-card";
+      card.className             = LECON_CARD;
       card.style.top             = pos.top;
       card.style.left            = pos.left;
       card.style.right           = pos.right;
       card.style.backgroundColor = bgColor;
 
-      // Titre + image via classes CSS globales
-      const titreHTML    = `<p class="lecon-titre">${lecon.titre}</p>`;
+      const titreHTML    = `<p class="${LECON_TITRE}">${lecon.titre}</p>`;
       const imgInnerHTML = imgUrl
-        ? `<img class="lecon-img" src="${imgUrl}" alt="${lecon.titre}" onerror="this.style.display='none'" />`
+        ? `<img class="${LECON_IMG}" src="${imgUrl}" alt="${lecon.titre}" onerror="this.style.display='none'" />`
         : "";
 
       if (bloquee) {

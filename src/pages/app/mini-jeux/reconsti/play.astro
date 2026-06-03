@@ -123,10 +123,15 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       }, 1000);
     }
 
+    // Classes Tailwind pour les cartes Reconsti
+    const SIGN_BASE   = "border-[3px] border-zozzo-bleu-clair rounded-2xl bg-white cursor-pointer flex flex-col items-center justify-start p-[6px] transition-[transform,opacity] duration-150 active:scale-95 min-h-[clamp(100px,28vw,140px)] w-[clamp(80px,25vw,130px)]";
+    const ANSWER_BASE = "border-[2px] border-dashed border-zozzo-bleu-clair rounded-[14px] bg-zozzo-surface-bleu cursor-pointer flex flex-col items-center justify-start p-[6px] min-h-[clamp(100px,28vw,140px)] w-[clamp(80px,25vw,130px)] transition-transform duration-150 active:scale-95";
+
     // ── Créer une carte signe ──────────────────────────────────────
-    function createSignCard(signe, className) {
+    function createSignCard(signe, type) {
       const card = document.createElement("div");
-      card.className   = className;
+      card.className   = type === "sign" ? SIGN_BASE : ANSWER_BASE;
+      card.dataset.tile = type;
       card.dataset.mot = signe.mot;
       card.dataset.id  = signe.id;
 
@@ -175,7 +180,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       const shuffled = [...currentSignes].sort(() => Math.random() - 0.5);
 
       shuffled.forEach((signe, i) => {
-        const card = createSignCard(signe, "sign-tile");
+        const card = createSignCard(signe, "sign");
         card.dataset.poolIdx = i;
         card.addEventListener("click", () => addToAnswer(card, signe));
         signPool.appendChild(card);
@@ -184,12 +189,13 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
     // ── Ajouter un signe à la réponse ─────────────────────────────
     function addToAnswer(poolCard, signe) {
-      if (answered || poolCard.classList.contains("used")) return;
+      if (answered || poolCard.dataset.used) return;
 
-      poolCard.classList.add("used");
+      poolCard.classList.add("opacity-[0.35]", "pointer-events-none");
+      poolCard.dataset.used = "1";
       selected.push(signe);
 
-      const ansCard = createSignCard(signe, "answer-tile");
+      const ansCard = createSignCard(signe, "answer");
       ansCard.addEventListener("click", () => removeFromAnswer(ansCard, poolCard, signe));
       answerZone.appendChild(ansCard);
 
@@ -203,9 +209,10 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     function removeFromAnswer(ansCard, poolCard, signe) {
       if (answered) return;
       ansCard.remove();
-      const idx = selected.findIndex(s => s.id === signe.id && !poolCard.classList.contains("used-check"));
+      const idx = selected.findIndex(s => s.id === signe.id);
       if (idx !== -1) selected.splice(idx, 1);
-      poolCard.classList.remove("used");
+      poolCard.classList.remove("opacity-[0.35]", "pointer-events-none");
+      delete poolCard.dataset.used;
     }
 
     // ── Valider la réponse ────────────────────────────────────────
@@ -217,8 +224,13 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       const estCorrect  = userMots.join("|") === currentMots.join("|");
 
       // Feedback visuel sur les cartes
-      answerZone.querySelectorAll(".answer-tile").forEach((card, i) => {
-        card.classList.add(estCorrect ? "correct" : "wrong");
+      answerZone.querySelectorAll("[data-tile='answer']").forEach(card => {
+        card.classList.remove("border-dashed", "border-zozzo-bleu-clair", "bg-zozzo-surface-bleu");
+        if (estCorrect) {
+          card.classList.add("border-solid", "border-zozzo-success", "bg-zozzo-success-bg");
+        } else {
+          card.classList.add("border-solid", "border-zozzo-danger", "bg-zozzo-danger-bg");
+        }
         card.style.pointerEvents = "none";
       });
 
