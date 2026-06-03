@@ -39,14 +39,22 @@ import Layout from "../layouts/Layout.astro";
         Contact
       </h1>
 
-      <form class="w-full max-w-150 space-y-6 sm:space-y-7" method="post" novalidate>
+      <form
+        id="contact-form"
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        class="w-full max-w-150 space-y-6 sm:space-y-7"
+      >
+        <!-- Clé Web3Forms -->
+        <input type="hidden" name="access_key" value="3a7aceff-6536-4637-9f5a-6120e20031a2" />
+        <!-- Anti-spam honeypot -->
+        <input type="checkbox" name="botcheck" class="hidden" aria-hidden="true" />
+
         <div>
-          <label for="nom" class="mb-2 block text-base text-black sm:text-lg"
-            >Nom</label
-          >
+          <label for="nom" class="mb-2 block text-base text-black sm:text-lg">Nom</label>
           <input
             id="nom"
-            name="nom"
+            name="name"
             type="text"
             placeholder="Dubois"
             required
@@ -55,9 +63,7 @@ import Layout from "../layouts/Layout.astro";
         </div>
 
         <div>
-          <label for="prenom" class="mb-2 block text-base text-black sm:text-lg"
-            >Prénom</label
-          >
+          <label for="prenom" class="mb-2 block text-base text-black sm:text-lg">Prénom</label>
           <input
             id="prenom"
             name="prenom"
@@ -69,9 +75,19 @@ import Layout from "../layouts/Layout.astro";
         </div>
 
         <div>
-          <label for="statut" class="mb-2 block text-base text-black sm:text-lg"
-            >Statut</label
-          >
+          <label for="email" class="mb-2 block text-base text-black sm:text-lg">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="anne.dubois@email.fr"
+            required
+            class="h-11 w-full rounded-sm border-0 px-4 text-base text-black placeholder:text-[var(--color-zozzo-text-placeholder)] focus:outline-none sm:h-12 sm:text-lg bg-zozzo-input-bg"
+          />
+        </div>
+
+        <div>
+          <label for="statut" class="mb-2 block text-base text-black sm:text-lg">Statut</label>
           <input
             id="statut"
             name="statut"
@@ -83,25 +99,11 @@ import Layout from "../layouts/Layout.astro";
 
         <div class="relative">
           <div class="mb-2 flex items-center justify-between">
-            <label for="message" class="block text-base text-black sm:text-lg"
-              >Message</label
-            >
-
-            <svg
-              class="h-5 w-5 text-[var(--color-zozzo-text-placeholder)]"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M4 7L10 13L16 7"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"></path>
+            <label for="message" class="block text-base text-black sm:text-lg">Message</label>
+            <svg class="h-5 w-5 text-[var(--color-zozzo-text-placeholder)]" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 7L10 13L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-
           <textarea
             id="message"
             name="message"
@@ -112,15 +114,69 @@ import Layout from "../layouts/Layout.astro";
           ></textarea>
         </div>
 
+        <!-- Message de succès -->
+        <div id="form-success" class="hidden rounded-2xl bg-zozzo-success-bg px-5 py-4 text-center font-subtitle text-sm font-semibold text-zozzo-success sm:text-base">
+          Message envoyé ! Nous vous répondrons dans les plus brefs délais.
+        </div>
+
+        <!-- Message d'erreur -->
+        <div id="form-error" class="hidden rounded-2xl bg-zozzo-danger-bg px-5 py-4 text-center font-subtitle text-sm text-zozzo-danger sm:text-base">
+          Une erreur est survenue. Veuillez réessayer ou nous écrire directement par email.
+        </div>
+
         <div class="pt-4 sm:pt-6">
           <button
+            id="submit-btn"
             type="submit"
-            class="mx-auto block w-full max-w-64 rounded-3xl bg-zozzo-bleu-fonce px-8 py-4 text-center text-xl text-white transition hover:scale-[1.02] sm:max-w-72.5 sm:py-5 sm:text-2xl"
+            class="mx-auto flex w-full max-w-64 items-center justify-center gap-2 rounded-3xl bg-zozzo-bleu-fonce px-8 py-4 text-center text-xl text-white transition hover:scale-[1.02] sm:max-w-72.5 sm:py-5 sm:text-2xl"
           >
-            Envoyer
+            <span id="submit-label">Envoyer</span>
+            <svg id="submit-spinner" class="hidden h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="60" stroke-dashoffset="20" stroke-linecap="round"/>
+            </svg>
           </button>
         </div>
       </form>
+
+      <script>
+        const form       = document.getElementById("contact-form");
+        const submitBtn  = document.getElementById("submit-btn");
+        const submitLbl  = document.getElementById("submit-label");
+        const spinner    = document.getElementById("submit-spinner");
+        const successEl  = document.getElementById("form-success");
+        const errorEl    = document.getElementById("form-error");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          successEl.classList.add("hidden");
+          errorEl.classList.add("hidden");
+          submitBtn.disabled = true;
+          submitLbl.textContent = "Envoi…";
+          spinner.classList.remove("hidden");
+
+          try {
+            const res  = await fetch("https://api.web3forms.com/submit", {
+              method: "POST",
+              body: new FormData(form),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+              successEl.classList.remove("hidden");
+              form.reset();
+            } else {
+              errorEl.classList.remove("hidden");
+            }
+          } catch {
+            errorEl.classList.remove("hidden");
+          } finally {
+            submitBtn.disabled = false;
+            submitLbl.textContent = "Envoyer";
+            spinner.classList.add("hidden");
+          }
+        });
+      </script>
     </div>
   </section>
 </Layout>

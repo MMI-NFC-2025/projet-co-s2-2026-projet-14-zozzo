@@ -1,0 +1,131 @@
+---
+const FAQS = [
+  {
+    q: "Qu'est-ce que ZOZZO ?",
+    a: "ZOZZO est une application éducative conçue pour aider les enfants à découvrir et apprendre la Langue des Signes Française (LSF) grâce à des leçons interactives, des histoires et des mini-jeux.",
+    badge: "bg-zozzo-jaune text-zozzo-bleu-fonce",
+  },
+  {
+    q: "À qui s'adresse ZOZZO ?",
+    a: "ZOZZO s'adresse principalement aux enfants sourds ou malentendants âgés de 6 à 12 ans, mais également à leurs familles, enseignants et à toute personne souhaitant découvrir la LSF.",
+    badge: "bg-zozzo-bleu-clair text-white",
+  },
+  {
+    q: "Faut-il déjà connaître la langue des signes ?",
+    a: "Non. Les leçons sont progressives et adaptées aux débutants afin de permettre un apprentissage simple et ludique.",
+    badge: "bg-zozzo-orange text-white",
+  },
+  {
+    q: "Comment les enfants apprennent-ils avec ZOZZO ?",
+    a: "Les enfants découvrent les signes à travers des vidéos, des exercices interactifs, des histoires illustrées et plusieurs mini-jeux qui renforcent la mémorisation.",
+    badge: "bg-zozzo-violet text-zozzo-bleu-fonce",
+  },
+  {
+    q: "Certaines fonctionnalités sont-elles réservées aux abonnés premium ?",
+    a: "Oui. Certaines leçons, histoires ou catégories avancées sont accessibles avec l'abonnement premium afin de soutenir le développement de l'application.",
+    badge: "bg-zozzo-beige text-zozzo-orange",
+  },
+];
+---
+
+<section class="bg-zozzo-surface-page py-16 sm:py-20 lg:py-24">
+  <div class="container-zozzo">
+
+    <!-- En-tête -->
+    <div class="mb-10 text-center sm:mb-12 lg:mb-14">
+      <h2 class="font-title text-3xl leading-tight text-black sm:text-4xl lg:text-5xl">
+        Questions fréquentes
+      </h2>
+      <p class="mt-3 font-subtitle text-base text-gray-500 sm:text-lg">
+        Tout ce qu'il faut savoir sur ZOZZO
+      </p>
+    </div>
+
+    <!-- Liste FAQ -->
+    <div class="mx-auto max-w-3xl space-y-4">
+      {FAQS.map((faq, i) => (
+        <div class="overflow-hidden rounded-3xl border border-zozzo-border-soft bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
+
+          <!-- Bouton question -->
+          <button
+            id={`faq-btn-${i}`}
+            aria-expanded="false"
+            aria-controls={`faq-panel-${i}`}
+            class="flex w-full items-center gap-4 px-6 py-5 text-left sm:px-7 sm:py-6"
+          >
+            <!-- Badge numéroté -->
+            <span
+              aria-hidden="true"
+              class={`shrink-0 flex h-9 w-9 items-center justify-center rounded-full font-title text-sm font-bold sm:h-10 sm:w-10 sm:text-base ${faq.badge}`}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+
+            <!-- Texte question -->
+            <span class="flex-1 font-subtitle text-base font-semibold leading-snug text-zozzo-bleu-fonce sm:text-lg">
+              {faq.q}
+            </span>
+
+            <!-- Chevron rotatif -->
+            <span
+              aria-hidden="true"
+              class="faq-chevron shrink-0 transition-transform duration-300 ease-in-out"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                class="h-5 w-5 text-zozzo-bleu-fonce sm:h-6 sm:w-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+
+          <!-- Panneau réponse (animation grid-template-rows) -->
+          <div
+            id={`faq-panel-${i}`}
+            role="region"
+            aria-labelledby={`faq-btn-${i}`}
+            class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+            style="grid-template-rows: 0fr"
+          >
+            <div class="overflow-hidden">
+              <p class="px-6 pb-6 pt-1 font-subtitle text-sm leading-relaxed text-gray-600 sm:px-7 sm:pb-7 sm:text-base">
+                {faq.a}
+              </p>
+            </div>
+          </div>
+
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[id^='faq-btn-']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const isOpen  = btn.getAttribute("aria-expanded") === "true";
+      const panelId = btn.getAttribute("aria-controls");
+      const panel   = panelId ? document.getElementById(panelId) : null;
+      const chevron = btn.querySelector<HTMLElement>(".faq-chevron");
+
+      btn.setAttribute("aria-expanded", String(!isOpen));
+
+      if (panel) {
+        panel.style.gridTemplateRows = isOpen ? "0fr" : "1fr";
+      }
+
+      if (chevron) {
+        chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+      }
+    });
+
+    // Navigation clavier (Entrée et Espace déjà natifs sur <button>)
+  });
+</script>
