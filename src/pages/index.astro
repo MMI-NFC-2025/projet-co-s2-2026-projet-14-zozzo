@@ -1,11 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
+import FaqSection from "../components/landing/FaqSection.astro";
 ---
 
 <Layout
-  title="Accueil"
-  description="Découvrez ZOZZO, l’application éducative pour apprendre la langue des signes aux enfants."
+  title="Zozzo | Apprendre la langue des signes aux enfants"
+  description="Zozzo aide les enfants de 6 à 12 ans à apprendre la langue des signes française grâce à des histoires interactives, éducatives et inclusives."
 >
   <Hero />
 
@@ -17,24 +18,32 @@ import Hero from "../components/Hero.astro";
         src="/images/landing/star-1.svg"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         class="pointer-events-none absolute left-0 -top-3 hidden w-11 sm:block lg:w-14"
       />
       <img
         src="/images/landing/star-2.svg"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         class="pointer-events-none absolute left-8 top-6 hidden w-10 sm:block lg:w-12"
       />
       <img
         src="/images/landing/star-1.svg"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         class="pointer-events-none absolute right-8 bottom-18.5 hidden w-11 sm:block lg:w-14"
       />
       <img
         src="/images/landing/star-2.svg"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         class="pointer-events-none absolute right-0 bottom-6 hidden w-10 sm:block lg:w-12"
       />
 
@@ -44,7 +53,9 @@ import Hero from "../components/Hero.astro";
         <div class="flex justify-center sm:justify-start">
           <img
             src="/images/landing/zozzo-standing.png"
-            alt="Zozzo debout"
+            alt="Personnage Zozzo accompagnant les enfants dans l'apprentissage de la langue des signes française"
+            loading="lazy"
+            decoding="async"
             class="w-full max-w-52 sm:max-w-66 md:max-w-80 lg:max-w-100"
           />
         </div>
@@ -68,7 +79,7 @@ import Hero from "../components/Hero.astro";
             class="mt-4 font-['Montserrat'] text-[1rem] leading-[1.4] text-black sm:text-[1.1rem] md:text-[1.25rem] lg:text-[1.5rem]"
           >
             Alors, elle utilise ses mains et la langue des signes pour parler et
-            communiquer avec ses amis.
+            communiquer avec les personnes qui l'entourent.
           </p>
         </div>
       </div>
@@ -86,6 +97,8 @@ import Hero from "../components/Hero.astro";
             <img
               src="/images/landing/bonjour-step-1.png"
               alt="Premier geste du signe bonjour"
+              loading="lazy"
+              decoding="async"
               class="w-full max-w-70 sm:max-w-90 lg:max-w-107.5"
             />
           </div>
@@ -94,6 +107,8 @@ import Hero from "../components/Hero.astro";
             <img
               src="/images/landing/bonjour-step-2.png"
               alt="Deuxième geste du signe bonjour"
+              loading="lazy"
+              decoding="async"
               class="w-full max-w-70 sm:max-w-90 lg:max-w-107.5"
             />
           </div>
@@ -115,8 +130,14 @@ import Hero from "../components/Hero.astro";
     <div class="container-zozzo">
       <div class="mx-auto max-w-295">
         <div class="max-w-245 text-white">
+          <h2
+            class="font-title text-3xl leading-tight text-white sm:text-4xl lg:text-5xl"
+          >
+            Et si votre enfant apprenait a communiquer autrement ?
+          </h2>
+
           <p
-            class="font-['Montserrat'] text-[1.05rem] leading-[1.45] sm:text-[1.2rem] lg:text-[1.55rem]"
+            class="mt-6 font-['Montserrat'] text-[1.05rem] leading-[1.45] sm:text-[1.2rem] lg:text-[1.55rem]"
           >
             Découvrez Zozzo, l’application éducative pour apprendre la langue
             des signes aux enfants de 6 à 12 ans. Ludique, immersive et adaptée.
@@ -135,8 +156,8 @@ import Hero from "../components/Hero.astro";
           >
             Le seul souci c’est que Zozzo communique avec ses mains, son visage
             et ses émotions. Pour la comprendre, il faut signer avec elle.
-            L’enfant est obligé d’utiliser la langue des signes pour communiquer
-            avec Zozzo.
+            L’enfant découvre progressivement la langue des signes en
+            interagissant avec Zozzo.
           </p>
         </div>
 
@@ -144,6 +165,8 @@ import Hero from "../components/Hero.astro";
           <img
             src="/images/landing/tablet-preview.png"
             alt="Aperçu de l’application ZOZZO sur tablette"
+            loading="lazy"
+            decoding="async"
             class="w-full max-w-105 sm:max-w-155 lg:max-w-205"
           />
         </div>
@@ -166,4 +189,177 @@ import Hero from "../components/Hero.astro";
       </a>
     </div>
   </section>
+
+  <FaqSection />
+
+  <!-- ══ SECTION LSF MAP ══════════════════════════════════════════════ -->
+  <section class="bg-zozzo-surface-bleu py-16 sm:py-20 lg:py-24">
+    <div class="container-zozzo">
+      <div class="mx-auto max-w-2xl">
+        <!-- En-tête -->
+        <h2
+          class="font-title text-2xl text-zozzo-bleu-fonce sm:text-3xl lg:text-4xl"
+        >
+          Trouver une ressource LSF près de chez vous
+        </h2>
+        <p
+          class="mt-3 font-subtitle text-sm leading-relaxed text-gray-500 sm:text-base"
+        >
+          Recherchez des associations ou structures autour de la langue des
+          signes et de l'accompagnement des personnes sourdes ou malentendantes.
+        </p>
+
+        <!-- Champ + bouton -->
+        <div class="mt-6 flex gap-2">
+          <input
+            id="lsf-city"
+            type="text"
+            placeholder="Nom de la ville…"
+            class="flex-1 rounded-full border border-zozzo-border-soft-blue bg-white px-5 py-3 font-subtitle text-sm text-zozzo-text outline-none transition focus:border-zozzo-bleu-clair sm:text-base"
+          />
+          <button
+            id="lsf-search-btn"
+            class="shrink-0 rounded-full bg-zozzo-jaune px-6 py-3 font-subtitle text-sm font-semibold text-zozzo-bleu-fonce transition hover:opacity-90 active:scale-95 sm:px-7 sm:text-base"
+          >
+            Rechercher
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="lsf-loading" class="mt-6 hidden items-center gap-3">
+          <div
+            class="h-5 w-5 animate-spin rounded-full border-2 border-zozzo-bleu-fonce border-t-transparent"
+          >
+          </div>
+          <p class="font-subtitle text-sm text-gray-400">Recherche en cours…</p>
+        </div>
+
+        <!-- Erreur -->
+        <p
+          id="lsf-error"
+          class="mt-5 hidden font-subtitle text-sm text-red-500"
+        >
+        </p>
+
+        <!-- Aucun résultat -->
+        <p
+          id="lsf-empty"
+          class="mt-5 hidden font-subtitle text-sm text-gray-400"
+        >
+          Aucun résultat trouvé pour cette ville. Essayez une ville voisine.
+        </p>
+
+        <!-- Résultats -->
+        <div id="lsf-results" class="mt-5 space-y-3"></div>
+
+        <!-- Attribution -->
+        <p
+          id="lsf-attribution"
+          class="mt-5 hidden text-right font-subtitle text-[11px] text-gray-400"
+        >
+          Données © <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener"
+            class="underline hover:opacity-70">OpenStreetMap contributors</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // @ts-nocheck
+    const cityInput = document.getElementById("lsf-city");
+    const searchBtn = document.getElementById("lsf-search-btn");
+    const loadingEl = document.getElementById("lsf-loading");
+    const errorEl = document.getElementById("lsf-error");
+    const emptyEl = document.getElementById("lsf-empty");
+    const resultsEl = document.getElementById("lsf-results");
+    const attributionEl = document.getElementById("lsf-attribution");
+
+    function showOnly(el) {
+      [loadingEl, errorEl, emptyEl].forEach((e) => {
+        e.classList.add("hidden");
+        e.classList.remove("flex");
+      });
+      if (el) el.classList.remove("hidden");
+    }
+
+    function buildCard(place) {
+      const parts = place.display_name.split(",");
+      const name = parts[0].trim();
+      const address = parts.slice(1, 4).join(",").trim();
+      const osmUrl = `https://www.openstreetmap.org/${place.osm_type}/${place.osm_id}`;
+
+      return `
+        <div class="rounded-2xl bg-white px-5 py-4 shadow-sm border border-zozzo-border-soft">
+          <p class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce leading-snug">${name}</p>
+          <p class="mt-1 font-subtitle text-xs text-gray-400 leading-relaxed">${address}</p>
+          <a href="${osmUrl}" target="_blank" rel="noopener"
+            class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-zozzo-bleu-fonce px-4 py-1.5 font-subtitle text-xs font-semibold text-white transition hover:opacity-90">
+            Voir sur OpenStreetMap
+            <svg viewBox="0 0 24 24" class="h-3 w-3" fill="currentColor" aria-hidden="true"><path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42L17.59 5H14V3zM5 5h6V3H3v18h18v-8h-2v6H5V5z"/></svg>
+          </a>
+        </div>`;
+    }
+
+    async function nominatim(query) {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=fr&q=${encodeURIComponent(query)}`,
+        { headers: { "Accept-Language": "fr" } },
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function searchLSF() {
+      const city = cityInput.value.trim();
+      if (!city) {
+        cityInput.focus();
+        return;
+      }
+
+      resultsEl.innerHTML = "";
+      attributionEl.classList.add("hidden");
+      showOnly(loadingEl);
+      loadingEl.classList.add("flex");
+      searchBtn.disabled = true;
+
+      const queries = [
+        `langue des signes ${city}`,
+        `sourd ${city}`,
+        `association sourds ${city}`,
+        `LSF ${city}`,
+      ];
+
+      try {
+        let data = [];
+        for (const q of queries) {
+          data = await nominatim(q);
+          if (data.length) break;
+        }
+
+        showOnly(null);
+        if (!data.length) {
+          showOnly(emptyEl);
+          return;
+        }
+
+        resultsEl.innerHTML = data.map(buildCard).join("");
+        attributionEl.classList.remove("hidden");
+      } catch (err) {
+        errorEl.textContent =
+          "Impossible de récupérer les résultats. Vérifiez votre connexion.";
+        showOnly(errorEl);
+      } finally {
+        searchBtn.disabled = false;
+      }
+    }
+
+    searchBtn.addEventListener("click", searchLSF);
+    cityInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") searchLSF();
+    });
+  </script>
 </Layout>

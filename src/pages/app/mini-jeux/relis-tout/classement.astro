@@ -1,0 +1,83 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Classement Relis-tout" showBack={true} backHref="/app/mini-jeux/relis-tout" pageTitle="Classement">
+
+  <div class="px-4 py-6 pb-12">
+    <div id="rank-loading" class="flex flex-col items-center gap-3 py-10">
+      <div class="h-9 w-9 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"></div>
+    </div>
+    <div id="rank-content" class="hidden max-w-md mx-auto"></div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getClassement, getCurrentUser, getAvatarImageUrl, formatTime } from "../../../../lib/backend.js";
+
+    const params  = new URLSearchParams(window.location.search);
+    const level   = params.get("level") ?? "15";
+    const jeuId   = params.get("jeu")   ?? "";
+    const niveau  = `${level}_mots`;
+
+    const loadingEl = document.getElementById("rank-loading");
+    const contentEl = document.getElementById("rank-content");
+
+    (async () => {
+      try {
+        const scores = await getClassement(jeuId, niveau, 10);
+        const user   = getCurrentUser();
+
+        loadingEl.style.display = "none";
+        contentEl.classList.remove("hidden");
+
+        if (!scores.length) {
+          contentEl.innerHTML = `
+            <p class="text-center font-subtitle text-gray-400 py-10">Aucun score pour ce niveau.</p>
+            <div class="flex justify-center mt-4">
+              <a href="/app/mini-jeux/relis-tout/play?level=${level}" class="rounded-full bg-zozzo-orange px-6 py-3 text-sm text-white font-semibold">
+                Jouer maintenant
+              </a>
+            </div>`;
+          return;
+        }
+
+        const rows = scores.map((s, i) => {
+          const u         = s.expand?.utilisateur;
+          const pseudo    = u?.pseudo || u?.email || "—";
+          const avatarUrl = getAvatarImageUrl(u?.expand?.avatar);
+          const isCurrent = u?.id === user?.id;
+          const medal     = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+          const avatarHTML = avatarUrl
+            ? `<img src="${avatarUrl}" class="h-9 w-9 rounded-full object-cover" />`
+            : `<div class="flex h-9 w-9 items-center justify-center rounded-full bg-zozzo-beige font-title text-base text-zozzo-orange">${pseudo[0]?.toUpperCase() ?? "?"}</div>`;
+
+          return `
+            <div class="flex items-center gap-3 rounded-2xl px-4 py-3 ${isCurrent ? "bg-zozzo-beige" : "bg-white"} shadow-sm">
+              <span class="w-7 text-center text-lg font-semibold">${medal}</span>
+              ${avatarHTML}
+              <div class="flex-1 min-w-0">
+                <p class="font-subtitle text-sm font-semibold truncate text-zozzo-text">${pseudo}</p>
+                <p class="text-xs text-gray-400">${s.score}/${s.nombre_mots} mots · ${formatTime(s.temps_secondes)}</p>
+              </div>
+              ${isCurrent ? `<span class="shrink-0 text-xs font-semibold text-zozzo-orange">Toi</span>` : ""}
+            </div>`;
+        }).join("");
+
+        contentEl.innerHTML = `
+          <h2 class="mb-4 text-center font-subtitle text-sm font-semibold text-gray-400 uppercase tracking-wide">${level} mots</h2>
+          <div class="space-y-2">${rows}</div>
+          <div class="mt-8 flex justify-center">
+            <a href="/app/mini-jeux/relis-tout/play?level=${level}" class="rounded-full bg-zozzo-orange px-7 py-3 font-semibold text-white transition hover:opacity-90">
+              Rejouer
+            </a>
+          </div>`;
+
+      } catch (err) {
+        loadingEl.innerHTML = `<p class="text-sm text-red-500 text-center">Erreur : ${err?.message ?? err}</p>`;
+      }
+    })();
+  </script>
+
+</AppLayout>

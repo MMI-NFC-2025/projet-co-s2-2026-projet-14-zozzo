@@ -12,12 +12,10 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- CHARGEMENT -->
   <div
     id="loading-screen"
-    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
-    style="background:white;"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-white"
   >
     <div
-      class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:#224ed1 transparent #224ed1 #224ed1;"
+      class="h-10 w-10 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"
     >
     </div>
     <p class="text-sm text-gray-400 font-subtitle">Chargement…</p>
@@ -26,8 +24,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- SIGNE -->
   <div
     id="signe-screen"
-    class="hidden flex-col min-h-[calc(100dvh-4rem)]"
-    style="background:white;"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] bg-white"
   >
     <!-- Zone centrale : image + mot centrés verticalement -->
     <div
@@ -36,8 +33,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       <!-- Image ou vidéo -->
       <video
         id="signe-video"
-        class="hidden object-contain"
-        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+        class="hidden h-auto w-[72vw] max-w-[320px] max-h-[36dvh] object-contain sm:w-[56vw] sm:max-w-[360px] sm:max-h-[38dvh]"
         autoplay
         muted
         loop
@@ -49,15 +45,13 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         id="signe-img"
         src=""
         alt="Signe"
-        class="hidden object-contain"
-        style="max-width:min(80vw,420px);max-height:45dvh;width:100%;height:auto;"
+        class="hidden h-auto w-[72vw] max-w-[320px] max-h-[36dvh] object-contain sm:w-[56vw] sm:max-w-[360px] sm:max-h-[38dvh]"
       />
       <div
         id="signe-ph"
-        class="flex items-center justify-center"
-        style="height:35dvh;"
+        class="flex h-[26dvh] items-center justify-center sm:h-[28dvh]"
       >
-        <span class="font-title text-6xl" style="color:#c4b5fd;">?</span>
+        <span class="font-title text-6xl text-zozzo-violet">?</span>
       </div>
 
       <!-- Mot centré juste sous l'image -->
@@ -77,8 +71,20 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         class="transition hover:scale-110 active:scale-95"
       >
         <svg viewBox="0 0 60 24" class="h-7 w-16 sm:h-9 sm:w-20" fill="none">
-          <line x1="0" y1="12" x2="50" y2="12" stroke="#f3e63f" stroke-width="4" stroke-linecap="round"/>
-          <polyline points="38,3 54,12 38,21" stroke="#f3e63f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line
+            x1="0"
+            y1="12"
+            x2="50"
+            y2="12"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"></line>
+          <polyline
+            points="38,3 54,12 38,21"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
         </svg>
       </button>
     </div>
@@ -87,8 +93,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
   <!-- ÉCRAN FIN DE CATÉGORIE -->
   <div
     id="end-screen"
-    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-8 py-10 text-center"
-    style="background:white;"
+    class="hidden flex-col min-h-[calc(100dvh-4rem)] items-center justify-center px-8 py-10 text-center bg-white"
   >
     <img
       src="/images/about/fin-dico.png"
@@ -107,8 +112,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     </p>
     <a
       href="/app/premium"
-      class="mt-8 rounded-full px-8 py-3 font-subtitle font-semibold text-white transition hover:opacity-90"
-      style="background:#224ed1;"
+      class="mt-8 rounded-full px-8 py-3 font-subtitle font-semibold text-white transition hover:opacity-90 bg-zozzo-bleu-fonce"
     >
       Découvrir plus
     </a>
@@ -121,7 +125,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       getSignesByCategorie,
       getSigneImageUrl,
       getSigneVideoUrl,
-    } from "../../../lib/pocketbase.js";
+    } from "../../../lib/backend.js";
 
     const params = new URLSearchParams(window.location.search);
     const signeId = params.get("id");

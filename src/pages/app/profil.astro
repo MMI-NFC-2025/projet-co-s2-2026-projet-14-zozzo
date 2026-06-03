@@ -9,9 +9,9 @@ import AppLayout from "../../layouts/AppLayout.astro";
   <div
     id="avatar-modal"
     aria-hidden="true"
-    style="position:fixed;inset:0;z-index:70;background:white;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.3s ease;"
+    class="fixed inset-0 z-[70] bg-white flex flex-col translate-y-full transition-transform duration-300 ease-in-out"
   >
-    <div class="flex items-center gap-4 border-b border-gray-100 px-5 py-4" style="background-color:#fcded6;">
+    <div class="flex items-center gap-4 border-b border-gray-100 px-5 py-4 bg-zozzo-beige">
       <button
         id="close-avatar-modal"
         aria-label="Fermer"
@@ -135,7 +135,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
       updateUserAvatar,
       updateUserProfile,
       logout,
-    } from "../../lib/pocketbase.js";
+    } from "../../lib/backend.js";
 
     let currentUser: any = null;
     let selectedAvatarId: string | null = null;
@@ -191,8 +191,8 @@ import AppLayout from "../../layouts/AppLayout.astro";
     let modalLoaded     = false;
     let loadedAvatars: any[] = []; // garde les records en mémoire pour affichage immédiat
 
-    const openModal  = () => { modal.style.transform = "translateY(0)"; modal.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; if (!modalLoaded) loadAvatarGrid(); };
-    const closeModal = () => { modal.style.transform = "translateY(100%)"; modal.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; };
+    const openModal  = () => { modal.classList.remove("translate-y-full"); modal.setAttribute("aria-hidden","false"); document.body.style.overflow = "hidden"; if (!modalLoaded) loadAvatarGrid(); };
+    const closeModal = () => { modal.classList.add("translate-y-full"); modal.setAttribute("aria-hidden","true"); document.body.style.overflow = ""; };
 
     document.getElementById("change-avatar-btn")?.addEventListener("click", openModal);
     document.getElementById("close-avatar-modal")?.addEventListener("click", closeModal);
@@ -347,7 +347,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
     // ── Déconnexion ──────────────────────────────────────────────────
     document.getElementById("logout-btn")?.addEventListener("click", () => {
       logout();
-      window.location.href = "/login";
+      window.location.href = "/";
     });
   </script>
 

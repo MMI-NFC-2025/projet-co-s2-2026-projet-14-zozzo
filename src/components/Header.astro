@@ -11,7 +11,8 @@ const mobileNavigation = [...desktopNavigation];
 
 <header class="sticky top-0 z-50 w-full">
   <div
-    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 shadow-[0_6px_18px_rgba(0,0,0,0.12)] md:px-10"
+    class="bg-zozzo-orange flex items-center justify-between px-6 py-3 md:px-10"
+    style="box-shadow:0 6px 18px var(--color-zozzo-shadow-12);"
   >
     <a href="/" aria-label="Accueil ZOZZO">
       <img
@@ -114,7 +115,7 @@ const mobileNavigation = [...desktopNavigation];
   }
 
   // ── Bouton auth : adapte selon connexion PocketBase ──
-  import { isLoggedIn, getCurrentUser, logout } from "../lib/pocketbase.js";
+  import { isLoggedIn, getCurrentUser, logout } from "../lib/backend.js";
 
   const btnDesktop = document.getElementById("auth-btn-desktop");
   const btnMobile = document.getElementById("auth-btn-mobile");

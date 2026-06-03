@@ -1,0 +1,36 @@
+---
+// @ts-nocheck
+import AppLayout from "../../layouts/AppLayout.astro";
+---
+
+<AppLayout
+  title="ZOZZO | Premium"
+  showBack={true}
+  backHref="/app"
+  pageTitle="Premium"
+>
+  <section
+    class="flex min-h-[calc(100dvh-4rem)] items-center justify-center bg-zozzo-surface-page px-4"
+  >
+    <div class="mx-auto flex w-full max-w-md flex-col items-center text-center">
+      <img
+        src="/images/shapes/lock.png"
+        alt="Cadenas"
+        class="h-16 w-16 object-contain"
+      />
+
+      <p class="mt-8 max-w-sm font-subtitle text-sm text-zozzo-text">
+        Cette collection est a debloquee pour cela il faut :
+      </p>
+
+      <button
+        type="button"
+        disabled
+        aria-disabled="true"
+        class="mt-7 w-full max-w-[210px] cursor-not-allowed rounded-2xl bg-zozzo-jaune px-8 py-4 font-subtitle text-lg font-medium text-zozzo-bleu-fonce"
+      >
+        Seulement 0, 99EUR
+      </button>
+    </div>
+  </section>
+</AppLayout>

@@ -1,0 +1,296 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout title="ZOZZO | Relis-tout" showBack={true} backHref="/app/mini-jeux/relis-tout" pageTitle="Relis-tout">
+
+  <!-- CHARGEMENT -->
+  <div id="ls" class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-zozzo-surface-muted">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"></div>
+    <p class="font-subtitle text-sm text-gray-400">Préparation…</p>
+    <p id="err-msg" class="hidden px-6 text-center text-xs text-red-400"></p>
+  </div>
+
+  <!-- JEU -->
+  <div id="gs" class="hidden pb-4 bg-zozzo-surface-muted">
+    <div class="mx-auto max-w-[1200px] px-4">
+
+      <div class="flex items-center justify-between px-2 pb-3 pt-5">
+        <p id="prog" class="font-subtitle text-sm font-medium text-gray-400">0 / ?</p>
+        <span id="timer" class="font-title text-base text-zozzo-text">0 s</span>
+      </div>
+
+      <div id="ga" class="relative px-2">
+        <svg id="svg" class="pointer-events-none absolute left-0 top-0 overflow-visible z-[15]"></svg>
+        <div id="pairs" class="relative flex flex-col gap-2 z-10"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉSULTAT -->
+  <div id="rs" class="hidden min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-6 py-8 text-center bg-zozzo-surface-muted">
+    <h1 class="font-title text-3xl text-zozzo-orange">Résultat</h1>
+    <img src="/images/about/zozzo-bon-reponse.png" alt="Zozzo" class="my-4 h-auto w-36" />
+    <div class="w-full max-w-xs space-y-3 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Temps :</span>
+        <span id="rt" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce">Score :</span>
+        <span id="rs2" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+    </div>
+    <div class="mt-8 flex w-full max-w-xs justify-end pr-2">
+      <button id="gc" class="transition hover:scale-110 active:scale-95">
+        <svg viewBox="0 0 60 24" class="h-8 w-16" fill="none">
+          <line x1="0" y1="12" x2="50" y2="12" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round"/>
+          <polyline points="38,3 54,12 38,21" stroke="var(--color-zozzo-jaune)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import { getJeuBySlug, getSignesForGame, getCategorieLesBases, getCurrentUser, saveScore, pb } from "../../../../lib/backend.js";
+
+    const params      = new URLSearchParams(window.location.search);
+    const level       = parseInt(params.get("level") ?? "15");
+    const niveauLabel = `${level}_mots`;
+
+    let signes = [], motsMelanges = [];
+    let selIdx = null, matched = 0, score = 0, elapsed = 0, timerInt = null, jeuId = null;
+    const permLines = [];
+    let tmpLine = null;
+
+    const signCards = [];
+    const wordCards = [];
+
+    const ga    = document.getElementById("ga");
+    const svgEl = document.getElementById("svg");
+    const pairs = document.getElementById("pairs");
+
+    // ── Timer ─────────────────────────────────────────────────────
+    function startTimer() {
+      timerInt = setInterval(() => {
+        elapsed++;
+        const m = Math.floor(elapsed/60), s = elapsed%60;
+        document.getElementById("timer").textContent = m ? `${m}min ${s}s` : `${s} s`;
+      }, 1000);
+    }
+
+    // ── SVG ───────────────────────────────────────────────────────
+    function syncSvg() {
+      svgEl.style.width  = "100%";
+      svgEl.style.height = "1px";
+    }
+
+    function dotCenter(cardEl, side) {
+      const gr  = ga.getBoundingClientRect();
+      const dot = cardEl.querySelector(`[data-dot="${side}"]`);
+      const r   = (dot ?? cardEl).getBoundingClientRect();
+      return { x: r.left + r.width/2 - gr.left, y: r.top + r.height/2 - gr.top };
+    }
+
+    function drawLine(si, wi, color) {
+      const se = signCards[si], we = wordCards[wi];
+      if (!se || !we) return null;
+      const p1 = dotCenter(se, "r"), p2 = dotCenter(we, "l");
+      const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ln.setAttribute("x1", p1.x); ln.setAttribute("y1", p1.y);
+      ln.setAttribute("x2", p2.x); ln.setAttribute("y2", p2.y);
+      ln.setAttribute("stroke", color); ln.setAttribute("stroke-width", "3"); ln.setAttribute("stroke-linecap", "round");
+      svgEl.appendChild(ln);
+      return ln;
+    }
+
+    let resizeT;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => {
+        svgEl.innerHTML = "";
+        permLines.forEach(({si, mi, color}) => drawLine(si, mi, color));
+        if (tmpLine) tmpLine = null;
+      }, 120);
+    });
+
+    // Classes Tailwind pour Relis-tout
+    const RT_SIGN_BASE  = "relative overflow-visible border-[3px] border-zozzo-jaune rounded-[24px] bg-white cursor-pointer flex items-center justify-center shadow-[0_3px_12px_var(--color-zozzo-shadow-08)] transition-[transform,border-color] duration-150 active:scale-[0.97]";
+    const RT_INNER      = "absolute inset-0 overflow-hidden rounded-[22px] flex items-center justify-center";
+    const RT_DOT_R      = "absolute right-[-9px] top-1/2 -translate-y-1/2 w-4 h-4 bg-zozzo-jaune border-2 border-zozzo-jaune-fonce rounded-full z-30 pointer-events-none";
+    const RT_DOT_L      = "absolute left-[-9px] top-1/2 -translate-y-1/2 w-4 h-4 bg-zozzo-bleu-fonce rounded-full z-30 pointer-events-none";
+    const RT_WORD_BASE  = "relative overflow-visible border-[3px] border-zozzo-bleu-clair rounded-[20px] bg-white cursor-pointer flex items-center justify-center text-center font-subtitle font-bold text-zozzo-bleu-fonce text-[clamp(1rem,4vw,1.25rem)] py-[14px] pl-6 pr-5 shadow-[0_3px_12px_var(--color-zozzo-shadow-06)] transition-[transform,border-color] duration-150 active:scale-[0.97]";
+
+    // ── Dot ───────────────────────────────────────────────────────
+    function makeDot(side) {
+      const d = document.createElement("div");
+      d.dataset.dot = side;
+      d.className   = side === "r" ? RT_DOT_R : RT_DOT_L;
+      return d;
+    }
+
+    // ── Carte SIGNE ───────────────────────────────────────────────
+    function makeSign(signe, signIdx) {
+      const c = document.createElement("div");
+      c.className = RT_SIGN_BASE;
+
+      // Inner clip pour les médias
+      const inner = document.createElement("div");
+      inner.className = RT_INNER;
+
+      const videoUrl = signe.video ? pb.files.getURL(signe, signe.video) : null;
+      if (videoUrl) {
+        const v = document.createElement("video");
+        v.src = videoUrl; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+        v.style.cssText = "width:100%;height:100%;object-fit:contain;max-height:140px;";
+        inner.appendChild(v);
+      } else if (signe.image) {
+        const img = document.createElement("img");
+        img.src = pb.files.getURL(signe, signe.image); img.alt = signe.mot;
+        img.style.cssText = "width:100%;height:100%;object-fit:contain;padding:6px;max-height:140px;";
+        inner.appendChild(img);
+      } else {
+        const sp = document.createElement("span");
+        sp.textContent = signe.mot?.[0]?.toUpperCase() ?? "?";
+        sp.style.cssText = "font-size:2rem;color:var(--color-zozzo-jaune);font-weight:bold;";
+        inner.appendChild(sp);
+      }
+
+      c.appendChild(inner);
+      c.appendChild(makeDot("r"));
+
+      c.addEventListener("click", () => {
+        if (c.dataset.done) return;
+        signCards.forEach(x => {
+          if (x.dataset.sel) {
+            x.classList.remove("border-zozzo-bleu-fonce", "scale-[1.03]");
+            x.classList.add("border-zozzo-jaune");
+            delete x.dataset.sel;
+          }
+        });
+        selIdx = signIdx;
+        c.classList.remove("border-zozzo-jaune");
+        c.classList.add("border-zozzo-bleu-fonce", "scale-[1.03]");
+        c.dataset.sel = "1";
+      });
+      return c;
+    }
+
+    // ── Carte MOT ─────────────────────────────────────────────────
+    function makeMot(mot, mi) {
+      const c = document.createElement("div");
+      c.className = RT_WORD_BASE;
+
+      c.appendChild(makeDot("l"));
+
+      const sp = document.createElement("span"); sp.textContent = mot; c.appendChild(sp);
+
+      c.addEventListener("click", () => {
+        if (c.dataset.done) return;
+        if (selIdx === null) return;
+
+        const si = selIdx; selIdx = null;
+        signCards.forEach(x => {
+          if (x.dataset.sel) {
+            x.classList.remove("border-zozzo-bleu-fonce", "scale-[1.03]");
+            x.classList.add("border-zozzo-jaune");
+            delete x.dataset.sel;
+          }
+        });
+        if (tmpLine && svgEl.contains(tmpLine)) { svgEl.removeChild(tmpLine); tmpLine = null; }
+
+        const correct = signes[si].mot === motsMelanges[mi];
+
+        if (correct) {
+          drawLine(si, mi, "var(--color-zozzo-success)");
+          permLines.push({ si, mi, color: "var(--color-zozzo-success)" });
+          // sign done
+          signCards[si].classList.remove("border-zozzo-jaune");
+          signCards[si].classList.add("border-zozzo-success", "opacity-60", "pointer-events-none");
+          signCards[si].dataset.done = "1";
+          // word done
+          c.classList.remove("border-zozzo-bleu-clair", "text-zozzo-bleu-fonce");
+          c.classList.add("border-zozzo-success", "text-zozzo-success", "opacity-60", "pointer-events-none");
+          c.dataset.done = "1";
+          score++; matched++;
+          document.getElementById("prog").textContent = `${matched} / ${signes.length}`;
+          if (matched === signes.length) setTimeout(showResult, 700);
+        } else {
+          tmpLine = drawLine(si, mi, "var(--color-zozzo-danger)");
+          c.classList.add("rt-shake");
+          setTimeout(() => {
+            if (tmpLine && svgEl.contains(tmpLine)) { svgEl.removeChild(tmpLine); tmpLine = null; }
+            c.classList.remove("rt-shake");
+          }, 900);
+        }
+      });
+      return c;
+    }
+
+    // ── Résultat ──────────────────────────────────────────────────
+    async function showResult() {
+      clearInterval(timerInt);
+      document.getElementById("gs").classList.add("hidden");
+      const rs = document.getElementById("rs");
+      rs.classList.remove("hidden"); rs.classList.add("flex");
+      const m = Math.floor(elapsed/60), s = elapsed%60;
+      document.getElementById("rt").textContent  = m ? `${m} mins ${s} s` : `${s} s`;
+      document.getElementById("rs2").textContent = `${score}/ ${signes.length} mots`;
+      const user = getCurrentUser();
+      if (user && jeuId) {
+        try { await saveScore({ utilisateur: user.id, jeu: jeuId, niveau: niveauLabel, nombre_mots: level, score, temps_secondes: elapsed }); }
+        catch(e) { console.warn(e); }
+      }
+      document.getElementById("gc").addEventListener("click", () => {
+        window.location.href = `/app/mini-jeux/classement?slug=relis-tout&level=${niveauLabel}`;
+      });
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    (async () => {
+      try {
+        const jeu   = await getJeuBySlug("relis-tout").catch(() => null);
+        jeuId       = jeu?.id ?? null;
+        const catId = await getCategorieLesBases().catch(() => null);
+        signes      = await getSignesForGame(level, catId);
+        if (!signes.length) throw new Error("Aucun signe trouvé");
+
+        motsMelanges = [...signes.map(s => s.mot)].sort(() => Math.random() - 0.5);
+        let tries = 0;
+        while (signes.length > 1 && motsMelanges.every((m,i) => m === signes[i].mot) && tries++ < 10)
+          motsMelanges = [...motsMelanges].sort(() => Math.random() - 0.5);
+
+        const ROW_H = "clamp(80px,18vw,130px)";
+
+        signes.forEach((signe, i) => {
+          const signCard = makeSign(signe, i);
+          const wordCard = makeMot(motsMelanges[i], i);
+          signCard.style.height = ROW_H;
+          wordCard.style.height = ROW_H;
+          signCards.push(signCard);
+          wordCards.push(wordCard);
+
+          const row = document.createElement("div");
+          row.style.cssText = `display:grid;grid-template-columns:5fr 4fr;gap:clamp(60px,10vw,120px);align-items:stretch;height:${ROW_H};`;
+          row.appendChild(signCard);
+          row.appendChild(wordCard);
+          pairs.appendChild(row);
+        });
+
+        document.getElementById("prog").textContent = `0 / ${signes.length}`;
+        document.getElementById("ls").classList.add("hidden");
+        document.getElementById("gs").classList.remove("hidden");
+        syncSvg();
+        startTimer();
+
+      } catch(err) {
+        console.error("[ZOZZO] Relis-tout:", err);
+        const e = document.getElementById("err-msg");
+        e.textContent = `Erreur : ${err?.message ?? String(err)}`; e.classList.remove("hidden");
+      }
+    })();
+  </script>
+
+</AppLayout>

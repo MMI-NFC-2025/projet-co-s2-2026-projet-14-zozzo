@@ -3,25 +3,24 @@
 import AppLayout from "../../../layouts/AppLayout.astro";
 ---
 
-<AppLayout title="ZOZZO | Leçons" showBack={true} backHref="/app" pageTitle="Leçons">
-
-  <!-- Conteneur relatif : l'image fond détermine la hauteur totale de la page -->
-  <div class="relative w-full">
-
-    <!-- Image fond complète (toujours visible, page scrollable) -->
-    <img
-      src="/images/shapes/bg-lecon-menu.png"
-      alt=""
-      aria-hidden="true"
-      class="w-full h-auto block"
-    />
-
-    <!-- Overlay transparent avec les cartes positionnées sur le chemin -->
+<AppLayout
+  title="ZOZZO | Leçons"
+  showBack={true}
+  backHref="/app"
+  pageTitle="Leçons"
+>
+  <!-- Conteneur avec fond unique (sans répétition), responsive -->
+  <div
+    class="relative w-full bg-[url('/images/shapes/bg-lecon-menu.png')] bg-no-repeat bg-top bg-cover min-h-[165vh] sm:min-h-[200vh] lg:min-h-[235vh] pb-24"
+  >
+    <!-- Overlay avec les cartes positionnées -->
     <div id="lecons-overlay" class="absolute inset-0">
-
       <!-- Chargement -->
       <div id="lecons-loading" class="flex flex-col items-center pt-16">
-        <div class="mb-3 h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
+        <div
+          class="mb-3 h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent"
+        >
+        </div>
         <p class="font-subtitle text-white drop-shadow">Chargement…</p>
       </div>
 
@@ -29,97 +28,126 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       <div id="lecons-error" class="hidden px-6 pt-16">
         <div class="mx-auto max-w-xs rounded-3xl bg-white/95 p-5 shadow-lg">
           <p class="font-semibold text-red-600">Erreur de chargement</p>
-          <p id="lecons-error-msg" class="mt-1 break-all text-xs text-gray-600"></p>
+          <p id="lecons-error-msg" class="mt-1 break-all text-xs text-gray-600">
+          </p>
         </div>
       </div>
 
       <!-- Cartes générées en JS avec position absolue -->
-
     </div>
 
     <!-- Bouton retour jaune fixé en bas à gauche -->
     <a
       href="/app"
-      class="fixed bottom-6 left-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95"
-      style="background:#f3e63f;"
+      class="fixed bottom-6 left-5 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition hover:scale-105 active:scale-95 bg-zozzo-jaune"
       aria-label="Retour"
     >
-      <svg viewBox="0 0 24 24" class="h-7 w-7" fill="#224ed1"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      <svg viewBox="0 0 24 24" class="h-7 w-7 fill-zozzo-bleu-fonce"
+        ><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+        ></path></svg
+      >
     </a>
   </div>
 
   <script>
     // @ts-nocheck
-    import { getLecons, getCurrentUser, getProgressionByUser, getLeconImageUrl } from "../../../lib/pocketbase.js";
+    import {
+      getLecons,
+      getCurrentUser,
+      getProgressionByUser,
+      getLeconImageUrl,
+    } from "../../../lib/backend.js";
 
     const loadingEl = document.getElementById("lecons-loading");
-    const errorEl   = document.getElementById("lecons-error");
-    const overlay   = document.getElementById("lecons-overlay");
+    const errorEl = document.getElementById("lecons-error");
+    const overlay = document.getElementById("lecons-overlay");
 
     // Couleur de fond par ordre de leçon
-    const COLORS = ["#b5c8f5", "#f5e845", "#f8c8c2", "#c0dfa1"];
-
-    // Positions sur le chemin (en % par rapport au conteneur relatif)
-    // Ajustées pour suivre le chemin de la maquette :
-    const POSITIONS = [
-      { top: "6%",  left: "55%", right: "auto" }, // ordre 1 — Les bases
-      { top: "28%", left: "15%", right: "auto" }, // ordre 2 — La politesse
-      { top: "50%", left: "47%", right: "auto" }, // ordre 3 — Les animaux
-      { top: "71%", left: "auto", right: "15%" }, // ordre 4 — Magicienne
+    const COLORS = [
+      "var(--color-zozzo-lilas)",
+      "var(--color-zozzo-jaune-vif)",
+      "var(--color-zozzo-rose-clair)",
+      "var(--color-zozzo-vert-clair)",
     ];
+
+    // Positions calées sur le chemin de bg-lecon-menu.png
+    // mobile < 640px | tablet 640-1023px | desktop 1024px+
+    const POS = {
+      mobile: [
+        { top: "12%", left: "40%", right: "auto" }, // 1 — Les bases
+        { top: "31%", left: "8%", right: "auto" }, // 2 — La politesse
+        { top: "50%", left: "39%", right: "auto" }, // 3 — Les animaux
+        { top: "69%", left: "35%", right: "auto" }, // 4 — Magicienne
+      ],
+      tablet: [
+        { top: "12%", left: "42%", right: "auto" }, // 1
+        { top: "31%", left: "8%", right: "auto" }, // 2
+        { top: "50%", left: "41%", right: "auto" }, // 3
+        { top: "69%", left: "40%", right: "auto" }, // 4
+      ],
+      desktop: [
+        { top: "14%", left: "48%", right: "auto" }, // 1
+        { top: "32%", left: "12%", right: "auto" }, // 2
+        { top: "47%", left: "47%", right: "auto" }, // 3
+        { top: "71%", left: "46%", right: "auto" }, // 4
+      ],
+    };
+
+    function getPositions() {
+      const w = window.innerWidth;
+      if (w >= 1024) return POS.desktop;
+      if (w >= 640) return POS.tablet;
+      return POS.mobile;
+    }
 
     function estDebloquee(lecon, toutes, progressions) {
       if (lecon.ordre === 1) return true;
-      const prev = toutes.find(l => l.ordre === lecon.ordre - 1);
+      const prev = toutes.find((l) => l.ordre === lecon.ordre - 1);
       if (!prev) return true;
-      return progressions.some(p => p.lecon === prev.id && p.termine === true);
+      return progressions.some(
+        (p) => p.lecon === prev.id && p.termine === true,
+      );
     }
 
     function estPremium(lecon, user) {
-      return (lecon.ordre === 4 || lecon.titre?.toLowerCase().includes("magicienne"))
-             && !user?.abonnement_actif;
+      return (
+        (lecon.ordre === 4 ||
+          lecon.titre?.toLowerCase().includes("magicienne")) &&
+        !user?.abonnement_actif
+      );
     }
 
+    // Classes Tailwind pour les cartes leçon
+    const LECON_CARD =
+      "absolute w-[clamp(132px,35vw,190px)] h-[clamp(132px,35vw,190px)] rounded-[14px] sm:w-[32vw] sm:h-[32vw] sm:rounded-[16px] md:w-[26vw] md:h-[26vw] md:rounded-[18px] lg:w-[20vw] lg:h-[20vw] lg:max-w-[260px] lg:max-h-[260px] lg:rounded-[20px] overflow-hidden shadow-[0_4px_14px_var(--color-zozzo-shadow-18)] transition-transform duration-200 cursor-pointer flex flex-col items-center pt-2 px-[6px]";
+    const LECON_TITRE =
+      "text-[clamp(0.7rem,2vw,0.95rem)] font-bold text-zozzo-text text-center w-full shrink-0 mb-1 leading-[1.2]";
+    const LECON_IMG = "flex-1 min-h-0 w-full object-contain object-center";
+
     function creerCarte(lecon, pos, bloquee, premiumBloquee) {
-      const imgUrl  = getLeconImageUrl(lecon);
+      const imgUrl = getLeconImageUrl(lecon);
       // Toujours utiliser la couleur de la leçon — l'overlay gère l'effet verrouillé
-      const bgColor = COLORS[(lecon.ordre - 1) % COLORS.length] ?? "#c4b5fd";
+      const bgColor =
+        COLORS[(lecon.ordre - 1) % COLORS.length] ??
+        "var(--color-zozzo-violet)";
 
       const card = document.createElement("div");
-      card.style.position        = "absolute";
-      card.style.top             = pos.top;
-      card.style.left            = pos.left;
-      card.style.right           = pos.right;
-      // Carte : plus étroite, titre centré en haut, image centrée en dessous
-      card.style.width           = "clamp(140px, 42vw, 210px)";
-      card.style.height          = "clamp(150px, 40vw, 220px)";
-      card.style.borderRadius    = "clamp(14px, 3vw, 22px)";
+      card.className = LECON_CARD;
+      card.style.top = pos.top;
+      card.style.left = pos.left;
+      card.style.right = pos.right;
       card.style.backgroundColor = bgColor;
-      card.style.overflow        = "hidden";
-      card.style.boxShadow       = "0 4px 14px rgba(0,0,0,0.18)";
-      card.style.transition      = "transform 0.2s";
-      card.style.cursor          = "pointer";
-      card.style.display         = "flex";
-      card.style.flexDirection   = "column";
-      card.style.alignItems      = "center";
-      card.style.padding         = "10px 8px 0";
 
-      // Titre centré en haut
-      const titreHTML = `<p style="font-size:clamp(0.8rem,2.5vw,1rem);font-weight:700;color:#374151;text-align:center;width:100%;flex-shrink:0;margin-bottom:6px;">${lecon.titre}</p>`;
-
-      // Image centrée, prend l'espace restant
+      const titreHTML = `<p class="${LECON_TITRE}">${lecon.titre}</p>`;
       const imgInnerHTML = imgUrl
-        ? `<img src="${imgUrl}" alt="${lecon.titre}"
-            style="flex:1;min-height:0;width:100%;object-fit:contain;object-position:bottom center;"
-            onerror="this.style.display='none'" />`
+        ? `<img class="${LECON_IMG}" src="${imgUrl}" alt="${lecon.titre}" onerror="this.style.display='none'" />`
         : "";
 
       if (bloquee) {
-        card.style.position = "absolute";
         card.innerHTML = `
           ${titreHTML}
           ${imgInnerHTML}
-          <div style="position:absolute;inset:0;background:rgba(200,200,200,0.72);border-radius:inherit;"></div>
+          <div style="position:absolute;inset:0;background:var(--color-zozzo-overlay-neutral);border-radius:inherit;"></div>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;">
             <img src="/images/shapes/lock.png" alt="Verrouillé" style="width:clamp(36px,9vw,52px);height:clamp(36px,9vw,52px);object-fit:contain;" />
           </div>`;
@@ -128,12 +156,17 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           if (premiumBloquee) window.location.href = "/app/premium";
         });
       } else {
-        card.style.position = "absolute";
         card.innerHTML = `${titreHTML}${imgInnerHTML}`;
 
-        card.addEventListener("mouseover",  () => { card.style.transform = "scale(1.05)"; });
-        card.addEventListener("mouseleave", () => { card.style.transform = "scale(1)"; });
-        card.addEventListener("click", () => { window.location.href = `/app/lecons/detail?id=${lecon.id}`; });
+        card.addEventListener("mouseover", () => {
+          card.style.transform = "scale(1.05)";
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "scale(1)";
+        });
+        card.addEventListener("click", () => {
+          window.location.href = `/app/lecons/detail?id=${lecon.id}`;
+        });
       }
 
       return card;
@@ -147,33 +180,52 @@ import AppLayout from "../../../layouts/AppLayout.astro";
         let progressions = [];
         try {
           if (user) progressions = await getProgressionByUser(user.id);
-        } catch { /* non bloquant */ }
+        } catch {
+          /* non bloquant */
+        }
 
         loadingEl.style.display = "none";
 
         if (!lecons.length) {
-          overlay.innerHTML += `<div style="margin:40px auto;max-width:280px;background:rgba(255,255,255,0.9);border-radius:20px;padding:20px;text-align:center;"><p>Aucune leçon disponible.</p></div>`;
+          overlay.innerHTML += `<div style="margin:40px auto;max-width:280px;background:var(--color-zozzo-overlay-light-fort);border-radius:20px;padding:20px;text-align:center;"><p>Aucune leçon disponible.</p></div>`;
           return;
         }
 
-        // Affichage ordre 1 en bas → ordre N en haut (comme la maquette)
-        lecons.forEach((lecon) => {
-          const idx           = lecon.ordre - 1; // 0-based
-          const pos           = POSITIONS[idx] ?? POSITIONS[POSITIONS.length - 1];
-          const debloquee     = estDebloquee(lecon, lecons, progressions);
-          const premiumBlock  = estPremium(lecon, user);
-          const bloquee       = !debloquee || premiumBlock;
-          overlay.appendChild(creerCarte(lecon, pos, bloquee, premiumBlock));
+        const cartesData = lecons.map((lecon) => {
+          const debloquee = estDebloquee(lecon, lecons, progressions);
+          const premiumBlock = estPremium(lecon, user);
+          const bloquee = !debloquee || premiumBlock;
+          return { lecon, bloquee, premiumBlock };
         });
 
+        function renderCartes() {
+          const positions = getPositions();
+          overlay.querySelectorAll(".lecon-carte").forEach((el) => el.remove());
+
+          cartesData.forEach(({ lecon, bloquee, premiumBlock }) => {
+            const idx = lecon.ordre - 1;
+            const pos = positions[idx] ?? positions[positions.length - 1];
+            const card = creerCarte(lecon, pos, bloquee, premiumBlock);
+            card.classList.add("lecon-carte");
+            overlay.appendChild(card);
+          });
+        }
+
+        renderCartes();
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(renderCartes, 140);
+        });
       } catch (err) {
         console.error("[ZOZZO] Leçons :", err);
         loadingEl.style.display = "none";
         errorEl.classList.remove("hidden");
         const msgEl = document.getElementById("lecons-error-msg");
-        if (msgEl) msgEl.textContent = `${err?.status ? "Status " + err.status + " — " : ""}${err?.message ?? String(err)}`;
+        if (msgEl)
+          msgEl.textContent = `${err?.status ? "Status " + err.status + " — " : ""}${err?.message ?? String(err)}`;
       }
     })();
   </script>
-
 </AppLayout>

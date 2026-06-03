@@ -1,0 +1,459 @@
+---
+// @ts-nocheck
+import AppLayout from "../../../../layouts/AppLayout.astro";
+---
+
+<AppLayout
+  title="ZOZZO | Reconsti"
+  showBack={true}
+  backHref="/app/mini-jeux/reconsti"
+  pageTitle="Reconsti"
+>
+  <!-- CHARGEMENT -->
+  <div
+    id="ls"
+    class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-zozzo-surface-rose"
+  >
+    <div
+      class="h-10 w-10 animate-spin rounded-full border-4 border-zozzo-bleu-fonce border-t-transparent"
+    >
+    </div>
+    <p class="font-subtitle text-sm text-gray-400">Préparation…</p>
+    <p id="err-msg" class="hidden px-6 text-center text-xs text-red-400"></p>
+  </div>
+
+  <!-- JEU -->
+  <div id="gs" class="hidden flex-col bg-white min-h-[calc(100dvh-4rem)]">
+    <!-- Timer + score -->
+    <div class="flex items-center justify-between px-5 pt-4 pb-1 shrink-0">
+      <p id="prog" class="font-subtitle text-sm font-medium text-gray-400">
+        1 / ?
+      </p>
+      <span id="timer" class="font-title text-sm text-gray-400">0 s</span>
+    </div>
+
+    <!-- Titre de la phrase -->
+    <div class="shrink-0 px-5 pt-2 pb-2 text-center lg:px-10">
+      <p
+        class="font-subtitle text-xs font-medium uppercase tracking-wide text-gray-400"
+      >
+        Phrase à reconstituer
+      </p>
+      <h2
+        id="phrase-titre"
+        class="mt-2 font-title text-xl text-zozzo-text sm:text-2xl"
+      >
+        …
+      </h2>
+    </div>
+
+    <!-- Zone de réponse -->
+    <div
+      class="shrink-0 px-5 pb-2 min-h-[110px] flex items-center justify-center lg:min-h-[130px] lg:px-10"
+    >
+      <div
+        id="answer-zone"
+        class="flex w-full flex-wrap justify-center gap-2 lg:mx-auto lg:max-w-5xl lg:gap-3"
+      >
+      </div>
+    </div>
+
+    <!-- Feedback ZOZZO (caché) -->
+    <div id="zozzo-fb" class="hidden shrink-0 items-center justify-center py-1">
+      <img id="zozzo-fb-img" src="" alt="" class="h-20 w-auto rc-bounce" />
+    </div>
+
+    <!-- Séparateur orange -->
+    <div class="mx-5 mb-2 shrink-0 rounded-full h-[3px] bg-zozzo-orange"></div>
+
+    <!-- Pool des signes — centré, proche du séparateur -->
+    <div
+      id="sign-pool"
+      class="shrink-0 flex w-full flex-nowrap justify-center gap-3 overflow-x-auto px-5 pb-2 pt-3 lg:mx-auto lg:max-w-5xl lg:flex-wrap lg:justify-center lg:gap-4 lg:overflow-visible lg:px-10"
+    >
+    </div>
+
+    <!-- Flèche jaune en bas à droite -->
+    <div class="mt-auto shrink-0 flex items-center justify-end px-5 pb-5 pt-2">
+      <button
+        id="validate-btn"
+        class="transition hover:scale-110 active:scale-95"
+      >
+        <svg viewBox="0 0 60 24" class="h-8 w-16" fill="none">
+          <line
+            x1="0"
+            y1="12"
+            x2="50"
+            y2="12"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"></line>
+          <polyline
+            points="38,3 54,12 38,21"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- RÉSULTAT -->
+  <div
+    id="rs"
+    class="hidden min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-6 py-8 text-center bg-zozzo-surface-rose"
+  >
+    <h1 class="font-title text-3xl text-zozzo-orange">Résultat</h1>
+    <img
+      src="/images/about/zozzo-bon-reponse.png"
+      alt="Zozzo"
+      class="my-4 h-auto w-36"
+    />
+    <div
+      class="w-full max-w-xs space-y-3 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm"
+    >
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce"
+          >Temps :</span
+        >
+        <span id="rt" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="font-subtitle text-sm font-semibold text-zozzo-bleu-fonce"
+          >Score :</span
+        >
+        <span id="rs2" class="font-title text-xl text-zozzo-text"></span>
+      </div>
+    </div>
+    <div class="mt-8 flex justify-end w-full max-w-xs pr-2">
+      <button id="gc" class="transition hover:scale-110 active:scale-95">
+        <svg viewBox="0 0 60 24" class="h-8 w-16" fill="none">
+          <line
+            x1="0"
+            y1="12"
+            x2="50"
+            y2="12"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"></line>
+          <polyline
+            points="38,3 54,12 38,21"
+            stroke="var(--color-zozzo-jaune)"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // @ts-nocheck
+    import {
+      getJeuBySlug,
+      getAllPhrasesJeux,
+      getSignesByMots,
+      getCurrentUser,
+      saveScore,
+      pb,
+    } from "../../../../lib/backend.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const niveau = params.get("level") ?? "facile";
+
+    // ── État ──────────────────────────────────────────────────────
+    let phrases = [];
+    let phraseIdx = 0;
+    let currentMots = []; // mots corrects dans l'ordre
+    let currentSignes = []; // signes shufflés pour cette phrase
+    let selected = []; // signes sélectionnés par l'utilisateur (dans l'ordre)
+    let score = 0,
+      bonnes = 0,
+      mauvaises = 0,
+      elapsed = 0,
+      timerInt = null,
+      jeuId = null;
+    let answered = false;
+
+    // ── DOM ───────────────────────────────────────────────────────
+    const $ = (id) => document.getElementById(id);
+    const ls = $("ls"),
+      gs = $("gs"),
+      rs = $("rs");
+    const progEl = $("prog");
+    const timerEl = $("timer");
+    const titreEl = $("phrase-titre");
+    const answerZone = $("answer-zone");
+    const signPool = $("sign-pool");
+    const zozzoFb = $("zozzo-fb");
+    const zozzoFbImg = $("zozzo-fb-img");
+    const validateBtn = $("validate-btn");
+
+    // ── Timer ─────────────────────────────────────────────────────
+    function startTimer() {
+      timerInt = setInterval(() => {
+        elapsed++;
+        const m = Math.floor(elapsed / 60),
+          s = elapsed % 60;
+        timerEl.textContent = m ? `${m}min ${s}s` : `${s} s`;
+      }, 1000);
+    }
+
+    // Classes Tailwind pour les cartes Reconsti
+    const SIGN_BASE =
+      "border-[3px] border-zozzo-bleu-clair rounded-2xl bg-white cursor-pointer flex flex-col items-center justify-start p-[6px] transition-[transform,opacity] duration-150 active:scale-95 min-h-[clamp(120px,30vw,170px)] w-[clamp(96px,27vw,150px)] lg:w-[170px] lg:min-h-[190px] xl:w-[180px] xl:min-h-[200px]";
+    const ANSWER_BASE =
+      "border-[2px] border-dashed border-zozzo-bleu-clair rounded-[14px] bg-zozzo-surface-bleu cursor-pointer flex flex-col items-center justify-start p-[6px] min-h-[clamp(120px,30vw,170px)] w-[clamp(96px,27vw,150px)] transition-transform duration-150 active:scale-95 lg:w-[170px] lg:min-h-[190px] xl:w-[180px] xl:min-h-[200px]";
+
+    // ── Créer une carte signe ──────────────────────────────────────
+    function createSignCard(signe, type) {
+      const card = document.createElement("div");
+      card.className = type === "sign" ? SIGN_BASE : ANSWER_BASE;
+      card.dataset.tile = type;
+      card.dataset.mot = signe.mot;
+      card.dataset.id = signe.id;
+
+      // Zone image (prend tout l'espace disponible)
+      const mediaWrap = document.createElement("div");
+      mediaWrap.style.cssText =
+        "flex:1;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:88px;";
+
+      const videoUrl = signe.video ? pb.files.getURL(signe, signe.video) : null;
+      if (videoUrl) {
+        const v = document.createElement("video");
+        v.src = videoUrl;
+        v.autoplay = true;
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.style.cssText =
+          "width:100%;height:100%;object-fit:contain;max-height:clamp(104px,18vw,156px);";
+        mediaWrap.appendChild(v);
+      } else if (signe.image) {
+        const img = document.createElement("img");
+        img.src = pb.files.getURL(signe, signe.image);
+        img.alt = signe.mot;
+        img.style.cssText =
+          "width:100%;height:100%;object-fit:contain;max-height:clamp(104px,18vw,156px);";
+        img.onerror = () => {
+          img.style.display = "none";
+        };
+        mediaWrap.appendChild(img);
+      }
+      // Pas d'image ET pas de vidéo → on n'affiche rien dans la zone média
+      // (le mot est affiché en dessous via le label)
+
+      card.appendChild(mediaWrap);
+
+      return card;
+    }
+
+    // ── Afficher la phrase ─────────────────────────────────────────
+    function afficherPhrase() {
+      answered = false;
+      selected = [];
+      answerZone.innerHTML = "";
+      signPool.innerHTML = "";
+      zozzoFb.classList.add("hidden");
+      zozzoFb.classList.remove("flex");
+
+      const phrase = phrases[phraseIdx];
+      const total = phrases.length;
+
+      titreEl.textContent = phrase.titre ?? "…";
+      progEl.textContent = `${phraseIdx + 1} / ${total}`;
+
+      // Mélanger les signes
+      const shuffled = [...currentSignes].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((signe, i) => {
+        const card = createSignCard(signe, "sign");
+        card.dataset.poolIdx = i;
+        card.addEventListener("click", () => addToAnswer(card, signe));
+        signPool.appendChild(card);
+      });
+    }
+
+    // ── Ajouter un signe à la réponse ─────────────────────────────
+    function addToAnswer(poolCard, signe) {
+      if (answered || poolCard.dataset.used) return;
+
+      poolCard.classList.add("opacity-[0.35]", "pointer-events-none");
+      poolCard.dataset.used = "1";
+      selected.push(signe);
+
+      const ansCard = createSignCard(signe, "answer");
+      ansCard.addEventListener("click", () =>
+        removeFromAnswer(ansCard, poolCard, signe),
+      );
+      answerZone.appendChild(ansCard);
+
+      // Auto-valider quand tous les mots sont placés
+      if (selected.length === currentMots.length) {
+        setTimeout(valider, 300);
+      }
+    }
+
+    // ── Retirer un signe de la réponse ────────────────────────────
+    function removeFromAnswer(ansCard, poolCard, signe) {
+      if (answered) return;
+      ansCard.remove();
+      const idx = selected.findIndex((s) => s.id === signe.id);
+      if (idx !== -1) selected.splice(idx, 1);
+      poolCard.classList.remove("opacity-[0.35]", "pointer-events-none");
+      delete poolCard.dataset.used;
+    }
+
+    // ── Valider la réponse ────────────────────────────────────────
+    function valider() {
+      if (answered) return;
+      answered = true;
+
+      const userMots = selected.map((s) => s.mot);
+      const estCorrect = userMots.join("|") === currentMots.join("|");
+
+      // Feedback visuel sur les cartes
+      answerZone.querySelectorAll("[data-tile='answer']").forEach((card) => {
+        card.classList.remove(
+          "border-dashed",
+          "border-zozzo-bleu-clair",
+          "bg-zozzo-surface-bleu",
+        );
+        if (estCorrect) {
+          card.classList.add(
+            "border-solid",
+            "border-zozzo-success",
+            "bg-zozzo-success-bg",
+          );
+        } else {
+          card.classList.add(
+            "border-solid",
+            "border-zozzo-danger",
+            "bg-zozzo-danger-bg",
+          );
+        }
+        card.style.pointerEvents = "none";
+      });
+
+      // ZOZZO
+      zozzoFbImg.src = estCorrect
+        ? "/images/about/zozzo-bon-reponse.png"
+        : "/images/about/mouvaise-reponse.png";
+      zozzoFb.classList.remove("hidden");
+      zozzoFb.classList.add("flex");
+
+      if (estCorrect) {
+        score++;
+        bonnes++;
+      } else {
+        mauvaises++;
+      }
+
+      setTimeout(() => passerSuivant(), estCorrect ? 1500 : 2000);
+    }
+
+    // ── Phrase suivante ───────────────────────────────────────────
+    async function passerSuivant() {
+      phraseIdx++;
+      if (phraseIdx < phrases.length) {
+        // Charger les signes de la prochaine phrase
+        const nextPhrase = phrases[phraseIdx];
+        const nextMots = parseMots(nextPhrase.mots);
+        currentMots = nextMots;
+        currentSignes = await getSignesByMots(nextMots);
+        afficherPhrase();
+      } else {
+        afficherResultat();
+      }
+    }
+
+    // ── Valider manuellement via flèche jaune ─────────────────────
+    validateBtn.addEventListener("click", () => {
+      if (answered || selected.length === 0) return;
+      // Si l'enfant valide avant d'avoir tout placé, on valide quand même
+      valider();
+    });
+
+    // ── Résultat ──────────────────────────────────────────────────
+    async function afficherResultat() {
+      clearInterval(timerInt);
+      gs.classList.add("hidden");
+      rs.classList.remove("hidden");
+      rs.classList.add("flex");
+
+      const m = Math.floor(elapsed / 60),
+        s = elapsed % 60;
+      $("rt").textContent = m ? `${m} mins ${s} s` : `${s} s`;
+      $("rs2").textContent = `${score} / ${phrases.length} phrases`;
+
+      const user = getCurrentUser();
+      if (user && jeuId) {
+        const totalMots = phrases.reduce(
+          (acc, p) => acc + parseMots(p.mots).length,
+          0,
+        );
+        try {
+          await saveScore({
+            utilisateur: user.id,
+            jeu: jeuId,
+            niveau,
+            nombre_mots: totalMots,
+            score,
+            temps_secondes: elapsed,
+          });
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
+      $("gc").addEventListener("click", () => {
+        window.location.href = `/app/mini-jeux/classement?slug=reconsti&level=${niveau}`;
+      });
+    }
+
+    // ── Parser le champ mots (JSON ou Array) ─────────────────────
+    function parseMots(mots) {
+      if (Array.isArray(mots)) return mots;
+      try {
+        return JSON.parse(mots);
+      } catch {
+        return [];
+      }
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    (async () => {
+      try {
+        const jeu = await getJeuBySlug("reconsti").catch(() => null);
+        jeuId = jeu?.id ?? null;
+
+        // Charger TOUTES les phrases actives de PocketBase
+        phrases = await getAllPhrasesJeux();
+        if (!phrases.length)
+          throw new Error("Aucune phrase disponible dans PocketBase");
+
+        // Préparer la première phrase
+        currentMots = parseMots(phrases[0].mots);
+        currentSignes = await getSignesByMots(currentMots);
+        console.log(
+          "[Reconsti] Signes chargés :",
+          currentSignes.map(
+            (s) => `${s.mot} → image:${!!s.image} vidéo:${!!s.video}`,
+          ),
+        );
+
+        ls.classList.add("hidden");
+        gs.classList.remove("hidden");
+        gs.classList.add("flex");
+
+        afficherPhrase();
+        startTimer();
+      } catch (err) {
+        console.error("[ZOZZO] Reconsti:", err);
+        $("err-msg").textContent = `Erreur : ${err?.message ?? String(err)}`;
+        $("err-msg").classList.remove("hidden");
+      }
+    })();
+  </script>
+</AppLayout>
