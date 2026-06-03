@@ -2,82 +2,25 @@ import PocketBase from "pocketbase";
 
 export const pb = new PocketBase("http://127.0.0.1:8090");
 
-// ── Auth ──────────────────────────────────────────────────────────────────
+// ── Re-exports depuis les fichiers organisés ──────────────────────────────
+// Les pages importent toujours depuis backend.js — rien ne casse.
 
-export async function login(email, password) {
-  return await pb.collection("users").authWithPassword(email, password);
-}
+export {
+  getFileUrl,
+  formatTime,
+  shuffleArray,
+} from "./utils.js";
 
-// avatar = ID du record dans la collection avatars (relation)
-export async function register({ email, password, passwordConfirm, pseudo, age, avatar }) {
-  await pb.collection("users").create({
-    email,
-    password,
-    passwordConfirm,
-    pseudo,
-    age: parseInt(age),
-    role: "enfant",
-    experience: 0,
-    niveau: 1,
-    vies: 3,
-    abonnement_actif: false,
-    ...(avatar ? { avatar } : {}),
-  });
-  return await pb.collection("users").authWithPassword(email, password);
-}
-
-export function logout() {
-  pb.authStore.clear();
-}
-
-export function getCurrentUser() {
-  return pb.authStore.record;
-}
-
-export function isLoggedIn() {
-  return pb.authStore.isValid;
-}
-
-// Utilisateur connecté avec la relation avatar expandée
-// Triple fallback pour garantir l'affichage de l'avatar
-export async function getCurrentUserWithAvatar() {
-  const user = getCurrentUser();
-  if (!user) return null;
-
-  try {
-    // 1️ Essai principal : getOne avec expand
-    const fullUser = await pb.collection("users").getOne(user.id, { expand: "avatar" });
-
-    // 2️ Expand absent mais avatar ID présent → fetch direct
-    if (!fullUser.expand?.avatar && fullUser.avatar) {
-      try {
-        const avatarRecord = await pb.collection("avatars").getOne(fullUser.avatar);
-        fullUser.expand = { avatar: avatarRecord };
-      } catch {
-        // ignore
-      }
-    }
-    return fullUser;
-  } catch {
-    // 3️ getOne a échoué → utiliser authStore + fetch avatar par ID
-    const avatarId = user?.avatar;
-    if (avatarId) {
-      try {
-        const avatarRecord = await pb.collection("avatars").getOne(avatarId);
-        return { ...user, expand: { avatar: avatarRecord } };
-      } catch {
-        // ignore
-      }
-    }
-    return user;
-  }
-}
-
-export async function updateUser(data) {
-  const user = getCurrentUser();
-  if (!user) throw new Error("Non connecté");
-  return await pb.collection("users").update(user.id, data);
-}
+export {
+  login,
+  register,
+  logout,
+  getCurrentUser,
+  isLoggedIn,
+  getCurrentUserWithAvatar,
+  updateUser,
+  updateUserProfile,
+} from "./auth.js";
 
 // ── Avatars ───────────────────────────────────────────────────────────────
 
@@ -107,16 +50,6 @@ export function getAvatarImageUrl(avatarRecord) {
   return pb.files.getURL(avatarRecord, avatarRecord.image);
 }
 
-// Met à jour pseudo, email et âge de l'utilisateur connecté
-export async function updateUserProfile({ pseudo, email, age }) {
-  const user = getCurrentUser();
-  if (!user) throw new Error("Non connecté");
-  return await pb.collection("users").update(user.id, {
-    pseudo,
-    email,
-    age: parseInt(age),
-  });
-}
 
 // ── Mini-jeux ─────────────────────────────────────────────────────────────
 

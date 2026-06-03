@@ -5,99 +5,10 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
 <AppLayout title="ZOZZO | Relis-tout" showBack={true} backHref="/app/mini-jeux/relis-tout" pageTitle="Relis-tout">
 
-  <style is:global>
-    @keyframes shake {
-      0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-7px)}
-      40%{transform:translateX(7px)}
-      60%{transform:translateX(-4px)}
-      80%{transform:translateX(4px)}
-    }
-    .rt-shake { animation: shake 0.38s ease; }
-
-    /* ── Carte SIGNE ── */
-    .rt-sign {
-      position: relative;
-      overflow: visible;
-      border: 3px solid #f3e63f;
-      border-radius: 24px;
-      background: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-      transition: transform 0.15s, border-color 0.15s;
-    }
-    .rt-sign:active { transform: scale(0.97); }
-    .rt-sign.sel    { border-color: #224ed1; transform: scale(1.03); }
-    .rt-sign.done   { border-color: #4DA3FF; opacity: 0.6; pointer-events: none; }
-
-    /* Inner clip (overflow:hidden) à l'intérieur du signe */
-    .rt-sign-inner {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      border-radius: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Point jaune droit */
-    .rt-dot-r {
-      position: absolute;
-      right: -9px; top: 50%;
-      transform: translateY(-50%);
-      width: 16px; height: 16px;
-      background: #f3e63f;
-      border: 2px solid #c9ab10;
-      border-radius: 50%;
-      z-index: 30;
-      pointer-events: none;
-    }
-
-    /* ── Carte MOT ── */
-    .rt-word {
-      position: relative;
-      overflow: visible;
-      border: 3px solid #84a5f2;
-      border-radius: 20px;
-      background: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-family: var(--font-subtitle);
-      font-weight: 700;
-      color: #224ed1;
-      font-size: clamp(1rem, 4vw, 1.25rem);
-      padding: 14px 20px 14px 24px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      transition: transform 0.15s, border-color 0.15s;
-    }
-    .rt-word:active { transform: scale(0.97); }
-    .rt-word.sel    { border-color: #224ed1; transform: scale(1.03); }
-    .rt-word.done   { border-color: #4DA3FF; color: #4DA3FF; opacity: 0.6; pointer-events: none; }
-
-    /* Point bleu gauche */
-    .rt-dot-l {
-      position: absolute;
-      left: -9px; top: 50%;
-      transform: translateY(-50%);
-      width: 16px; height: 16px;
-      background: #224ed1;
-      border-radius: 50%;
-      z-index: 30;
-      pointer-events: none;
-    }
-  </style>
-
   <!-- CHARGEMENT -->
   <div id="ls" class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-[#F8F6F6]">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
     <p class="font-subtitle text-sm text-gray-400">Préparation…</p>
     <p id="err-msg" class="hidden px-6 text-center text-xs text-red-400"></p>
   </div>
@@ -237,7 +148,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
       } else {
         const sp = document.createElement("span");
         sp.textContent = signe.mot?.[0]?.toUpperCase() ?? "?";
-        sp.style.cssText = "font-size:2rem;color:#f3e63f;font-weight:bold;";
+        sp.style.cssText = "font-size:2rem;color:var(--color-zozzo-jaune);font-weight:bold;";
         inner.appendChild(sp);
       }
 

@@ -9,7 +9,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     <h1 class="mb-6 text-center font-title text-2xl text-zozzo-text sm:text-3xl">Mini-jeux</h1>
 
     <div id="jeux-loading" class="flex flex-col items-center gap-3 py-10">
-      <div class="h-9 w-9 animate-spin rounded-full border-4 border-t-transparent" style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+      <div class="h-9 w-9 animate-spin rounded-full border-4 border-t-transparent" style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
     </div>
 
     <div id="jeux-container" class="hidden flex flex-col gap-5 max-w-md mx-auto"></div>
@@ -85,10 +85,10 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
           const texte = `
             <div style="flex:1; text-align:center; padding: 0 8px;">
-              <p style="font-family:var(--font-title);font-size:1.05rem;font-weight:700;color:#224ed1;margin:0;">
+              <p style="font-family:var(--font-title);font-size:1.05rem;font-weight:700;color:var(--color-zozzo-bleu-fonce);margin:0;">
                 ${jeu.titre}
               </p>
-              <p style="margin-top:4px;font-size:0.75rem;color:#374151;margin-bottom:0;">
+              <p style="margin-top:4px;font-size:0.75rem;color:var(--color-zozzo-text);margin-bottom:0;">
                 ${jeu.description ?? ""}
               </p>
             </div>`;
@@ -99,7 +99,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           card.onclick = () => { if (active) window.location.href = cfg.route; else alert("Ce jeu arrive bientôt !"); };
           card.style.cssText = `
             cursor:pointer; border-radius:22px; padding:16px 18px;
-            background:#f3e63f; box-shadow:0 4px 12px rgba(0,0,0,0.13);
+            background:var(--color-zozzo-jaune); box-shadow:0 4px 12px rgba(0,0,0,0.13);
             display:flex; align-items:center; gap:10px;
             opacity:${active ? "1" : "0.72"};
             transition:transform 0.18s;

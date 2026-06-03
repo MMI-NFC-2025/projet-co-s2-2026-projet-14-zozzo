@@ -20,7 +20,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
     </div>
 
     <!-- ── Séparateur jaune (caché sur mobile) ─────────────────── -->
-    <div class="hidden h-52 w-1 self-center rounded-full sm:block" style="background-color:#f3e63f;"></div>
+    <div class="hidden h-52 w-1 self-center rounded-full sm:block" style="background-color:var(--color-zozzo-jaune);"></div>
 
     <!-- ── Cartes de navigation ────────────────────────────────── -->
     <div class="flex w-full flex-col gap-3 sm:flex-1">
@@ -29,31 +29,31 @@ import AppLayout from "../../layouts/AppLayout.astro";
       <a
         href="/app/lecons"
         class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
-        style="background-color:#84a5f2;"
+        style="background-color:var(--color-zozzo-bleu-clair);"
       >
         <img src="/images/shapes/bg-lecon.png" alt="" aria-hidden="true"
           class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
         <span class="relative z-10 font-subtitle text-lg font-semibold text-white">Leçons</span>
-        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:var(--color-zozzo-bleu-fonce);" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
       <!-- Dictionnaire — texte + flèche jaune -->
       <a
         href="/app/dictionnaire"
         class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
-        style="background-color:#224ed1;"
+        style="background-color:var(--color-zozzo-bleu-fonce);"
       >
         <img src="/images/shapes/bg-dico.png" alt="" aria-hidden="true"
           class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
-        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#f3e63f;">Dictionnaire</span>
-        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#f3e63f;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:var(--color-zozzo-jaune);">Dictionnaire</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:var(--color-zozzo-jaune);" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
       <!-- Histoires — texte + flèche blanc -->
       <a
         href="/app/histoires"
         class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
-        style="background-color:#f26748;"
+        style="background-color:var(--color-zozzo-orange);"
       >
         <img src="/images/shapes/bg-histoire.png" alt="" aria-hidden="true"
           class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
@@ -65,12 +65,12 @@ import AppLayout from "../../layouts/AppLayout.astro";
       <a
         href="/app/mini-jeux"
         class="relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-3.5 shadow-sm transition active:scale-95"
-        style="background-color:#f3e63f;"
+        style="background-color:var(--color-zozzo-jaune);"
       >
         <img src="/images/shapes/bg-minijeux.png" alt="" aria-hidden="true"
           class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
-        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:#224ed1;">Mini-jeux</span>
-        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:#224ed1;" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        <span class="relative z-10 font-subtitle text-lg font-semibold" style="color:var(--color-zozzo-bleu-fonce);">Mini-jeux</span>
+        <svg class="relative z-10 h-12 w-12 shrink-0" fill="currentColor" viewBox="0 0 24 24" style="color:var(--color-zozzo-bleu-fonce);" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
       </a>
 
     </div>

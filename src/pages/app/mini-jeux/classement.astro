@@ -10,7 +10,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
     class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3"
     style="background:white;">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
     <p class="font-subtitle text-sm text-gray-400">Chargement…</p>
   </div>
 
@@ -167,7 +167,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
           row.className = [
             "flex items-center gap-3 rounded-2xl px-4 py-3 shadow-sm transition",
             isMoi
-              ? "bg-[#fffde7] border-2 border-[#84a5f2]"
+              ? "bg-[#fffde7] border-2 border-zozzo-bleu-clair"
               : i % 2 === 0 ? "bg-white border border-gray-100" : "bg-[#f0f5ff] border border-[#e0eaff]",
           ].join(" ");
 

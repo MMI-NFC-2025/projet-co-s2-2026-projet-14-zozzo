@@ -5,58 +5,10 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
 
 <AppLayout title="ZOZZO | Reconsti" showBack={true} backHref="/app/mini-jeux/reconsti" pageTitle="Reconsti">
 
-  <style is:global>
-    @keyframes bounce-in {
-      0%  { transform:scale(0.4); opacity:0; }
-      65% { transform:scale(1.1); }
-      100%{ transform:scale(1);   opacity:1; }
-    }
-    .rc-bounce { animation: bounce-in 0.35s ease forwards; }
-
-    /* Cartes signes */
-    .sign-tile {
-      border: 3px solid #84a5f2;
-      border-radius: 16px;
-      background: white;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 6px 6px 6px;
-      transition: transform 0.15s, opacity 0.15s;
-      min-height: clamp(100px, 28vw, 140px);
-      width: clamp(80px, 25vw, 130px);
-    }
-    .sign-tile:active { transform: scale(0.95); }
-    .sign-tile.used   { opacity: 0.35; pointer-events: none; }
-    .sign-tile.correct { border-color: #4DA3FF; background: #e8f4ff; }
-    .sign-tile.wrong   { border-color: #FF4D4D; background: #fff0f0; }
-
-    /* Zone de réponse */
-    .answer-tile {
-      border: 2px dashed #84a5f2;
-      border-radius: 14px;
-      background: #f0f5ff;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 6px 6px 6px;
-      min-height: clamp(100px, 28vw, 140px);
-      width: clamp(80px, 25vw, 130px);
-      transition: transform 0.15s;
-    }
-    .answer-tile:active { transform: scale(0.95); }
-    .answer-tile.correct { border-color: #4DA3FF; border-style: solid; background: #e8f4ff; }
-    .answer-tile.wrong   { border-color: #FF4D4D; border-style: solid; background: #fff0f0; }
-  </style>
-
   <!-- CHARGEMENT -->
   <div id="ls" class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-3 bg-[#fff9f7]">
     <div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
     <p class="font-subtitle text-sm text-gray-400">Préparation…</p>
     <p id="err-msg" class="hidden px-6 text-center text-xs text-red-400"></p>
   </div>
@@ -87,7 +39,7 @@ import AppLayout from "../../../../layouts/AppLayout.astro";
     </div>
 
     <!-- Séparateur orange -->
-    <div class="mx-5 mb-2 shrink-0 rounded-full" style="height:3px;background:#f26748;"></div>
+    <div class="mx-5 mb-2 shrink-0 rounded-full" style="height:3px;background:var(--color-zozzo-orange);"></div>
 
     <!-- Pool des signes — centré, proche du séparateur -->
     <div id="sign-pool" class="shrink-0 flex justify-center gap-3 px-5 pt-3 pb-2 overflow-x-auto" style="flex-wrap:nowrap;"></div>

@@ -5,29 +5,12 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
 <AppLayout title="ZOZZO | Quiz" showBack={true} backHref="/app/lecons" pageTitle="">
 
-  <style>
-    @keyframes bounce-in {
-      0%   { transform: scale(0.3); opacity: 0; }
-      60%  { transform: scale(1.12); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%     { transform: translateX(-8px); }
-      40%     { transform: translateX(8px); }
-      60%     { transform: translateX(-5px); }
-      80%     { transform: translateX(5px); }
-    }
-    .anim-bounce { animation: bounce-in 0.45s ease forwards; }
-    .anim-shake  { animation: shake 0.4s ease; }
-  </style>
-
   <!-- CHARGEMENT ──────────────────────────────────────────────────── -->
   <div id="loading-screen"
     class="flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center gap-4"
     style="background:#fff9f7;">
     <div class="h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"
-      style="border-color:#224ed1 transparent #224ed1 #224ed1;"></div>
+      style="border-color:var(--color-zozzo-bleu-fonce) transparent #224ed1 #224ed1;"></div>
     <p class="font-subtitle text-gray-400">Chargement du quiz…</p>
   </div>
 
@@ -42,7 +25,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
       <p id="prog-label" class="mt-1 text-xs font-medium text-gray-400">Signe 1 / ?</p>
       <div class="mx-auto mt-2 h-2 max-w-xs overflow-hidden rounded-full bg-gray-200">
         <div id="prog-bar" class="h-full rounded-full transition-all duration-500"
-          style="width:0%;background:#224ed1;"></div>
+          style="width:0%;background:var(--color-zozzo-bleu-fonce);"></div>
       </div>
     </div>
 
@@ -65,7 +48,7 @@ import AppLayout from "../../../layouts/AppLayout.astro";
 
         <!-- Placeholder -->
         <div id="signe-ph" class="flex flex-col items-center gap-1">
-          <span class="font-title text-4xl" style="color:#224ed1;">?</span>
+          <span class="font-title text-4xl" style="color:var(--color-zozzo-bleu-fonce);">?</span>
           <span class="text-sm text-gray-400">Chargement…</span>
         </div>
 
