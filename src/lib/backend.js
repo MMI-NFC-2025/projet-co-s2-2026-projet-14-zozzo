@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 
-export const pb = new PocketBase("http://127.0.0.1:8090");
+export const pb = new PocketBase("https://api.zozzo.fr/_/");
 
 // ── Re-exports centralisés ────────────────────────────────────────────────
 // Toutes les pages continuent d'importer depuis backend.js — rien ne casse.
