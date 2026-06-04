@@ -5,8 +5,8 @@
 
 - [ ] Nom du projet :Zozzo
 - [ ] URL de la landing page :https://zozzo.fr/
-- [ ] URL de l'application finale :
-- [ ] URL de connexion au back office :
+- [ ] URL de l'application finale :https://zozzo.fr/
+- [ ] URL de connexion au back office :http://api.zozzo.fr
 - [ ] Identifiant de connexion au backoffice :zozzoapplsf@gmail.com
 - [ ] Mot de passe de connexion au backoffice :Zozzo12345@?
 - [ ] URL de la maquette FIGMA :https://www.figma.com/design/04Kkmvtz9LE6pZEDcwACM0/ZOZZO?node-id=29-24&t=qB7UoNd3YRhHc62h-1
